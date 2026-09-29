@@ -1,0 +1,232 @@
+@import "tailwindcss";
+@import "react-toastify/dist/ReactToastify.css";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --primary: #9A85FE;
+  --primary-hover: #7b1fa2;
+  --gray-700: #374151;
+  --gray-900: #111827;
+  --gray-300: #d1d5db;
+  --gray-100: #f3f4f6;
+  --gray-400: #9ca3af;
+  --gray-600: #4b5563;
+  --gray-500: #6b7280;
+
+  /* Holistic Features section color */
+  --holistic-bg: #E3DDFF;
+
+  /* Problem section colors */
+  --problem-1: #EFE3A8;
+  --problem-2: #DCC2F2;
+  --problem-3: #BFDDF2;
+  --problem-4: #EECAD9;
+  --problem-5: #D8EBC6;
+
+  /* Solution section colors */
+  --solution-1: #E8F5E9;
+  --solution-1-text: #4CAF82;
+  --solution-2: #FCE4EC;
+  --solution-2-text: #E4789A;
+  --solution-3: #E3F2FD;
+  --solution-3-text: #5BA3D0;
+
+  /* Features section colors */
+  --features-bg: #EAE8F8;
+  --features-divider: #D8D4F0;
+  --features-divider-vertical: #C8C3E8;
+
+  /* Benefits section colors */
+  --benefit-1: #FEF3C7;
+  --benefit-2: #F3E8FF;
+  --benefit-3: #DBEAFE;
+  --benefit-4: #FCE7F3;
+  --benefit-5: #DCFCE7;
+
+  /* CTA section colors */
+  --cta-card: #DAEEFF;
+  
+  /* Footer colors */
+  --footer-bg: #8F79F2;
+  --footer-social-icon: #8F79F2;
+
+  /* About card color */
+  --about-card: #FFDBE7;
+
+  /* Journey card color */
+  --journey-card: #FFF6BF;
+
+  /* Balance the Elements card color */
+  --balance-the-elements-card: #E9FFDB;
+
+  /* Ancient card color */
+  --ancient-card: #EBCFFF;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-gray-700: var(--gray-700);
+  --color-gray-900: var(--gray-900);
+  --color-gray-300: var(--gray-300);
+  --color-gray-100: var(--gray-100);
+  --color-gray-400: var(--gray-400);
+  --color-gray-600: var(--gray-600);
+  --color-gray-500: var(--gray-500);
+
+  /* Holistic Features section color */
+  --color-holistic-bg: var(--holistic-bg);
+
+  /* Problem section colors */
+  --color-problem-1: var(--problem-1);
+  --color-problem-2: var(--problem-2);
+  --color-problem-3: var(--problem-3);
+  --color-problem-4: var(--problem-4);
+  --color-problem-5: var(--problem-5);
+
+  /* Solution section colors */
+  --color-solution-1: var(--solution-1);
+  --color-solution-1-text: var(--solution-1-text);
+  --color-solution-2: var(--solution-2);
+  --color-solution-2-text: var(--solution-2-text);
+  --color-solution-3: var(--solution-3);
+  --color-solution-3-text: var(--solution-3-text);
+
+  /* Features section colors */
+  --color-features-bg: var(--features-bg);
+  --color-features-divider: var(--features-divider);
+  --color-features-divider-vertical: var(--features-divider-vertical);
+
+  /* Benefits section colors */
+  --color-benefit-1: var(--benefit-1);
+  --color-benefit-2: var(--benefit-2);
+  --color-benefit-3: var(--benefit-3);
+  --color-benefit-4: var(--benefit-4);
+  --color-benefit-5: var(--benefit-5);
+
+  /* CTA section colors */
+  --color-cta-card: var(--cta-card);
+
+  /* Footer colors */
+  --color-footer-bg: var(--footer-bg);
+  --color-footer-social-icon: var(--footer-social-icon);
+
+  /* About card color */
+  --color-about-card: var(--about-card);
+
+  /* Journey card color */
+  --color-journey-card: var(--journey-card);
+
+  /* Balance the Elements card color */
+  --color-balance-the-elements-card: var(--balance-the-elements-card);
+
+  /* Ancient card color */
+  --color-ancient-card: var(--ancient-card);
+
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #ffffff;
+    --foreground: #000000;
+    --primary: #9A85FE;
+    --primary-hover: #7b1fa2;
+    --gray-700: #374151;
+    --gray-900: #111827;
+    --gray-300: #d1d5db;
+    --gray-100: #f3f4f6;
+    --gray-400: #9ca3af;
+    --gray-600: #4b5563;
+    --gray-500: #6b7280;
+
+    /* Holistic Features section color */
+    --holistic-bg: #E3DDFF;
+
+    /* Problem section colors */
+    --problem-1: #EFE3A8;
+    --problem-2: #DCC2F2;
+    --problem-3: #BFDDF2;
+    --problem-4: #EECAD9;
+    --problem-5: #D8EBC6;
+
+    /* Solution section colors */
+    --solution-1: #E8F5E9;
+    --solution-1-text: #4CAF82;
+    --solution-2: #FCE4EC;
+    --solution-2-text: #E4789A;
+    --solution-3: #E3F2FD;
+    --solution-3-text: #5BA3D0;
+
+    /* Features section colors */
+    --features-bg: #EAE8F8;
+    --features-divider: #D8D4F0;
+    --features-divider-vertical: #C8C3E8;
+
+    /* Benefits section colors */
+    --benefit-1: #FEF3C7;
+    --benefit-2: #F3E8FF;
+    --benefit-3: #DBEAFE;
+    --benefit-4: #FCE7F3;
+    --benefit-5: #DCFCE7;
+
+    /* CTA section colors */
+    --cta-card: #DAEEFF;
+
+    /* Footer colors */
+    --footer-bg: #8F79F2;
+    --footer-social-icon: #8F79F2;
+
+    /* About card color */
+    --about-card: #FFDBE7;
+
+    /* Journey card color */
+    --journey-card: #FFF6BF;
+
+    /* Balance the Elements card color */
+    --balance-the-elements-card: #E9FFDB;
+
+    /* Ancient card color */
+    --ancient-card: #EBCFFF;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Custom scrollbar hide utility */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Custom react-toastify overrides to match Mudras Theme */
+:root {
+  --toastify-color-success: #9A85FE;
+  --toastify-color-info: #9A85FE;
+}
+
+.Toastify__toast {
+  font-family: inherit !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 30px rgba(154, 133, 254, 0.15) !important;
+}
+
+.Toastify__toast-theme--colored.Toastify__toast--success {
+  background-color: #9A85FE !important;
+}
+
+.Toastify__toast-theme--colored.Toastify__toast--info {
+  background-color: #9A85FE !important;
+}
