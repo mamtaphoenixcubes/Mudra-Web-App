@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import type { MouseEvent as ReactMouseEvent } from "react";
 import { IMAGES } from "../../assets/assets";
 import { useState, useRef, useEffect } from "react";
@@ -40,10 +41,16 @@ interface NavLinkProps {
   isMobile?: boolean;
 }
 
+const HOW_IT_WORKS_SUBMENU: NavItem[] = [
+  { label: "What are Mudras", path: "/WhatareMudras" },
+  { label: "What is Yoga Nidra", path: "/whatisyoganidra" },
+];
+
 interface ProfileDropdownProps {
   user: User;
   onClose: () => void;
   onLogout: () => void;
+  inline?: boolean;
 }
 
 interface ProfileButtonProps {
@@ -138,10 +145,8 @@ setUser({
 const NAV_ITEMS: NavItem[] = [
   { label: "About", path: "/about" },
   { label: "How It Works", path: "/WhatareMudras" },
-  // { label: "Mudra Library", path: "/MudraLibrary" },
-  // { label: "Yoga Nidra", path: "/YogaNidraLibrary" },
   { label: "Features", path: "/Home#features" },
-  { label: "Benefits", path: "/Home#benefits" },
+  { label: "Elements", path: "/FiveElements" },
   { label: "Blog", path: "/BlogLearning" }
 ];
 
@@ -235,6 +240,8 @@ function MorePagesDropdown({ dark, textColor }: MorePagesDropdownProps) {
 function FeaturesDropdown({ dark }: { dark: boolean }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
+  const isActive = FEATURE_SUBMENU.some((item) => pathname === item.path || pathname.startsWith(`${item.path}/`));
 
   useEffect(() => {
     const handleOutsideClick = (event: MouseEvent) => {
@@ -250,8 +257,8 @@ function FeaturesDropdown({ dark }: { dark: boolean }) {
         type="button"
         onClick={() => setOpen((value) => !value)}
         aria-expanded={open}
-        className={`${typography.navLink} whitespace-nowrap border-b-2 border-transparent transition-all duration-200 hover:border-[#9A85FE] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#9A85FE]`}
-        style={{ color: NAV_ACCENT, fontSize: "clamp(0.78rem, 1.05vw, 1.05rem)" }}
+        className={`${typography.navLink} whitespace-nowrap border-b-2 transition-all duration-200 ${isActive ? "border-[#9A85FE]" : "border-transparent hover:border-[#9A85FE]"} focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#9A85FE]`}
+        style={{ color: NAV_ACCENT, fontSize: "clamp(0.78rem, 1.05vw, 1.05rem)", paddingBottom: "4px", opacity: isActive ? 1 : undefined }}
       >
         Features
       </button>
@@ -276,6 +283,61 @@ function FeaturesDropdown({ dark }: { dark: boolean }) {
               className="block px-4 py-2.5 text-sm font-medium text-[#9A85FE] transition-colors hover:bg-[#F1EDFF] hover:text-[#8068E8] dark:hover:bg-[#9A85FE]/15"
             >
               {feature.label}
+            </Link>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function HowItWorksDropdown({ dark, onNavigate }: { dark: boolean; onNavigate?: () => void }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
+  const isActive = HOW_IT_WORKS_SUBMENU.some((item) => pathname === item.path);
+
+  useEffect(() => {
+    const handleOutsideClick = (event: MouseEvent) => {
+      if (ref.current && !ref.current.contains(event.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, []);
+
+  return (
+    <div className="relative flex items-center gap-0.5" ref={ref}>
+      <button
+        type="button"
+        onClick={() => setOpen((value) => !value)}
+        aria-expanded={open}
+        className={`${typography.navLink} whitespace-nowrap border-b-2 transition-all duration-200 ${isActive ? "border-[#9A85FE]" : "border-transparent hover:border-[#9A85FE]"} focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#9A85FE]`}
+        style={{ color: NAV_ACCENT, fontSize: "clamp(0.78rem, 1.05vw, 1.05rem)", paddingBottom: "4px", opacity: isActive ? 1 : undefined }}
+      >
+        How It Works
+      </button>
+      <button
+        type="button"
+        onClick={() => setOpen((value) => !value)}
+        aria-label="Toggle How It Works submenu"
+        aria-expanded={open}
+        className="rounded p-1 text-[#9A85FE] transition-colors hover:bg-[#F1EDFF] hover:text-[#8068E8] dark:hover:bg-[#9A85FE]/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#9A85FE]"
+      >
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className={`transition-transform duration-200 ${open ? "rotate-180" : ""}`}>
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+      </button>
+      {open && (
+        <div className={`absolute left-0 top-full mt-3 w-52 overflow-hidden rounded-2xl border py-2 shadow-xl z-50 ${dark ? "bg-gray-800 border-gray-700" : "bg-white border-gray-100"}`}>
+          {HOW_IT_WORKS_SUBMENU.map((item) => (
+            <Link
+              key={item.path}
+              href={item.path}
+              onClick={() => { setOpen(false); onNavigate?.(); }}
+              aria-current={pathname === item.path ? "page" : undefined}
+              className={`block px-4 py-2.5 text-sm font-medium transition-colors hover:bg-[#F1EDFF] hover:text-[#8068E8] dark:hover:bg-[#9A85FE]/15 ${pathname === item.path ? "text-[#8068E8]" : "text-[#9A85FE]"}`}
+            >
+              {item.label}
             </Link>
           ))}
         </div>
@@ -311,22 +373,27 @@ function Avatar({ user, size = 36, dark, textColor }: AvatarProps) {
 // ─── NavLink Component ──────────────────────────────────────────────────────
 function NavLink({ item, dark, textColor, onClick, isMobile = false }: NavLinkProps) {
   const [isHovered, setIsHovered] = useState(false);
+  const pathname = usePathname();
+  const isActive = pathname === item.path ||
+    (item.label === "How It Works" && HOW_IT_WORKS_SUBMENU.some((subItem) => pathname === subItem.path)) ||
+    (item.path === "/Home#features" && pathname === "/Home");
 
   return (
     <Link
       href={item.path}
       className={`${typography.navLink} whitespace-nowrap transition-all duration-200 ${
         isMobile ? "py-2" : ""
-      }`}
+      } ${isActive && !isMobile ? "border-b-2 border-[#9A85FE]" : isMobile ? "border-l-[3px]" : "border-b-2 border-transparent hover:border-[#9A85FE]"}`}
+      aria-current={isActive ? "page" : undefined}
       style={{
         color: textColor, // Always apply theme color
-        // borderBottom: isMobile ? "none" : `2px solid ${isHovered ? textColor : "transparent"}`,
-        borderLeft: isMobile ? `3px solid ${isHovered ? textColor : "transparent"}` : "none",
+        borderLeft: isMobile ? `3px solid ${isActive || isHovered ? textColor : "transparent"}` : "none",
         paddingLeft: isMobile ? "12px" : "10px",
         paddingRight: isMobile ? "12px" : "10px",
+        paddingBottom: isMobile ? "2px" : "4px",
         fontWeight: "500",
         fontSize: isMobile ? undefined : "clamp(0.78rem, 1.05vw, 1.05rem)",
-        opacity: 0.9,
+        opacity: isActive ? 1 : 0.9,
         transition: "all 0.3s ease",
       }}
       onMouseEnter={() => setIsHovered(true)}
@@ -339,10 +406,11 @@ function NavLink({ item, dark, textColor, onClick, isMobile = false }: NavLinkPr
 }
 
 // ─── Profile Dropdown ─────────────────────────────────────────────────────────
-function ProfileDropdown({ user, onClose, onLogout }: ProfileDropdownProps) {
+function ProfileDropdown({ user, onClose, onLogout, inline = false }: ProfileDropdownProps) {
   const router = useRouter();
   const { dark, textColor } = useTheme();
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
+  const [expanded, setExpanded] = useState(false);
 
   const menuItems = [
     {
@@ -390,8 +458,8 @@ function ProfileDropdown({ user, onClose, onLogout }: ProfileDropdownProps) {
 
   return (
     <div
-      className={`absolute right-0 top-[calc(100%+12px)] w-64 rounded-2xl shadow-xl border z-50 overflow-hidden ${dark ? "bg-gray-800 border-gray-700" : "bg-white border-gray-100"}`}
-      style={{ animation: "dropdownIn 0.18s ease" }}
+      className={`${inline ? "w-full rounded-xl" : "absolute right-0 top-[calc(100%+12px)] w-64 rounded-2xl shadow-xl z-50"} border overflow-hidden ${dark ? "bg-gray-800 border-gray-700" : "bg-white border-gray-100"}`}
+      style={inline ? undefined : { animation: "dropdownIn 0.18s ease" }}
     >
       <style>{`
         @keyframes dropdownIn {
@@ -401,16 +469,35 @@ function ProfileDropdown({ user, onClose, onLogout }: ProfileDropdownProps) {
       `}</style>
 
       {/* User header */}
-      <div className={`flex items-center gap-3 px-4 py-4 border-b ${dark ? "bg-gray-700 border-gray-600" : "bg-holistic-bg border-gray-100"}`}>
-        <Avatar user={user} size={40} dark={dark} textColor={textColor} />
-        <div className="min-w-0">
-          <p className="text-sm font-semibold leading-normal truncate" style={{ color: NAV_ACCENT }}>{user?.name}</p>
-          <p className="text-xs truncate" style={{ color: dark ? "#6b7280" : "#9ca3af" }}>{user?.email}</p>
+      {inline ? (
+        <button
+          type="button"
+          onClick={() => setExpanded((value) => !value)}
+          aria-expanded={expanded}
+          className={`flex w-full items-center gap-3 px-4 py-3 text-left transition-colors ${dark ? "hover:bg-gray-700" : "hover:bg-[#F8F6FF]"}`}
+        >
+          <Avatar user={user} size={40} dark={dark} textColor={textColor} />
+          <span className="min-w-0 flex-1">
+            <span className="block truncate text-sm font-semibold leading-normal" style={{ color: NAV_ACCENT }}>{user?.name}</span>
+            <span className="block truncate text-xs" style={{ color: dark ? "#9ca3af" : "#6b7280" }}>{user?.email}</span>
+          </span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className={`shrink-0 transition-transform duration-200 ${expanded ? "rotate-180" : ""}`} style={{ color: NAV_ACCENT }}>
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </button>
+      ) : (
+        <div className={`flex items-center gap-3 px-4 py-4 border-b ${dark ? "bg-gray-700 border-gray-600" : "bg-holistic-bg border-gray-100"}`}>
+          <Avatar user={user} size={40} dark={dark} textColor={textColor} />
+          <div className="min-w-0">
+            <p className="text-sm font-semibold leading-normal truncate" style={{ color: NAV_ACCENT }}>{user?.name}</p>
+            <p className="text-xs truncate" style={{ color: dark ? "#6b7280" : "#9ca3af" }}>{user?.email}</p>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Menu items */}
-      <div className="py-2">
+      {(!inline || expanded) && <>
+      <div className="py-2 border-t" style={{ borderColor: dark ? "#374151" : "#f3f4f6" }}>
         {menuItems.map(({ icon, label, path, badge }) => (
           <button
             key={label}
@@ -448,6 +535,7 @@ function ProfileDropdown({ user, onClose, onLogout }: ProfileDropdownProps) {
           Log out
         </button>
       </div>
+      </>}
     </div>
   );
 }
@@ -509,14 +597,15 @@ function ProfileButton({ user, onLogout }: ProfileButtonProps) {
 // ─── Navbar Content ─────────────────────────────────────────────────────────
 function NavbarContent() {
   const router = useRouter();
+  const pathname = usePathname();
   const { dark, textColor } = useTheme();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [mobileProfileOpen, setMobileProfileOpen] = useState(false);
   const [mobileExploreOpen, setMobileExploreOpen] = useState(false);
+  const [mobileHowItWorksOpen, setMobileHowItWorksOpen] = useState(false);
   const [mobileFeaturesOpen, setMobileFeaturesOpen] = useState(false);
   const [getStartedHovered, setGetStartedHovered] = useState(false);
   const { isLoggedIn, user, loading, logout } = useAuth();
-console.log(isLoggedIn, user, loading);
+
   const handleLogout = () => {
     logout();
     router.push("/");
@@ -563,7 +652,9 @@ console.log(isLoggedIn, user, loading);
         <div className="flex min-w-0 items-center gap-2 lg:gap-4">
           <div className="flex min-w-0 items-center gap-1 lg:gap-2">
             {NAV_ITEMS.map((item) => (
-              item.label === "Features" ? (
+              item.label === "How It Works" ? (
+                <HowItWorksDropdown key={item.label} dark={dark} />
+              ) : item.label === "Features" ? (
                 <FeaturesDropdown key={item.label} dark={dark} />
               ) : (
                 <NavLink
@@ -612,21 +703,6 @@ console.log(isLoggedIn, user, loading);
         </Link>
 
         <div className="flex items-center gap-3">
-          {/* Mobile profile avatar (logged in) */}
-          {isLoggedIn && user && (
-            <button
-              onClick={() => setMobileProfileOpen((p) => !p)}
-              className="relative"
-            >
-              <Avatar user={user} size={34} dark={dark} textColor={textColor} />
-              {user.notificationCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-4 h-4 text-white text-[9px] font-bold rounded-full flex items-center justify-center" style={{ backgroundColor: textColor }}>
-                  {user.notificationCount}
-                </span>
-              )}
-            </button>
-          )}
-
           {/* Hamburger */}
           <button
             onClick={() => setIsMenuOpen((p) => !p)}
@@ -665,7 +741,45 @@ console.log(isLoggedIn, user, loading);
           <div className={`flex flex-col ${spacing.cardGap}`}>
 
             {NAV_ITEMS.map((item) => (
-              item.label === "Features" ? (
+              item.label === "How It Works" ? (
+                <div key={item.label}>
+                  <div className="flex items-center justify-between gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setMobileHowItWorksOpen((value) => !value)}
+                      aria-expanded={mobileHowItWorksOpen}
+                      className="flex-1 py-2 pl-3 text-left font-medium border-l-[3px] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#9A85FE]"
+                      style={{
+                        color: NAV_ACCENT,
+                        borderLeftColor: HOW_IT_WORKS_SUBMENU.some((subItem) => pathname === subItem.path) ? NAV_ACCENT : "transparent",
+                        fontSize: "clamp(0.78rem, 1.05vw, 1.05rem)",
+                      }}
+                    >
+                      How It Works
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setMobileHowItWorksOpen((value) => !value)}
+                      aria-label="Toggle How It Works submenu"
+                      aria-expanded={mobileHowItWorksOpen}
+                      className="rounded p-2 text-[#9A85FE] transition-colors hover:bg-[#F1EDFF] hover:text-[#8068E8] dark:hover:bg-[#9A85FE]/15"
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className={`transition-transform duration-200 ${mobileHowItWorksOpen ? "rotate-180" : ""}`}>
+                        <polyline points="6 9 12 15 18 9" />
+                      </svg>
+                    </button>
+                  </div>
+                  {mobileHowItWorksOpen && (
+                    <div className="ml-4 mt-1 flex flex-col border-l border-[#9A85FE]/30 pl-3">
+                      {HOW_IT_WORKS_SUBMENU.map((subItem) => (
+                        <Link key={subItem.path} href={subItem.path} onClick={() => { setIsMenuOpen(false); setMobileHowItWorksOpen(false); }} className="rounded-md px-3 py-2 text-sm font-medium text-[#9A85FE] transition-colors hover:bg-[#F1EDFF] hover:text-[#8068E8] dark:hover:bg-[#9A85FE]/15">
+                          {subItem.label}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ) : item.label === "Features" ? (
                 <div key={item.label}>
                   <div className="flex items-center justify-between gap-2">
                     <button
@@ -675,7 +789,7 @@ console.log(isLoggedIn, user, loading);
                       className="flex-1 py-2 pl-3 text-left font-medium border-l-[3px] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#9A85FE]"
                       style={{
                         color: NAV_ACCENT,
-                        borderLeftColor: mobileFeaturesOpen ? NAV_ACCENT : "transparent",
+                        borderLeftColor: mobileFeaturesOpen || FEATURE_SUBMENU.some((feature) => pathname === feature.path || pathname.startsWith(`${feature.path}/`)) ? NAV_ACCENT : "transparent",
                         fontSize: "clamp(0.78rem, 1.05vw, 1.05rem)",
                       }}
                     >
@@ -759,6 +873,16 @@ console.log(isLoggedIn, user, loading);
                 </div>
               )}
             </div>
+            {isLoggedIn && user && (
+              <div className="border-t border-gray-200 dark:border-gray-800 pt-3">
+                <ProfileDropdown
+                  user={user}
+                  inline
+                  onClose={() => setIsMenuOpen(false)}
+                  onLogout={handleLogout}
+                />
+              </div>
+            )}
             {!isLoggedIn && (
               <div className="flex justify-center pt-1">
                 <button
@@ -779,23 +903,6 @@ console.log(isLoggedIn, user, loading);
         </div>
       )}
 
-      {/* ── MOBILE: Profile Dropdown ── */}
-      {mobileProfileOpen && isLoggedIn && user && (
-        <div 
-          className="lg:hidden fixed top-[57px] right-0 w-[min(18rem,100vw)] max-h-[calc(100dvh-57px)] overflow-y-auto border shadow-xl z-50 rounded-bl-2xl"
-          style={{
-            backgroundColor: dark ? "#1f2937" : "#fff", 
-            borderColor: dark ? "#374151" : "#e5e7eb",
-            animation: "slideDown 0.3s ease"
-          }}
-        >
-          <ProfileDropdown
-            user={user}
-            onClose={() => setMobileProfileOpen(false)}
-            onLogout={handleLogout}
-          />
-        </div>
-      )}
     </>
     </div>
   );

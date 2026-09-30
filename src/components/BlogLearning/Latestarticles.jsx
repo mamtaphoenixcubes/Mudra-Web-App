@@ -16,7 +16,7 @@ const getImgBaseUrl = () => {
       return `http://${hostname}:1337`;
     }
   }
-  return "http://192.168.1.14:1337";
+  return "http://192.168.1.3:1337";
 };
 
 const IMAGE_BASE_URL = getImgBaseUrl();
