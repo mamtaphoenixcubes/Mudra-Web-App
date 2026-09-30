@@ -149,6 +149,7 @@ function SessionDetailContent() {
   const heroImgUrl = thumbnail ? `${IMAGE_BASE_URL}${thumbnail}` : null;
 
   const durationStr = detailData?.Duration ? `${detailData?.Duration} min` : "30 min";
+  const durationpickercard = detailData?.DurationPickerCard || 30; // Default to 30 if not available
   const levelStr = detailData?.Level || "Beginner Friendly";
 
   const tagsList = detailData?.Intentions && detailData.Intentions.length > 0
@@ -201,9 +202,14 @@ function SessionDetailContent() {
         tags={tagsList}
         description={shortDescription}
         duration={durationStr}
+        durationpickercard={durationpickercard}
         level={levelStr}
         imgSrc={heroImgUrl}
-        onPlayClick={() => router.push(`/PlaySession?id=${id}&type=yoganidra`)}
+        onPlayClick={(selectedDuration) => {
+        router.push(
+          `/PlaySession?id=${id}&type=yoganidra&duration=${selectedDuration}`
+        );
+      }}
         onSaveClick={handleSave}
         onLikeClick={handleLike}
         onDownloadClick={handleDownload}

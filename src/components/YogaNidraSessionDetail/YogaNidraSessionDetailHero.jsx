@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import { Clock, BarChart2, Headphones, Play, Bookmark, Heart, Download, Share2 } from "lucide-react";
 import { IMAGES } from "../../assets/assets";
@@ -13,7 +13,7 @@ export default function YogaNidraSessionDetailHero({
   category = "Yoga Nidra",
   title = "Deep Relaxation Yoga Nidra",
   tags = ["Relaxation", " Restorative", "Rejuvenating"],
-  description = "This Yoga Nidra session is designed to guide you into deep rest and relaxation, helping you release stress, calm the mind, and restore energy.",
+  description = "This Yoga Nidradaw session is designed to guide you into deep rest and relaxation, helping you release stress, calm the mind, and restore energy.",
   duration = "30 min",
   level = "Beginner Friendly",
   audioGuided = true,
@@ -26,8 +26,35 @@ export default function YogaNidraSessionDetailHero({
   isSaved = false,
   isDownloaded = false,
   imgSrc = null,
+  durationpickercard
 }) {
   const { dark, textColor } = useTheme();
+  const [selectedTimer, setSelectedTimer] = useState(15);
+
+const timerOptions = durationpickercard
+  ? [
+      {
+        label: `${durationpickercard.beginnerDuration} min`,
+        value: durationpickercard.beginnerDuration,
+        type: "beginner",
+      },
+      {
+        label: `${durationpickercard.intermediateDuration} min`,
+        value: durationpickercard.intermediateDuration,
+        type: "intermediate",
+      },
+      {
+        label: `${durationpickercard.advancedDuration} min`,
+        value: durationpickercard.advancedDuration,
+        type: "advanced",
+      },
+      {
+        label: `${durationpickercard.expertDuration} min`,
+        value: durationpickercard.expertDuration,
+        type: "expert",
+      },
+    ]
+  : [];
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { 
     once: true, 
@@ -271,102 +298,119 @@ export default function YogaNidraSessionDetailHero({
           </div>
 
           {/* CTA buttons */}
-          <motion.div 
-            className="flex items-center gap-3"
-            initial={{ opacity: 0, y: 20 }}
-            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-          >
-            <motion.button
-              onClick={onPlayClick}
-              className="flex items-center gap-2 text-white font-medium text-xs md:text-[10px] lg:text-sm rounded-xl px-5 py-2.5 transition-colors"
+         {/* Timer Selector */}
+<motion.div
+  className="mb-6 w-full max-w-xl"
+  initial={{ opacity: 0, y: 15 }}
+  animate={
+    isInView
+      ? { opacity: 1, y: 0 }
+      : { opacity: 0, y: 15 }
+  }
+  transition={{ duration: 0.5, delay: 0.35 }}
+>
+  <p
+    className="text-sm font-medium mb-3"
+    style={{
+      color: dark ? "#ffffff" : "#374151",
+    }}
+  >
+    Choose your session duration
+  </p>
+
+  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+    {timerOptions.map((option) => {
+      const isSelected = selectedTimer === option.value;
+
+      return (
+        <motion.button
+          key={option.value}
+          type="button"
+          onClick={() => setSelectedTimer(option.value)}
+          className="relative rounded-xl px-4 py-3 text-sm font-medium border transition-all"
+          style={{
+            border: `1px solid ${
+              isSelected
+                ? textColor
+                : dark
+                ? "#374151"
+                : "#d1d5db"
+            }`,
+            backgroundColor: isSelected
+              ? textColor
+              : dark
+              ? "#1f2937"
+              : "#ffffff",
+            color: isSelected
+              ? "#ffffff"
+              : dark
+              ? "#ffffff"
+              : "#374151",
+          }}
+          whileHover={{
+            scale: 1.03,
+          }}
+          whileTap={{
+            scale: 0.97,
+          }}
+        >
+         <div className="flex flex-col items-center">
+  <span className="font-semibold">
+    {option.value} min
+  </span>
+
+  <span className="text-[11px] opacity-70 mt-1">
+    {option.label}
+  </span>
+</div>
+
+          {isSelected && (
+            <span
+              className="absolute -top-2 -right-2 w-5 h-5 rounded-full flex items-center justify-center text-[10px]"
               style={{
-                backgroundColor: textColor,
+                backgroundColor: "#10b981",
+                color: "#ffffff",
               }}
-              whileHover={{
-                scale: 1.05,
-                opacity: 0.85,
-                boxShadow: `0 4px 20px ${textColor}40`,
-                transition: { duration: 0.2 }
-              }}
-              whileTap={{ scale: 0.95 }}
             >
-              <Play size={16} fill="currentColor" />
-              Play Session
-            </motion.button>
-            <motion.button
-              onClick={onSaveClick}
-              className="flex items-center gap-2 font-medium text-xs md:text-[10px] lg:text-sm rounded-xl px-5 py-2.5 transition-colors"
-              style={{
-                border: dark ? "1px solid #ffffff" : "1px solid #d1d5db",
-                color: isSaved ? "#10b981" : (dark ? "#ffffff" : "#374151"),
-                backgroundColor: isSaved ? "rgba(16, 185, 129, 0.1)" : "transparent",
-              }}
-              whileHover={{
-                scale: 1.05,
-                backgroundColor: isSaved ? "rgba(16, 185, 129, 0.15)" : (dark ? "#374151" : "#f9fafb"),
-                transition: { duration: 0.2 }
-              }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Bookmark size={16} fill={isSaved ? "currentColor" : "none"} />
-              {isSaved ? "Saved" : "Save"}
-            </motion.button>
-            <motion.button
-              onClick={onLikeClick}
-              className="flex items-center gap-2 font-medium text-xs md:text-[10px] lg:text-sm rounded-xl px-5 py-2.5 transition-colors"
-              style={{
-                border: dark ? "1px solid #ffffff" : "1px solid #d1d5db",
-                color: isLiked ? "#ef4444" : (dark ? "#ffffff" : "#374151"),
-                backgroundColor: isLiked ? "rgba(239, 68, 68, 0.1)" : "transparent",
-              }}
-              whileHover={{
-                scale: 1.05,
-                backgroundColor: isLiked ? "rgba(239, 68, 68, 0.15)" : (dark ? "#374151" : "#f9fafb"),
-                transition: { duration: 0.2 }
-              }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Heart size={16} fill={isLiked ? "currentColor" : "none"} />
-              {isLiked ? "Liked" : "Like"}
-            </motion.button>
-            <motion.button
-              onClick={onDownloadClick}
-              className="flex items-center gap-2 font-medium text-xs md:text-[10px] lg:text-sm rounded-xl px-5 py-2.5 transition-colors"
-              style={{
-                border: dark ? "1px solid #ffffff" : "1px solid #d1d5db",
-                color: isDownloaded ? "#3b82f6" : (dark ? "#ffffff" : "#374151"),
-                backgroundColor: isDownloaded ? "rgba(59, 130, 246, 0.1)" : "transparent",
-              }}
-              whileHover={{
-                scale: 1.05,
-                backgroundColor: isDownloaded ? "rgba(59, 130, 246, 0.15)" : (dark ? "#374151" : "#f9fafb"),
-                transition: { duration: 0.2 }
-              }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Download size={16} />
-              {isDownloaded ? "Downloaded" : "Download"}
-            </motion.button>
-            <motion.button
-              onClick={onShareClick}
-              className="flex items-center gap-2 font-medium text-xs md:text-[10px] lg:text-sm rounded-xl px-5 py-2.5 transition-colors"
-              style={{
-                border: dark ? "1px solid #ffffff" : "1px solid #d1d5db",
-                color: dark ? "#ffffff" : "#374151",
-                backgroundColor: "transparent",
-              }}
-              whileHover={{
-                scale: 1.05,
-                backgroundColor: dark ? "#374151" : "#f9fafb",
-                transition: { duration: 0.2 }
-              }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Share2 size={16} />
-              Share
-            </motion.button>
-          </motion.div>
+              ✓
+            </span>
+          )}
+        </motion.button>
+      );
+    })}
+  </div>
+</motion.div>
+
+{/* CTA buttons */}
+<motion.div
+  className="flex items-center gap-3"
+  initial={{ opacity: 0, y: 20 }}
+  animate={
+    isInView
+      ? { opacity: 1, y: 0 }
+      : { opacity: 0, y: 20 }
+  }
+  transition={{ duration: 0.5, delay: 0.4 }}
+>
+  <motion.button
+    onClick={() => onPlayClick?.(selectedTimer)}
+    className="flex items-center gap-2 text-white font-medium text-xs md:text-[10px] lg:text-sm rounded-xl px-5 py-2.5 transition-colors"
+    style={{
+      backgroundColor: textColor,
+    }}
+    whileHover={{
+      scale: 1.05,
+      opacity: 0.85,
+      boxShadow: `0 4px 20px ${textColor}40`,
+    }}
+    whileTap={{ scale: 0.95 }}
+  >
+    <Play size={16} fill="currentColor" />
+    Start {selectedTimer} Min Session
+  </motion.button>
+
+  {/* Keep your Save, Like, Download and Share buttons here */}
+</motion.div>
 
         </motion.div>
 
