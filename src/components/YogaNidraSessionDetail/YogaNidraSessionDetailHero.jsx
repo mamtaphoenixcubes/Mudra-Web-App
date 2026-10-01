@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { motion, useInView } from "framer-motion";
 import { Clock, BarChart2, Headphones, Play, Bookmark, Heart, Download, Share2 } from "lucide-react";
 import { IMAGES } from "../../assets/assets";
@@ -28,8 +28,7 @@ export default function YogaNidraSessionDetailHero({
   imgSrc = null,
   durationpickercard
 }) {
-  const { dark, textColor } = useTheme();
-  const [selectedTimer, setSelectedTimer] = useState(15);
+const { dark, textColor } = useTheme();
 
 const timerOptions = durationpickercard
   ? [
@@ -55,6 +54,10 @@ const timerOptions = durationpickercard
       },
     ]
   : [];
+const [selectedTimer, setSelectedTimer] = useState(
+  timerOptions[0]?.value ?? null
+);
+
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { 
     once: true, 
