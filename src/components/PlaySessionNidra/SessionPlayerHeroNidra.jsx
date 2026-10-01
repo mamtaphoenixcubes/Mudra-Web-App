@@ -242,33 +242,12 @@ function extractIsLiked(data, profileId) {
     if (typeof act.IsLiked === "boolean") return act.IsLiked;
   }
 
-  // 3. Array of userMudraActivities (e.g. Mudras)
-  if (Array.isArray(data.userMudraActivities) && data.userMudraActivities.length > 0) {
-    let userAct = null;
-    if (profileId) {
-      userAct = data.userMudraActivities.find(
-        (a) =>
-          a?.user?.documentId === profileId ||
-          a?.user?.id === profileId ||
-          String(a?.user?.id) === String(profileId)
-      );
-    }
-    if (!userAct) {
-      userAct = data.userMudraActivities[0];
-    }
-    if (userAct) {
-      if (typeof userAct.isLiked === "boolean") return userAct.isLiked;
-      if (typeof userAct.IsLiked === "boolean") return userAct.IsLiked;
-    }
-  }
-
   return false;
 }
 
 // ─── Session Player ─────────────────────────────────────────────────────────
 export default function SessionPlayer({
   sessionData = null,
-  type = "yoganidra",
   mode = "guided",
   durationParam = null,
   playlistTracks: propPlaylistTracks = null,
@@ -282,7 +261,6 @@ export default function SessionPlayer({
   setTotalSecs: setControlledTotalSecs,
 }) {
   const { dark, textColor } = useTheme();
-console.log(sessionData,"heroImgUrlheroImgUrl");
   
   const [localTrackIndex, setLocalTrackIndex] = useState(0);
   const currentTrackIndex = setControlledTrackIndex ? controlledTrackIndex : localTrackIndex;
@@ -294,9 +272,9 @@ console.log(sessionData,"heroImgUrlheroImgUrl");
 
   // Unwrap nested data if present (e.g. from Strapi/Express response wrapper)
   const actualData = sessionData?.data || sessionData;
-  const isPlaylist = isMudra 
-    ? (actualData?.mediaType === "AUDIO_PLAYLIST" || actualData?.mediaType === "VIDEO_PLAYLIST")
-    : (actualData?.AudioPlaylist && actualData.AudioPlaylist.length > 0);
+ const isPlaylist =
+  actualData?.AudioPlaylist &&
+  actualData.AudioPlaylist.length > 0;
 
 const playlistTracks =
   propPlaylistTracks ||
@@ -407,9 +385,7 @@ const shortDescription =
   // Initialize countdown timer from params or localStorage
  // Initialize countdown timer from params or localStorage
 useEffect(() => {
-  if (!isMudra) return;
-
- const nidraDocId = actualData?.documentId || actualData?.id;
+  const nidraDocId = actualData?.documentId || actualData?.id;
 
   if (!nidraDocId) return;
 
@@ -453,17 +429,16 @@ useEffect(() => {
     setPlayBellOnEnd(restored.playBell);
     setPlaying(!restored.paused);
     setTimerModalOpen(true);
-  } else if (mode === "timer" && totalTimeFromProps > 0) {
-    console.log("Starting new timer:", totalTimeFromProps);
-
-    setTimerTotalSeconds(totalTimeFromProps);
-    setTimerSecondsLeft(totalTimeFromProps);
-    setTimerActive(true);
-    setTimerPaused(false);
-    setPlaying(true);
-    setTimerModalOpen(true);
-  }
-}, [durationParam, isMudra, mode, actualData]);
+} else if (totalTimeFromProps > 0) {
+  const totalSeconds = totalTimeFromProps * 60;
+  setTimerTotalSeconds(totalSeconds);
+  setTimerSecondsLeft(totalSeconds);
+  setTimerActive(true);
+  setTimerPaused(false);
+  setPlaying(true);
+  setTimerModalOpen(true);
+}
+}, [durationParam, mode, actualData]);
 
   // Save countdown timer state to localStorage
   useEffect(() => {
@@ -534,24 +509,42 @@ useEffect(() => {
   };
 
 
-  const handleTimerComplete = async () => {
-    setTimerActive(false);
-    setPlaying(false);
-    
-    if (playBellOnEnd) {
-      playSingingBowlSound();
-    }
+const handleTimerComplete = async () => {
+  setTimerActive(false);
+  setPlaying(false);
 
-    const mudraDocId = actualData?.documentId || actualData?.id;
-    if (mudraDocId) {
-      try {
-        await mudraService.completeMudra(mudraDocId, profileDocId, timerTotalSeconds);
-      } catch (err) {
-        console.warn("Failed to complete mudra session:", err);
-      }
+  if (playBellOnEnd) {
+    playSingingBowlSound();
+  }
+
+  const nidraDocId = actualData?.documentId || actualData?.id;
+
+  if (nidraDocId) {
+    try {
+      const activeTrackId =
+        activeTrack?.documentId ||
+        activeTrack?.id ||
+        nidraDocId;
+
+      const mediaTypeVal =
+        actualData?.mediaType ||
+        actualData?.MediaType ||
+        "AUDIO_SINGLE";
+
+      await yogaNidraService.completeMedia({
+        profileDocumentId: profileDocId,
+        mediaType: mediaTypeVal,
+        mediaDocumentId: activeTrackId,
+        yogaNidraDocumentId: nidraDocId,
+        completedDuration: Math.floor(timerTotalSeconds),
+      });
+    } catch (err) {
+      console.warn("Failed to complete Yoga Nidra session:", err);
     }
-    showToast("Meditation timer completed!");
-  };
+  }
+
+  showToast("Meditation timer completed!");
+};
 
 const handleTimerPauseToggle = () => {
   setPlaying((prev) => !prev);
@@ -562,14 +555,27 @@ const handleTimerPauseToggle = () => {
     setPlaying(false);
     
     const elapsed = timerTotalSeconds - timerSecondsLeft;
-    const mudraDocId = actualData?.documentId || actualData?.id;
-    if (mudraDocId && elapsed > 0) {
-      try {
-        await mudraService.completeMudra(mudraDocId, profileDocId, elapsed);
-      } catch (err) {
-        console.warn("Failed to complete mudra session on stop:", err);
-      }
-    }
+ const nidraDocId = actualData?.documentId || actualData?.id;
+
+if (nidraDocId && elapsed > 0) {
+  try {
+  await yogaNidraService.completeMedia({
+  profileDocumentId: profileDocId,
+  mediaType:
+    actualData?.mediaType ||
+    actualData?.MediaType ||
+    "AUDIO_SINGLE",
+  mediaDocumentId:
+    activeTrack?.documentId ||
+    activeTrack?.id ||
+    nidraDocId,
+  yogaNidraDocumentId: nidraDocId,
+  completedDuration: Math.floor(elapsed),
+});
+  } catch (err) {
+    console.warn("Failed to complete Yoga Nidra session on stop:", err);
+  }
+}
     setTimerModalOpen(false);
   };
 
@@ -621,36 +627,15 @@ useEffect(() => {
       ? Math.floor(timerSecondsLeft)
       : Math.max(0, Math.floor(totalSecs - currentTime));
 
-    console.log("Saving progress:", {
-      sessionDuration,
-      remainingDuration,
-      timerTotalSeconds,
-      timerSecondsLeft,
-      totalSecs,
-      currentTime,
-    });
 
-    if (isMudra) {
-      await mudraService.saveMudraMediaProgress({
-        profileDocumentId: profileDocId,
-        mediaType: mediaTypeVal,
-        mediaDocumentId: activeTrackId,
-        mudraDocumentId: currentId,
-        remainingDuration,
-        sessionDuration,
-      });
-    } else {
-      await yogaNidraService.saveMediaProgress({
-        profileDocumentId: profileDocId,
-        mediaType: mediaTypeVal,
-        mediaDocumentId: activeTrackId,
-        nidraDocumentId: currentId,
-        mudraDocumentId: currentId,
-        remainingDuration,
-        sessionDuration,
-      });
-    }
-
+  await yogaNidraService.saveMediaProgress({
+  profileDocumentId: profileDocId,
+  mediaType: mediaTypeVal,
+  mediaDocumentId: activeTrackId,
+  yogaNidraDocumentId: currentId,
+  remainingDuration,
+  sessionDuration,
+});
     lastProgressSentRef.current = currentTime;
   } catch (err) {
     console.warn("Failed to update media progress:", err);
@@ -724,7 +709,7 @@ useEffect(() => {
     const pct = Number(e.target.value);
     const newTime = (pct / 100) * totalSecs;
     setCurrent(newTime);
-    const activeEl = isVideoMode ? videoRef.current : audioRef.current;
+    const activeEl = audioRef.current;
     if (activeEl) {
       activeEl.currentTime = newTime;
     }
@@ -732,7 +717,7 @@ useEffect(() => {
 const handlePlayPause = () => {
   if (playing) {
     // User explicitly clicked Pause
-    const activeEl = isVideoMode ? videoRef.current : audioRef.current;
+    const activeEl = audioRef.current;
 
     if (activeEl) {
       sendProgressUpdate(activeEl.currentTime);
@@ -742,7 +727,7 @@ const handlePlayPause = () => {
   setPlaying((prev) => !prev);
 };
  function handleTimeUpdate() {
-  const activeEl = isVideoMode ? videoRef.current : audioRef.current;
+  const activeEl = audioRef.current;
 
   if (activeEl) {
     const curr = activeEl.currentTime;
@@ -757,64 +742,40 @@ const handlePlayPause = () => {
   }
 
   async function handleAudioEnded() {
-    const activeEl = isVideoMode ? videoRef.current : audioRef.current;
-    const duration = activeEl ? activeEl.duration : totalSecs;
+   const activeEl = audioRef.current;
+const duration = activeEl ? activeEl.duration : totalSecs;
 
     // Handle timer active loop behavior
     if (timerActive) {
-      if (isVideoMode) {
-        if (isPlaylist) {
-          const nextIdx = (currentTrackIndex + 1) % playlistTracks.length;
-          setCurrentTrackIndex(nextIdx);
-          setCurrent(0);
-          setPlaying(true);
-        } else {
-          if (videoRef.current) {
-            videoRef.current.currentTime = 0;
-            if (!timerActive || playBellOnEnd) {
-              videoRef.current.play().catch(() => {});
-            }
-          }
-        }
-      } else {
-        if (isPlaylist) {
-          const nextIdx = (currentTrackIndex + 1) % playlistTracks.length;
-          setCurrentTrackIndex(nextIdx);
-          setCurrent(0);
-          setPlaying(true);
-        } else {
-          if (audioRef.current) {
-            audioRef.current.currentTime = 0;
-            if (!timerActive || playBellOnEnd) {
-              audioRef.current.play().catch(() => {});
-            }
-          }
-        }
+    if (isPlaylist) {
+    const nextIdx =
+      (currentTrackIndex + 1) % playlistTracks.length;
+
+    setCurrentTrackIndex(nextIdx);
+    setCurrent(0);
+    setPlaying(true);
+  } else {
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0;
+
+      if (!timerActive || playBellOnEnd) {
+        audioRef.current.play().catch(() => {});
       }
+    }
+  }
       
       try {
         const activeTrackId = activeTrack?.documentId || activeTrack?.id || currentId;
         const mediaTypeVal = actualData?.mediaType || actualData?.MediaType || "AUDIO_SINGLE";
         const currentId = actualData?.documentId || actualData?.id;
 
-        if (isMudra) {
-          await mudraService.completeMudraMedia({
-            profileDocumentId: profileDocId,
-            mediaType: mediaTypeVal,
-            mediaDocumentId: activeTrackId,
-            mudraDocumentId: currentId,
-            completedDuration: Math.round(duration || totalSecs || 0)
-          });
-        } else {
-          await yogaNidraService.completeMedia({
-            profileDocumentId: profileDocId,
-            mediaType: mediaTypeVal,
-            mediaDocumentId: activeTrackId,
-            nidraDocumentId: currentId,
-            mudraDocumentId: currentId,
-            completedDuration: Math.round(duration || totalSecs || 0)
-          });
-        }
+     await yogaNidraService.completeMedia({
+  profileDocumentId: profileDocId,
+  mediaType: mediaTypeVal,
+  mediaDocumentId: activeTrackId,
+  yogaNidraDocumentId: currentId,
+  completedDuration: Math.round(duration || totalSecs || 0)
+});
       } catch (e) {
         console.warn("Failed to complete media inside timer loop:", e);
       }
@@ -828,24 +789,13 @@ const handlePlayPause = () => {
       const activeTrackId = activeTrack?.documentId || activeTrack?.id || currentId;
       const mediaTypeVal = actualData?.mediaType || actualData?.MediaType || "AUDIO_SINGLE";
 
-      if (isMudra) {
-        await mudraService.completeMudraMedia({
-          profileDocumentId: profileDocId,
-          mediaType: mediaTypeVal,
-          mediaDocumentId: activeTrackId,
-          mudraDocumentId: currentId,
-          completedDuration: Math.round(duration || totalSecs || 0)
-        });
-      } else {
-        await yogaNidraService.completeMedia({
-          profileDocumentId: profileDocId,
-          mediaType: mediaTypeVal,
-          mediaDocumentId: activeTrackId,
-          nidraDocumentId: currentId,
-          mudraDocumentId: currentId,
-          completedDuration: Math.round(duration || totalSecs || 0)
-        });
-      }
+  await yogaNidraService.completeMedia({
+  profileDocumentId: profileDocId,
+  mediaType: mediaTypeVal,
+  mediaDocumentId: activeTrackId,
+  nidraDocumentId: currentId,
+  completedDuration: Math.round(duration || totalSecs || 0)
+});
     } catch (err) {
       console.warn("Failed to mark session as completed:", err);
     }
@@ -892,11 +842,10 @@ const handlePlayPause = () => {
     try {
       // Report download to backend
       try {
-        if (isMudra) {
-          await mudraService.incrementMudraDownload(currentId, profileDocId);
-        } else {
-          await yogaNidraService.downloadYogaNidra(currentId, profileDocId);
-        }
+       await yogaNidraService.downloadYogaNidra(
+  currentId,
+  profileDocId
+);
       } catch (dErr) {
         console.warn("Failed to track download:", dErr);
       }
@@ -906,7 +855,7 @@ const handlePlayPause = () => {
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `${heroName.replace(/\s+/g, "-").toLowerCase()}.${isVideoMode ? "mp4" : "mp3"}`;
+      a.download = `${heroName.replace(/\s+/g, "-").toLowerCase()}.mp3`;
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -921,18 +870,17 @@ const handlePlayPause = () => {
   async function handleShare() {
     const currentId = actualData?.documentId || actualData?.id || "ui2phqjaaqub5r1k38gkppko";
     try {
-      if (isMudra) {
-        await mudraService.incrementMudraShare(currentId, profileDocId);
-      } else {
-        await yogaNidraService.shareYogaNidra(currentId, profileDocId);
-      }
+    await yogaNidraService.shareYogaNidra(
+  currentId,
+  profileDocId
+);
     } catch (sErr) {
       console.warn("Failed to track share:", sErr);
     }
 
     const shareData = {
       title: heroName,
-      text: isMudra ? `Practice "${heroName}" on Mudras — ${categoryName}` : `Listen to "${heroName}" on Mudras — ${categoryName}`,
+      text: `Listen to "${heroName}" on Yoga Nidra — ${categoryName}`,
       url: typeof window !== "undefined" ? window.location.href : "",
     };
 
@@ -997,31 +945,30 @@ const handlePlayPause = () => {
     setPlaylistOpen(false);
   }
 
-  const getActiveAudioId = () => {
-    if (activeTrack?.documentId) return activeTrack.documentId;
-    if (activeTrack?.id) return activeTrack.id;
+const getActiveAudioId = () => {
+  if (activeTrack?.documentId) return activeTrack.documentId;
+  if (activeTrack?.id) return activeTrack.id;
 
-    if (actualData?.audioSingleSessions?.[0]?.documentId) return actualData.audioSingleSessions[0].documentId;
-    if (actualData?.audioSingleSessions?.[0]?.id) return actualData.audioSingleSessions[0].id;
+  if (actualData?.AudioSingleSessions?.[0]?.documentId) {
+    return actualData.AudioSingleSessions[0].documentId;
+  }
 
-    if (actualData?.audio_playlists?.[0]?.audios?.[0]?.documentId) return actualData.audio_playlists[0].audios[0].documentId;
-    if (actualData?.audio_playlists?.[0]?.audios?.[0]?.id) return actualData.audio_playlists[0].audios[0].id;
+  if (actualData?.AudioSingleSessions?.[0]?.id) {
+    return actualData.AudioSingleSessions[0].id;
+  }
 
-    return actualData?.documentId || actualData?.id;
-  };
+  if (actualData?.AudioPlaylist?.[0]?.audios?.[0]?.documentId) {
+    return actualData.AudioPlaylist[0].audios[0].documentId;
+  }
 
-  const getActiveVideoId = () => {
-    if (activeTrack?.documentId) return activeTrack.documentId;
-    if (activeTrack?.id) return activeTrack.id;
+  if (actualData?.AudioPlaylist?.[0]?.audios?.[0]?.id) {
+    return actualData.AudioPlaylist[0].audios[0].id;
+  }
 
-    if (actualData?.videoSingleSessions?.[0]?.documentId) return actualData.videoSingleSessions[0].documentId;
-    if (actualData?.videoSingleSessions?.[0]?.id) return actualData.videoSingleSessions[0].id;
+  return actualData?.documentId || actualData?.id;
+};
 
-    if (actualData?.video_playlists?.[0]?.videos?.[0]?.documentId) return actualData.video_playlists[0].videos[0].documentId;
-    if (actualData?.video_playlists?.[0]?.videos?.[0]?.id) return actualData.video_playlists[0].videos[0].id;
-
-    return actualData?.documentId || actualData?.id;
-  };
+ 
 
   const sleepSublabel =
     sleepRemaining !== null
@@ -1035,7 +982,7 @@ const handlePlayPause = () => {
         backgroundColor: dark ? "#111827" : "#ffffff",
       }}
     >
-      {!isVideoMode && resolvedAudioUrl && (
+      {resolvedAudioUrl && (
         <audio
           ref={audioRef}
           src={resolvedAudioUrl}
@@ -1065,17 +1012,13 @@ const handlePlayPause = () => {
                 backgroundColor: dark ? "#374151" : "#9A85FE",
               }}
             >
-              {isVideoMode ? (
-                <video
-                  ref={videoRef}
-                  src={resolvedAudioUrl || undefined}
-                  controls
-                  className="w-full h-full object-contain bg-black"
-                  poster={heroImgUrl}
-                  onTimeUpdate={handleTimeUpdate}
-                  onLoadedMetadata={handleLoadedMetadata}
-                  onEnded={handleAudioEnded}
-                />
+              {heroImgUrl && !imageError ? (
+                 <img
+                    src={heroImgUrl}
+                    alt={heroName || "Yoga Nidra"}
+                    className="w-full h-full object-cover"
+                    onError={() => setImageError(true)}
+                  />
               ) : heroImgUrl && !imageError ? (
                 <img
                   src={heroImgUrl.src || heroImgUrl}
@@ -1091,7 +1034,7 @@ const handlePlayPause = () => {
                   </div>
                 </div>
               )}
-              {!isVideoMode && (
+              
               <button
                   onClick={handlePlayPause}
                   className="absolute inset-0 flex items-center justify-center group"
@@ -1105,7 +1048,7 @@ const handlePlayPause = () => {
                     )}
                   </span>
                 </button>
-              )}
+              
             </div>
           </div>
 
@@ -1430,15 +1373,15 @@ const handlePlayPause = () => {
    
 
       {addToPlaylistOpen && (
-        <AddToPlaylistModal
-          dark={dark}
-          textColor={textColor}
-          audioId={isVideoMode ? getActiveVideoId() : getActiveAudioId()}
-          profileDocId={profileDocId}
-          isMudra={isMudra}
-          isVideo={isVideoMode}
-          onClose={() => setAddToPlaylistOpen(false)}
-        />
+       <AddToPlaylistModal
+  dark={dark}
+  textColor={textColor}
+  audioId={getActiveAudioId()}
+  profileDocId={profileDocId}
+  isMudra={false}
+  isVideo={false}
+  onClose={() => setAddToPlaylistOpen(false)}
+/>
       )}
     </div>
   );

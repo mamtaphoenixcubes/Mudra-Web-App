@@ -319,12 +319,12 @@ const timerOptions = durationpickercard
   </p>
 
   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
-    {timerOptions.map((option) => {
-      const isSelected = selectedTimer === option.value;
+   {timerOptions.map((option, index) => {
+  const isSelected = selectedTimer === option.value;
 
-      return (
-        <motion.button
-          key={option.value}
+  return (
+    <motion.button
+      key={`${option.type}-${option.value}-${index}`}
           type="button"
           onClick={() => setSelectedTimer(option.value)}
           className="relative rounded-xl px-4 py-3 text-sm font-medium border transition-all"
