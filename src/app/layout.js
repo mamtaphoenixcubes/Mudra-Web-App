@@ -1,4 +1,3 @@
-import { Inter } from "next/font/google";
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
 import "../styles/globals.css";
@@ -7,9 +6,6 @@ import ThemeWrapper from "../components/ThemeWrapper";
 import LiveSupportChat from "./LiveSupportChat/page";
 import SocialContactFab from "./Socialcontactfab/page";
 import { ToastContainer } from "react-toastify";
-
-
-const inter = Inter({ subsets: ["latin"] });
 
 
 export const metadata = {
@@ -21,7 +17,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
  return (
    <html lang="en">
-     <body className={`${inter.className} min-h-screen flex flex-col`}>
+     <body className="font-sans min-h-screen flex flex-col">
        <ThemeProvider>
          <ThemeWrapper>
            <Navbar />
@@ -36,6 +32,4 @@ export default function RootLayout({ children }) {
    </html>
  );
 }
-
-
 

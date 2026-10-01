@@ -5,6 +5,7 @@ import { useState, useEffect, Suspense } from "react";
 import { yogaNidraService, mudraService } from "../../services/apiService";
 import UpNextWithMiniPlayer from "../../components/PlaySession/UpNextWithMiniPlayer";
 import SessionPlayerHero from "../../components/PlaySession/SessionPlayerHero";
+import SessionPlayerHeroNidra from "../../components/PlaySessionNidra/SessionPlayerHeroNidra";
 
 function PlaySessionContent() {
   const searchParams = useSearchParams();
@@ -103,8 +104,9 @@ function PlaySessionContent() {
           : (actualData?.AudioPlaylist?.[0]?.audios || [])
       );
 
-  return (
-    <main className="bg-white dark:bg-gray-900 min-h-screen">
+ return (
+  <main className="bg-white dark:bg-gray-900 min-h-screen">
+    {isMudra ? (
       <SessionPlayerHero
         sessionData={detailData}
         type={type}
@@ -120,19 +122,37 @@ function PlaySessionContent() {
         setTotalSecs={setTotalSecs}
         playlistTracks={playlistTracks}
       />
-      {playlistTracks && playlistTracks.length > 0 && (
-        <UpNextWithMiniPlayer
-          playlistTracks={playlistTracks}
-          currentTrackIndex={currentTrackIndex}
-          setCurrentTrackIndex={setCurrentTrackIndex}
-          playing={playing}
-          setPlaying={setPlaying}
-          current={current}
-          totalSecs={totalSecs}
-        />
-      )}
-    </main>
-  );
+    ) : (
+      <SessionPlayerHeroNidra
+        sessionData={detailData}
+        type={type}
+        mode={mode}
+        durationParam={durationParam}
+        currentTrackIndex={currentTrackIndex}
+        setCurrentTrackIndex={setCurrentTrackIndex}
+        playing={playing}
+        setPlaying={setPlaying}
+        current={current}
+        setCurrent={setCurrent}
+        totalSecs={totalSecs}
+        setTotalSecs={setTotalSecs}
+        playlistTracks={playlistTracks}
+      />
+    )}
+
+    {playlistTracks && playlistTracks.length > 0 && (
+      <UpNextWithMiniPlayer
+        playlistTracks={playlistTracks}
+        currentTrackIndex={currentTrackIndex}
+        setCurrentTrackIndex={setCurrentTrackIndex}
+        playing={playing}
+        setPlaying={setPlaying}
+        current={current}
+        totalSecs={totalSecs}
+      />
+    )}
+  </main>
+);
 }
 
 export default function PlaySession() {
