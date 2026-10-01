@@ -130,7 +130,7 @@ export default function FeaturesHero() {
                     {/* Heading - Character by character */}
                     <motion.h1
                         className={`${typography.MainHeading}`}
-                        style={{ color: textColor, fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+                        style={{ color: textColor }}
                     >
                         {headingChars.map((char, i) => (
                             <motion.span
@@ -161,7 +161,7 @@ export default function FeaturesHero() {
                             ${typography.heroBody}
                             ${maxW.heroMbBody}
                         `}
-                        style={{ color: dark ? "#D9CFE0" : "#4b5563", fontFamily: "'Cormorant Garamond', Georgia, serif"  }}
+                        style={{ color: dark ? "#D9CFE0" : "#4b5563" }}
                     >
                         {bodyWords.map((word, i) => (
                             <motion.span
