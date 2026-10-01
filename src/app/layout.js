@@ -13,6 +13,8 @@ export const metadata = {
  description: "Ancient wisdom. Modern life...",
 };
 
+// updated
+
 
 export default function RootLayout({ children }) {
  return (
