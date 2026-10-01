@@ -271,7 +271,7 @@ export const yogaNidraService = {
   },
   saveMediaProgress: async (payload) => {
     try {
-      const response = await api.post(`/yoga-nidras-activity/media-progress`, payload);
+      const response = await api.post(`/yoga-nidras/media-progress`, payload);
       return response.data;
     } catch (err) {
       const targetId = payload.nidraDocumentId || payload.mudraDocumentId || payload.mediaDocumentId;
@@ -288,7 +288,7 @@ export const yogaNidraService = {
   },
   completeMedia: async (payload) => {
     try {
-      const response = await api.post(`/yoga-nidras-activity/media-complete`, payload);
+      const response = await api.post(`/yoga-nidras/media-complete`, payload);
       return response.data;
     } catch (err) {
       const targetId = payload.nidraDocumentId || payload.mudraDocumentId || payload.mediaDocumentId;
