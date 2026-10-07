@@ -151,7 +151,7 @@ const NAV_ITEMS: NavItem[] = [
 ];
 
 const FEATURE_SUBMENU: NavItem[] = [
-  { label: "Asanas", path: "/feature-three" },
+  { label: "Asanas", path: "/Asanas" },
   { label: "Meditation", path: "/feature-four" },
   { label: "Pranayam", path: "/feature-five" },
   { label: "Yoga Mudra", path: "/MudraLibrary" },
