@@ -27,6 +27,7 @@ import {
   Plus,
   Trash2,
   FolderHeart,
+   Link as LinkIcon,
 } from "lucide-react";
 import { spacing, typography } from "../../theme";
 import { useTheme } from "../../context/ThemeContext";
@@ -34,6 +35,9 @@ import { IMAGES } from "../../assets/assets";
 import { useAuthStore } from "../../store/useAuthStore";
 import { yogaNidraService, playlistService } from "../../services/apiService";
 import AddToPlaylistModal from "../AddToPlaylistModal";
+import { motion, AnimatePresence } from "framer-motion";
+import { useRouter } from "next/navigation";
+
 
 const getImgBaseUrl = () => {
   if (typeof window !== "undefined") {
@@ -48,18 +52,7 @@ const getImgBaseUrl = () => {
 const IMAGE_BASE_URL = process.env.NEXT_PUBLIC_IMAGE_BASE_URL || getImgBaseUrl();
 
 // ─── Config ─────────────────────────────────────────────────────────────────
-const SESSION = {
-  title: "Deep Sleep Yoga Nidra",
-  tagline: "Rest deeply. Restore naturally.",
-  duration: "30 min",
-  mode: "Audio",
-  level: "Beginner",
-  cover: IMAGES.YogaNidraHero,
-  audioUrl: "/audio/deep-sleep-nidra.mp3",
-  totalSeconds: 30 * 60,
-  about:
-    "This Yoga Nidra is designed to help you relax your body and mind, release tension and cultivate deep restorative sleep.",
-};
+
 
 const SPEED_OPTIONS = [0.75, 1.0, 1.25, 1.5, 2.0];
 const SLEEP_TIMER_OPTIONS = [
@@ -84,6 +77,45 @@ function formatTime(sec) {
   const s = Math.floor(sec % 60);
   return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
 }
+
+const buildSessionCompleteUrl = (
+  response,
+  fallbackName = "Yoga Nidra Session",
+  sessionType = "yoga nidra"
+) => {
+  const payload = response?.data || response || {};
+  const resolvedType =
+    payload?.type ||
+    payload?.sessionType ||
+    sessionType ||
+    "yoga nidra";
+  const sessionName =
+    payload?.yogaNidra?.name ||
+    payload?.name ||
+    payload?.sessionName ||
+    fallbackName;
+  const completedAt = payload?.completedAt || new Date().toISOString();
+  const lastSessionDuration = Number(
+    payload?.lastSessionDuration ??
+      payload?.completedDuration ??
+      payload?.sessionDuration ??
+      0
+  );
+  const activityDocumentId =
+    payload?.activityDocumentId ||
+    payload?.data?.activityDocumentId ||
+    "";
+
+  const params = new URLSearchParams({
+    name: String(sessionName),
+    completedAt,
+    lastSessionDuration: String(lastSessionDuration),
+    activityDocumentId: String(activityDocumentId),
+    type: String(resolvedType),
+  });
+
+  return `/SessionComplete?${params.toString()}`;
+};
 
 // ─── Action Button ──────────────────────────────────────────────────────────
 function ActionButton({ icon, label, sublabel, onClick }) {
@@ -261,7 +293,7 @@ export default function SessionPlayer({
   setTotalSecs: setControlledTotalSecs,
 }) {
   const { dark, textColor } = useTheme();
-  
+  const router = useRouter();
   const [localTrackIndex, setLocalTrackIndex] = useState(0);
   const currentTrackIndex = setControlledTrackIndex ? controlledTrackIndex : localTrackIndex;
   const setCurrentTrackIndex = setControlledTrackIndex || setLocalTrackIndex;
@@ -269,7 +301,8 @@ export default function SessionPlayer({
   const [localTotalSecs, setLocalTotalSecs] = useState(0);
   const totalSecs = setControlledTotalSecs ? controlledTotalSecs : localTotalSecs;
   const setTotalSecs = setControlledTotalSecs || setLocalTotalSecs;
-
+const [showShareModal, setShowShareModal] = useState(false);
+const [copied, setCopied] = useState(false);
   // Unwrap nested data if present (e.g. from Strapi/Express response wrapper)
   const actualData = sessionData?.data || sessionData;
  const isPlaylist =
@@ -381,6 +414,62 @@ const shortDescription =
   const [timerPaused, setTimerPaused] = useState(false);
   const [timerModalOpen, setTimerModalOpen] = useState(false);
   const [playBellOnEnd, setPlayBellOnEnd] = useState(true);
+
+  const shareUrl =
+  typeof window !== "undefined"
+    ? window.location.href
+    : "";
+
+const shareText = `Check out ${heroName} - ${shortDescription}`;
+
+const handleShareClick = () => {
+  setShowShareModal(true);
+};
+
+const handleWhatsAppShare = () => {
+  const url = `https://wa.me/?text=${encodeURIComponent(
+    `${shareText}\n\n${shareUrl}`
+  )}`;
+
+  window.open(url, "_blank", "noopener,noreferrer");
+};
+
+const handleFacebookShare = () => {
+  const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+    shareUrl
+  )}`;
+
+  window.open(url, "_blank", "noopener,noreferrer");
+};
+
+const handleInstagramShare = async () => {
+  await handleCopyLink();
+
+  window.open(
+    "https://www.instagram.com/",
+    "_blank",
+    "noopener,noreferrer"
+  );
+};
+
+const handleCopyLink = async () => {
+  try {
+    await navigator.clipboard.writeText(shareUrl);
+
+    setCopied(true);
+
+    setTimeout(() => {
+      setCopied(false);
+    }, 2000);
+  } catch (error) {
+    console.error("Failed to copy link:", error);
+  }
+};
+
+const closeShareModal = () => {
+  setShowShareModal(false);
+  setCopied(false);
+};
 
   // Initialize countdown timer from params or localStorage
  // Initialize countdown timer from params or localStorage
@@ -531,13 +620,19 @@ const handleTimerComplete = async () => {
         actualData?.MediaType ||
         "AUDIO_SINGLE";
 
-      await yogaNidraService.completeMedia({
+      const response = await yogaNidraService.completeMedia({
         profileDocumentId: profileDocId,
         mediaType: mediaTypeVal,
         mediaDocumentId: activeTrackId,
         yogaNidraDocumentId: nidraDocId,
         completedDuration: Math.floor(timerTotalSeconds),
       });
+      if (response) {
+        console.log("Media completion response:", response?.data || response);
+        router.push(
+          buildSessionCompleteUrl(response, heroName, "yoga nidra")
+        );
+      }
     } catch (err) {
       console.warn("Failed to complete Yoga Nidra session:", err);
     }
@@ -559,7 +654,7 @@ const handleTimerPauseToggle = () => {
 
 if (nidraDocId && elapsed > 0) {
   try {
-  await yogaNidraService.completeMedia({
+  const response = await yogaNidraService.completeMedia({
   profileDocumentId: profileDocId,
   mediaType:
     actualData?.mediaType ||
@@ -572,6 +667,12 @@ if (nidraDocId && elapsed > 0) {
   yogaNidraDocumentId: nidraDocId,
   completedDuration: Math.floor(elapsed),
 });
+ if (response) {
+  console.log("Media completion response:", response?.data || response);
+    router.push(
+      buildSessionCompleteUrl(response, heroName, "yoga nidra")
+    );
+  }
   } catch (err) {
     console.warn("Failed to complete Yoga Nidra session on stop:", err);
   }
@@ -643,15 +744,17 @@ useEffect(() => {
 };
 
   // Sync audio source
-  useEffect(() => {
-    if (audioRef.current && resolvedAudioUrl) {
-      audioRef.current.src = resolvedAudioUrl;
-      audioRef.current.load();
-      if (playing && (!timerActive || playBellOnEnd)) {
-        audioRef.current.play().catch(() => {});
-      }
-    }
-  }, [resolvedAudioUrl, playing, timerActive, playBellOnEnd]);
+ useEffect(() => {
+  if (!audioRef.current || !resolvedAudioUrl) return;
+
+  const activeEl = audioRef.current;
+
+  // Only load when the actual audio source changes
+  if (activeEl.src !== resolvedAudioUrl) {
+    activeEl.src = resolvedAudioUrl;
+    activeEl.load();
+  }
+}, [resolvedAudioUrl]);
 
   // Sync audio playback
   useEffect(() => {
@@ -769,13 +872,19 @@ const duration = activeEl ? activeEl.duration : totalSecs;
         const mediaTypeVal = actualData?.mediaType || actualData?.MediaType || "AUDIO_SINGLE";
         const currentId = actualData?.documentId || actualData?.id;
 
-     await yogaNidraService.completeMedia({
+   const response = await yogaNidraService.completeMedia({
   profileDocumentId: profileDocId,
   mediaType: mediaTypeVal,
   mediaDocumentId: activeTrackId,
   yogaNidraDocumentId: currentId,
   completedDuration: Math.round(duration || totalSecs || 0)
 });
+ if (response) {
+  console.log("Media completion response:", response?.data || response);
+    router.push(
+      buildSessionCompleteUrl(response, heroName, "yoga nidra")
+    );
+  }
       } catch (e) {
         console.warn("Failed to complete media inside timer loop:", e);
       }
@@ -789,13 +898,19 @@ const duration = activeEl ? activeEl.duration : totalSecs;
       const activeTrackId = activeTrack?.documentId || activeTrack?.id || currentId;
       const mediaTypeVal = actualData?.mediaType || actualData?.MediaType || "AUDIO_SINGLE";
 
-  await yogaNidraService.completeMedia({
+  const response = await yogaNidraService.completeMedia({
   profileDocumentId: profileDocId,
   mediaType: mediaTypeVal,
   mediaDocumentId: activeTrackId,
   nidraDocumentId: currentId,
   completedDuration: Math.round(duration || totalSecs || 0)
 });
+ if (response) {
+  console.log("Media completion response:", response?.data || response);
+    router.push(
+      buildSessionCompleteUrl(response, heroName, "yoga nidra")
+    );
+  }
     } catch (err) {
       console.warn("Failed to mark session as completed:", err);
     }
@@ -807,12 +922,8 @@ const duration = activeEl ? activeEl.duration : totalSecs;
     try {
       setLiked(nextState);
       const currentId = actualData?.documentId || actualData?.id || "ui2phqjaaqub5r1k38gkppko";
-      let res;
-      if (isMudra) {
-        res = await mudraService.likeMudra(currentId, profileDocId);
-      } else {
-        res = await yogaNidraService.likeYogaNidra(currentId, profileDocId);
-      }
+      const res = await yogaNidraService.likeYogaNidra(currentId, profileDocId);
+      
       const resData = res?.data || res;
       const serverIsLiked = resData?.isLiked ?? resData?.IsLiked ?? resData?.isliked;
       if (typeof serverIsLiked === "boolean") {
@@ -1279,7 +1390,7 @@ const getActiveAudioId = () => {
                 <ActionButton
                   icon={<Share2 className="w-4 h-4 md:w-[15px] md:h-[15px] lg:w-[18px] lg:h-[18px]" />}
                   label="Share"
-                  onClick={handleShare}
+                  onClick={handleShareClick}
                 />
               </div>
 
@@ -1370,7 +1481,185 @@ const getActiveAudioId = () => {
         </button>
       }
 
-   
+   <AnimatePresence>
+  {showShareModal && (
+    <motion.div
+      className="fixed inset-0 z-[9999] flex items-center justify-center px-4"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
+      {/* Overlay */}
+      <div
+        className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+        onClick={closeShareModal}
+      />
+
+      {/* Modal */}
+      <motion.div
+        className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl p-6"
+        initial={{
+          opacity: 0,
+          scale: 0.9,
+          y: 20,
+        }}
+        animate={{
+          opacity: 1,
+          scale: 1,
+          y: 0,
+        }}
+        exit={{
+          opacity: 0,
+          scale: 0.9,
+          y: 20,
+        }}
+        transition={{
+          duration: 0.2,
+        }}
+      >
+        {/* Close */}
+        <button
+          onClick={closeShareModal}
+          className="absolute right-4 top-4 w-8 h-8 rounded-full flex items-center justify-center hover:bg-gray-100 transition-colors"
+          aria-label="Close share modal"
+        >
+          <X size={18} className="text-gray-500" />
+        </button>
+
+        {/* Header */}
+        <div className="mb-6 pr-8">
+          <h2 className="text-xl font-semibold text-gray-900">
+            Share {heroName}
+          </h2>
+
+          <p className="text-sm text-gray-500 mt-1">
+            Share this Yoga Nidra session with your friends
+          </p>
+        </div>
+
+        {/* Share Options */}
+        <div className="grid grid-cols-2 gap-3">
+
+          {/* WhatsApp */}
+          <button
+            onClick={handleWhatsAppShare}
+            className="flex items-center gap-3 p-4 rounded-xl border border-gray-200 hover:bg-green-50 hover:border-green-200 transition-all"
+          >
+            <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                className="text-green-600"
+              >
+                <path d="M20.52 3.48A11.86 11.86 0 0 0 12.06 0C5.5 0 .16 5.34.16 11.9c0 2.1.55 4.15 1.6 5.96L.05 24l6.29-1.65a11.9 11.9 0 0 0 5.72 1.46h.01c6.55 0 11.89-5.34 11.89-11.9 0-3.18-1.24-6.17-3.44-8.43ZM12.07 21.8h-.01a9.88 9.88 0 0 1-5.04-1.38l-.36-.21-3.73.98 1-3.64-.23-.37a9.88 9.88 0 0 1-1.52-5.28C2.18 6.45 6.61 2.02 12.07 2.02c2.65 0 5.14 1.03 7.01 2.91a9.86 9.86 0 0 1 2.9 7.02c0 5.46-4.44 9.89-9.91 9.89Zm5.42-7.41c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.95 1.17-.17.2-.35.22-.65.07-.3-.15-1.25-.46-2.38-1.47-.88-.79-1.47-1.76-1.64-2.06-.17-.3-.02-.46.13-.61.14-.14.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.61-.92-2.2-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.8.37-.27.3-1.05 1.03-1.05 2.51s1.08 2.91 1.23 3.11c.15.2 2.13 3.25 5.16 4.56.72.31 1.28.5 1.72.64.72.23 1.38.2 1.9.12.58-.09 1.76-.72 2.01-1.42.25-.7.25-1.3.17-1.42-.07-.12-.27-.2-.57-.35Z" />
+              </svg>
+            </div>
+
+            <div className="text-left">
+              <p className="font-medium text-gray-900">
+                WhatsApp
+              </p>
+              <p className="text-xs text-gray-500">
+                Share link
+              </p>
+            </div>
+          </button>
+
+          {/* Facebook */}
+          <button
+            onClick={handleFacebookShare}
+            className="flex items-center gap-3 p-4 rounded-xl border border-gray-200 hover:bg-blue-50 hover:border-blue-200 transition-all"
+          >
+            <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+              <span className="text-xl font-bold text-blue-600">
+                f
+              </span>
+            </div>
+
+            <div className="text-left">
+              <p className="font-medium text-gray-900">
+                Facebook
+              </p>
+              <p className="text-xs text-gray-500">
+                Share link
+              </p>
+            </div>
+          </button>
+
+          {/* Instagram */}
+          <button
+            onClick={handleInstagramShare}
+            className="flex items-center gap-3 p-4 rounded-xl border border-gray-200 hover:bg-pink-50 hover:border-pink-200 transition-all"
+          >
+            <div className="w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="21"
+                height="21"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="text-pink-600"
+              >
+                <rect width="20" height="20" x="2" y="2" rx="5" />
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+              </svg>
+            </div>
+
+            <div className="text-left">
+              <p className="font-medium text-gray-900">
+                Instagram
+              </p>
+              <p className="text-xs text-gray-500">
+                Copy & open
+              </p>
+            </div>
+          </button>
+
+          {/* Copy Link */}
+          <button
+            onClick={handleCopyLink}
+            className="flex items-center gap-3 p-4 rounded-xl border border-gray-200 hover:bg-purple-50 hover:border-purple-200 transition-all"
+          >
+            <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
+              {copied ? (
+                <Check
+                  size={20}
+                  className="text-green-600"
+                />
+              ) : (
+                <LinkIcon
+                  size={20}
+                  className="text-purple-600"
+                />
+              )}
+            </div>
+
+            <div className="text-left">
+              <p className="font-medium text-gray-900">
+                {copied ? "Copied!" : "Copy Link"}
+              </p>
+
+              <p className="text-xs text-gray-500">
+                {copied
+                  ? "Link copied"
+                  : "Copy website URL"}
+              </p>
+            </div>
+          </button>
+
+        </div>
+      </motion.div>
+    </motion.div>
+  )}
+</AnimatePresence>
 
       {addToPlaylistOpen && (
        <AddToPlaylistModal

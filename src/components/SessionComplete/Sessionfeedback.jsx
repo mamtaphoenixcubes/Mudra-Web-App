@@ -5,7 +5,8 @@ import { Laugh, Smile, Meh, Frown, Angry, Clock, Heart, Activity } from "lucide-
 import { spacing, typography } from "../../theme";
 import { useTheme } from "../../context/ThemeContext";
 import { motion } from "framer-motion";
-
+import { useSearchParams } from "next/navigation";
+import axios from "axios";
 // ─── Data ─────────────────────────────────────────────────────
 const MOODS = [
     { id: "amazing", label: "Amazing", icon: Laugh },
@@ -15,6 +16,14 @@ const MOODS = [
     { id: "bad", label: "Bad", icon: Angry },
 ];
 
+const MOOD_TO_RATING = {
+    amazing: "AMAZING",
+    good: "GOOD",
+    okay: "OKAY",
+    "not-good": "NOT_GOOD",
+    bad: "BAD",
+};
+
 const INSIGHTS = [
     { id: "time", icon: Clock, label: "Time Spent", value: "20:00" },
     { id: "heart", icon: Heart, label: "Average Heart Rate", value: "72 bpm" },
@@ -22,7 +31,7 @@ const INSIGHTS = [
 ];
 
 // ─── Mood button ────────────────────────────────────────────────
-function MoodButton({ mood, selected, onSelect, dark }) {
+function MoodButton({ mood, selected, onSelect, dark, submitting }) {
     const Icon = mood.icon;
     const isSelected = selected === mood.id;
 
@@ -30,31 +39,53 @@ function MoodButton({ mood, selected, onSelect, dark }) {
         <motion.button
             type="button"
             onClick={() => onSelect(mood.id)}
+            disabled={submitting}
             className="flex flex-col items-center gap-1.5 cursor-pointer group flex-1"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            whileHover={!submitting ? { scale: 1.05 } : {}}
+            whileTap={!submitting ? { scale: 0.95 } : {}}
         >
             <div
                 className="w-11 h-11 sm:w-12 sm:h-12 rounded-full border flex items-center justify-center transition-all duration-200"
                 style={{
-                    borderColor: isSelected ? "var(--primary)" : dark ? "#4b5563" : "#d1d5db",
+                    borderColor: isSelected
+                        ? "var(--primary)"
+                        : dark
+                            ? "#4b5563"
+                            : "#d1d5db",
+
                     borderWidth: isSelected ? "2px" : "1px",
+
                     backgroundColor: isSelected
                         ? dark
                             ? "rgba(154,133,254,0.15)"
                             : "var(--balanced-card)"
                         : "transparent",
+
+                    opacity: submitting ? 0.6 : 1,
                 }}
             >
                 <Icon
                     size={20}
                     strokeWidth={1.6}
-                    style={{ color: isSelected ? "var(--primary)" : dark ? "#9ca3af" : "#374151" }}
+                    style={{
+                        color: isSelected
+                            ? "var(--primary)"
+                            : dark
+                                ? "#9ca3af"
+                                : "#374151",
+                    }}
                 />
             </div>
+
             <span
                 className="text-[10px] sm:text-[11px] font-medium"
-                style={{ color: isSelected ? "var(--primary)" : dark ? "#9ca3af" : "#4b5563" }}
+                style={{
+                    color: isSelected
+                        ? "var(--primary)"
+                        : dark
+                            ? "#9ca3af"
+                            : "#4b5563",
+                }}
             >
                 {mood.label}
             </span>
@@ -98,13 +129,60 @@ export default function SessionFeedback({
     avgHeartRate = "72 bpm",
     breathingRate = "12 breaths/min",
     onMoodSelect,
+    sessionType: propSessionType,
 }) {
     const { dark, textColor } = useTheme();
-    const [selectedMood, setSelectedMood] = useState(null);
 
-    const handleSelect = (id) => {
+    const searchParams = useSearchParams();
+
+    const sessionType =
+        propSessionType ||
+        searchParams.get("type") ||
+        searchParams.get("sessionType") ||
+        "yoga mudra";
+    const activityId = searchParams.get("activityDocumentId");
+
+    const [selectedMood, setSelectedMood] = useState(null);
+    const [submittingFeedback, setSubmittingFeedback] = useState(false);
+    const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
+
+    const handleSelect = async (id) => {
+        if (submittingFeedback || feedbackSubmitted) {
+            return;
+        }
+
+        if (!activityId) {
+            console.error("Activity ID is missing");
+            return;
+        }
+
         setSelectedMood(id);
         onMoodSelect?.(id);
+
+        try {
+            setSubmittingFeedback(true);
+
+            const rating = MOOD_TO_RATING[id];
+            const normalizedSessionType = String(sessionType || "").toLowerCase();
+            const isYogaMudra = normalizedSessionType.includes("mudra") && !normalizedSessionType.includes("nidra");
+
+            const feedbackUrl = isYogaMudra
+                ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/user-mudra-activities/${activityId}/feedback`
+                : `${process.env.NEXT_PUBLIC_API_BASE_URL}/user-yoga-nidra-activities/${activityId}/feedback`;
+
+            await axios.post(feedbackUrl, {
+                experienceRating: rating,
+            });
+
+            setFeedbackSubmitted(true);
+        } catch (error) {
+            console.error(
+                "FEEDBACK_SUBMIT_ERROR",
+                error.response?.data || error.message
+            );
+        } finally {
+            setSubmittingFeedback(false);
+        }
     };
 
     const insights = [
@@ -122,8 +200,8 @@ export default function SessionFeedback({
             style={{ backgroundColor: dark ? "#020202" : "#ffffff" }}
         >
             <div className={spacing.maxW.sectionBody}>
-                {/* Heading */}
-                <motion.div 
+
+                <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4 }}
@@ -135,31 +213,72 @@ export default function SessionFeedback({
                     >
                         How do you feel?
                     </h2>
+
                     <p
                         className="text-[14px] sm:text-[15px] mt-1"
                         style={{ color: dark ? "#9ca3af" : "#6b7280" }}
                     >
-                        Rate your experience
+                        {feedbackSubmitted
+                            ? "Thank you for sharing your thoughts"
+                            : "Rate your experience"}
                     </p>
                 </motion.div>
 
-                {/* Mood row - reduced gap */}
-                <motion.div 
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1, duration: 0.4 }}
-                    className="flex items-start justify-between gap-1 sm:gap-1 mb-6 sm:mb-8"
-                >
-                    {MOODS.map((mood) => (
-                        <MoodButton
-                            key={mood.id}
-                            mood={mood}
-                            selected={selectedMood}
-                            onSelect={handleSelect}
-                            dark={dark}
-                        />
-                    ))}
-                </motion.div>
+                {feedbackSubmitted ? (
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="flex flex-col items-center justify-center py-6 mb-8"
+                    >
+                        <div
+                            className="w-14 h-14 rounded-full border-2 flex items-center justify-center mb-3"
+                            style={{
+                                borderColor: "var(--primary)",
+                            }}
+                        >
+                            <span
+                                className="text-2xl"
+                                style={{ color: "var(--primary)" }}
+                            >
+                                ✓
+                            </span>
+                        </div>
+
+                        <h3
+                            className="text-base font-semibold"
+                            style={{ color: "var(--primary)" }}
+                        >
+                            Feedback submitted
+                        </h3>
+
+                        <p
+                            className="text-sm mt-1"
+                            style={{
+                                color: dark ? "#9ca3af" : "#6b7280",
+                            }}
+                        >
+                            Thank you for sharing your thoughts
+                        </p>
+                    </motion.div>
+                ) : (
+                    <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1, duration: 0.4 }}
+                        className="flex items-start justify-between gap-1 sm:gap-1 mb-6 sm:mb-8"
+                    >
+                        {MOODS.map((mood) => (
+                            <MoodButton
+                                key={mood.id}
+                                mood={mood}
+                                selected={selectedMood}
+                                onSelect={handleSelect}
+                                dark={dark}
+                                submitting={submittingFeedback}
+                            />
+                        ))}
+                    </motion.div>
+                )}
 
                 {/* Session insights card */}
                 <motion.div
@@ -167,11 +286,15 @@ export default function SessionFeedback({
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2, duration: 0.4 }}
                     className="rounded-2xl overflow-hidden"
-                    style={{ backgroundColor: dark ? "#1c1c1e" : "#f3f4f6" }}
+                    style={{
+                        backgroundColor: dark ? "#1c1c1e" : "#f3f4f6",
+                    }}
                 >
                     <h3
                         className="text-[15px] sm:text-base font-semibold px-5 sm:px-6 pt-5 pb-3"
-                        style={{ color: dark ? "#f3f4f6" : "#111827" }}
+                        style={{
+                            color: dark ? "#f3f4f6" : "#111827",
+                        }}
                     >
                         Your Session Insights
                     </h3>
@@ -185,6 +308,7 @@ export default function SessionFeedback({
                         />
                     ))}
                 </motion.div>
+
             </div>
         </motion.div>
     );

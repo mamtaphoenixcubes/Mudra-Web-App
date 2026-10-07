@@ -34,6 +34,7 @@ import { IMAGES } from "../../assets/assets";
 import { useAuthStore } from "../../store/useAuthStore";
 import { yogaNidraService, mudraService, playlistService } from "../../services/apiService";
 import AddToPlaylistModal from "../AddToPlaylistModal";
+import { useRouter } from "next/navigation";
 
 const getImgBaseUrl = () => {
   if (typeof window !== "undefined") {
@@ -264,6 +265,45 @@ function extractIsLiked(data, profileId) {
 
   return false;
 }
+const buildSessionCompleteUrl = (
+  response,
+  fallbackName = "Yoga Mudra Session",
+  sessionType = "yoga mudra"
+) => {
+  const payload = response?.data || response || {};
+  const resolvedType =
+    payload?.type ||
+    payload?.sessionType ||
+    sessionType ||
+    "yoga mudra";
+  const sessionName =
+    payload?.yogaNidra?.name ||
+    payload?.name ||
+    payload?.sessionName ||
+    fallbackName;
+  const completedAt = payload?.completedAt || new Date().toISOString();
+  const lastSessionDuration = Number(
+    payload?.lastSessionDuration ??
+      payload?.completedDuration ??
+      payload?.sessionDuration ??
+      0
+  );
+  const activityDocumentId =
+    payload?.activityDocumentId ||
+    payload?.data?.activityDocumentId ||
+    "";
+
+  const params = new URLSearchParams({
+    name: String(sessionName),
+    completedAt,
+    lastSessionDuration: String(lastSessionDuration),
+    activityDocumentId: String(activityDocumentId),
+    type: String(resolvedType),
+  });
+
+  return `/SessionComplete?${params.toString()}`;
+};
+
 
 // ─── Session Player ─────────────────────────────────────────────────────────
 export default function SessionPlayer({
@@ -282,6 +322,7 @@ export default function SessionPlayer({
   setTotalSecs: setControlledTotalSecs,
 }) {
   const { dark, textColor } = useTheme();
+  const router = useRouter();
   
   const [localTrackIndex, setLocalTrackIndex] = useState(0);
   const currentTrackIndex = setControlledTrackIndex ? controlledTrackIndex : localTrackIndex;
@@ -555,7 +596,12 @@ useEffect(() => {
     const mudraDocId = actualData?.documentId || actualData?.id;
     if (mudraDocId) {
       try {
-        await mudraService.completeMudra(mudraDocId, profileDocId, timerTotalSeconds);
+        const response = await mudraService.completeMudra(mudraDocId, profileDocId, timerTotalSeconds);
+          if (response) {
+            router.push(
+              buildSessionCompleteUrl(response, heroName, "yoga mudra")
+            );
+          }
       } catch (err) {
         console.warn("Failed to complete mudra session:", err);
       }
@@ -668,15 +714,17 @@ useEffect(() => {
 };
 
   // Sync audio source
-  useEffect(() => {
-    if (audioRef.current && resolvedAudioUrl && !isVideoMode) {
-      audioRef.current.src = resolvedAudioUrl;
-      audioRef.current.load();
-      if (playing && (!timerActive || playBellOnEnd)) {
-        audioRef.current.play().catch(() => {});
-      }
-    }
-  }, [resolvedAudioUrl, isVideoMode, playing, timerActive, playBellOnEnd]);
+useEffect(() => {
+  if (!audioRef.current || !resolvedAudioUrl || isVideoMode) return;
+
+  const activeEl = audioRef.current;
+
+  // Only change/load the audio when the source actually changes
+  if (activeEl.src !== resolvedAudioUrl) {
+    activeEl.src = resolvedAudioUrl;
+    activeEl.load();
+  }
+}, [resolvedAudioUrl, isVideoMode]);
 
   // Sync audio playback
   useEffect(() => {
@@ -689,25 +737,28 @@ useEffect(() => {
   }, [playing, resolvedAudioUrl, isVideoMode, timerActive, playBellOnEnd]);
 
   // Sync video source
-  useEffect(() => {
-    if (videoRef.current && resolvedAudioUrl && isVideoMode) {
-      videoRef.current.src = resolvedAudioUrl;
-      videoRef.current.load();
-      if (playing && (!timerActive || playBellOnEnd)) {
-        videoRef.current.play().catch(() => {});
-      }
-    }
-  }, [resolvedAudioUrl, isVideoMode, playing, timerActive, playBellOnEnd]);
+// Sync video source
+useEffect(() => {
+  if (!videoRef.current || !resolvedAudioUrl || !isVideoMode) return;
+
+  const activeEl = videoRef.current;
+
+  if (activeEl.src !== resolvedAudioUrl) {
+    activeEl.src = resolvedAudioUrl;
+    activeEl.load();
+  }
+}, [resolvedAudioUrl, isVideoMode]);
 
   // Sync video playback
-  useEffect(() => {
-    if (!videoRef.current || !resolvedAudioUrl || !isVideoMode) return;
-    if (playing && (!timerActive || playBellOnEnd)) {
-      videoRef.current.play().catch(() => {});
-    } else {
-      videoRef.current.pause();
-    }
-  }, [playing, resolvedAudioUrl, isVideoMode, timerActive, playBellOnEnd]);
+useEffect(() => {
+  if (!videoRef.current || !resolvedAudioUrl || !isVideoMode) return;
+
+  if (playing && (!timerActive || playBellOnEnd)) {
+    videoRef.current.play().catch(() => {});
+  } else {
+    videoRef.current.pause();
+  }
+}, [playing, resolvedAudioUrl, isVideoMode, timerActive, playBellOnEnd]);
 
   // Sync playback speed
   useEffect(() => {
@@ -825,24 +876,20 @@ const handlePlayPause = () => {
         const mediaTypeVal = actualData?.mediaType || actualData?.MediaType || "AUDIO_SINGLE";
         const currentId = actualData?.documentId || actualData?.id;
 
-        if (isMudra) {
-          await mudraService.completeMudraMedia({
-            profileDocumentId: profileDocId,
-            mediaType: mediaTypeVal,
-            mediaDocumentId: activeTrackId,
-            mudraDocumentId: currentId,
-            completedDuration: Math.round(duration || totalSecs || 0)
-          });
-        } else {
-          await yogaNidraService.completeMedia({
-            profileDocumentId: profileDocId,
-            mediaType: mediaTypeVal,
-            mediaDocumentId: activeTrackId,
-            nidraDocumentId: currentId,
-            mudraDocumentId: currentId,
-            completedDuration: Math.round(duration || totalSecs || 0)
-          });
-        }
+      
+  //        const response = await mudraService.completeMudraMedia({
+  //           profileDocumentId: profileDocId,
+  //           mediaType: mediaTypeVal,
+  //           mediaDocumentId: activeTrackId,
+  //           mudraDocumentId: currentId,
+  //           completedDuration: Math.round(duration || totalSecs || 0)
+  //         });
+  //         console.log(response,"responseresponseresponse");
+          
+  //   if (response) {
+  // console.log("Media completion response:", response?.data || response);
+  //   router.push(buildSessionCompleteUrl(response, heroName));
+  // }
       } catch (e) {
         console.warn("Failed to complete media inside timer loop:", e);
       }
@@ -856,24 +903,18 @@ const handlePlayPause = () => {
       const activeTrackId = activeTrack?.documentId || activeTrack?.id || currentId;
       const mediaTypeVal = actualData?.mediaType || actualData?.MediaType || "AUDIO_SINGLE";
 
-      if (isMudra) {
-        await mudraService.completeMudraMedia({
-          profileDocumentId: profileDocId,
-          mediaType: mediaTypeVal,
-          mediaDocumentId: activeTrackId,
-          mudraDocumentId: currentId,
-          completedDuration: Math.round(duration || totalSecs || 0)
-        });
-      } else {
-        await yogaNidraService.completeMedia({
-          profileDocumentId: profileDocId,
-          mediaType: mediaTypeVal,
-          mediaDocumentId: activeTrackId,
-          nidraDocumentId: currentId,
-          mudraDocumentId: currentId,
-          completedDuration: Math.round(duration || totalSecs || 0)
-        });
-      }
+  //      const response =   await mudraService.completeMudraMedia({
+  //         profileDocumentId: profileDocId,
+  //         mediaType: mediaTypeVal,
+  //         mediaDocumentId: activeTrackId,
+  //         mudraDocumentId: currentId,
+  //         completedDuration: Math.round(duration || totalSecs || 0)
+  //       });
+  //  if (response) {
+  // console.log("Media completion response:", response?.data || response);
+  //   router.push(buildSessionCompleteUrl(response, heroName));
+  // }
+     
     } catch (err) {
       console.warn("Failed to mark session as completed:", err);
     }

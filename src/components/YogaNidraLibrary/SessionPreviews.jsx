@@ -4,6 +4,7 @@ import { useRef, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { IMAGES } from "../../assets/assets";
 import { yogaNidraService } from "../../services/apiService";
+import useAuthStore from "../../store/useAuthStore";
 
 const IMAGE_BASE_URL = process.env.NEXT_PUBLIC_IMAGE_BASE_URL || "http://192.168.1.14:1337";
 
@@ -35,8 +36,13 @@ function FilterSelect({ options = [], value, onChange }) {
 
 function SessionCard({ session }) {
   const router = useRouter();
+ const { isLoggedIn } = useAuthStore();
+   const handleCardClick = () => {
+    if (!isLoggedIn) {
+      router.push("/Login");
+      return;
+    }
 
-  const handleCardClick = () => {
     router.push(`/YogaNidraSessionDetail?id=${session.id}`);
   };
 
