@@ -346,6 +346,11 @@ export const needsService = {
 };
 
 export const elementsService = {
+  getElements: async () => {
+    const response = await api.get(`/five-elements`);
+    return response.data;
+  },
+
   getElementDetails: async (documentId) => {
     const response = await api.get(`/five-elements/${documentId}`);
     return response.data;

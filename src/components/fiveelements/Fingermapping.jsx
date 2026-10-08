@@ -1,12 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { useRef } from "react";
+import { useRef, useEffect, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { typography, spacing } from "../../theme";
 import { IMAGES } from "../../assets/assets";
 import { useTheme } from "../../context/ThemeContext";
+import { elementsService } from "../../services/apiService";
 
 const ELEMENTS = [
   {
@@ -132,8 +133,10 @@ function ElementCard({ el, dark, textColor, index, isInView }) {
 
   return (
     <motion.div 
-      onClick={() => router.push(`/ElementDetailTemplate?id=${documentIds[el.name]}`)}
-      className="flex flex-col items-center text-center w-full cursor-pointer"
+      onClick={() =>
+        router.push(`/ElementDetailTemplate?id=${el.documentId}`)
+      }
+     className="flex flex-col items-center text-center w-full cursor-pointer"
       variants={cardVariants}
       initial="hidden"
       animate={isInView ? "visible" : "hidden"}
@@ -155,12 +158,12 @@ function ElementCard({ el, dark, textColor, index, isInView }) {
           transition: { duration: 0.3 }
         }}
       >
-        <Image
-          src={IMAGES[el.imageKey]}
-          alt={el.name}
-          fill
-          className="object-cover"
-        />
+       <Image
+  src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${el.image}`}
+  alt={el.name}
+  fill
+  className="object-cover"
+/>
         
         {/* Pulsing ring */}
         <motion.div
@@ -268,7 +271,34 @@ export default function FingerMapping() {
     amount: 0.15,
     margin: "-50px"
   });
+  const [elements, setElements] = useState([]);
+useEffect(() => {
+  const fetchElements = async () => {
+    try {
+      const response = await elementsService.getElements();
 
+      console.log("FIVE ELEMENTS RESPONSE:", response);
+
+      const apiElements = response?.data || [];
+
+      const formattedElements = apiElements.map((item) => ({
+        key: item.Name,
+        name: item.Name,
+        finger: item.FingerMapping?.Finger || "",
+        description: item.FingerMapping?.ShortDescription || "",
+        image: item.FingerMapping?.Image?.url || "",
+        documentId: item.documentId,
+        color: "#9C27B0",
+      }));
+
+      setElements(formattedElements);
+    } catch (error) {
+      console.error("FIVE ELEMENTS API ERROR:", error);
+    }
+  };
+
+  fetchElements();
+}, []);
   // Letter animation for label
   const letterVariants = {
     hidden: { opacity: 0, y: 20, rotateX: -10 },
@@ -429,49 +459,102 @@ export default function FingerMapping() {
 
         {/* Desktop: single horizontal row (md and above) */}
         <div className="hidden md:flex flex-row items-start justify-between">
-          {ELEMENTS.map((el, i) => (
-            <div key={el.key} className="flex flex-row items-stretch flex-1 min-w-0">
-              <div className={`flex-1 flex justify-center ${spacing.fingerDesktopGutter}`}>
-                <ElementCard el={el} dark={dark} textColor={textColor} index={i} isInView={isInView} />
-              </div>
-              {i < ELEMENTS.length - 1 && <VDivider dark={dark} />}
-            </div>
-          ))}
+         {elements.map((el, i) => (
+  <div
+    key={el.documentId}
+    className="flex flex-row items-stretch flex-1 min-w-0"
+  >
+    <div className={`flex-1 flex justify-center ${spacing.fingerDesktopGutter}`}>
+      <ElementCard
+        el={el}
+        dark={dark}
+        textColor={textColor}
+        index={i}
+        isInView={isInView}
+      />
+    </div>
+
+    {i < elements.length - 1 && <VDivider dark={dark} />}
+  </div>
+))}
         </div>
 
         {/* Mobile: 2-col rows + Space centred (below md) */}
-        <div className="md:hidden">
-          {/* Row 1: Earth & Water */}
-          <div className="flex flex-row mb-8">
-            <div className="flex-1 flex justify-center">
-              <ElementCard el={ELEMENTS[0]} dark={dark} textColor={textColor} index={0} isInView={isInView} />
-            </div>
-            <div className={spacing.fingerMobileDivider} style={{
-              backgroundColor: dark ? "#374151" : "#e5e7eb",
-            }} />
-            <div className="flex-1 flex justify-center">
-              <ElementCard el={ELEMENTS[1]} dark={dark} textColor={textColor} index={1} isInView={isInView} />
-            </div>
-          </div>
+       <div className="md:hidden">
+  {elements.length >= 2 && (
+    <div className="flex flex-row mb-8">
+      <div className="flex-1 flex justify-center">
+        <ElementCard
+          el={elements[0]}
+          dark={dark}
+          textColor={textColor}
+          index={0}
+          isInView={isInView}
+        />
+      </div>
 
-          {/* Row 2: Fire & Air */}
-          <div className="flex flex-row mb-8">
-            <div className="flex-1 flex justify-center">
-              <ElementCard el={ELEMENTS[2]} dark={dark} textColor={textColor} index={2} isInView={isInView} />
-            </div>
-            <div className={spacing.fingerMobileDivider} style={{
-              backgroundColor: dark ? "#374151" : "#e5e7eb",
-            }} />
-            <div className="flex-1 flex justify-center">
-              <ElementCard el={ELEMENTS[3]} dark={dark} textColor={textColor} index={3} isInView={isInView} />
-            </div>
-          </div>
+      <div
+        className={spacing.fingerMobileDivider}
+        style={{
+          backgroundColor: dark ? "#374151" : "#e5e7eb",
+        }}
+      />
 
-          {/* Row 3: Space (centered) */}
-          <div className="flex justify-center">
-            <ElementCard el={ELEMENTS[4]} dark={dark} textColor={textColor} index={4} isInView={isInView} />
-          </div>
-        </div>
+      <div className="flex-1 flex justify-center">
+        <ElementCard
+          el={elements[1]}
+          dark={dark}
+          textColor={textColor}
+          index={1}
+          isInView={isInView}
+        />
+      </div>
+    </div>
+  )}
+
+  {elements.length >= 4 && (
+    <div className="flex flex-row mb-8">
+      <div className="flex-1 flex justify-center">
+        <ElementCard
+          el={elements[2]}
+          dark={dark}
+          textColor={textColor}
+          index={2}
+          isInView={isInView}
+        />
+      </div>
+
+      <div
+        className={spacing.fingerMobileDivider}
+        style={{
+          backgroundColor: dark ? "#374151" : "#e5e7eb",
+        }}
+      />
+
+      <div className="flex-1 flex justify-center">
+        <ElementCard
+          el={elements[3]}
+          dark={dark}
+          textColor={textColor}
+          index={3}
+          isInView={isInView}
+        />
+      </div>
+    </div>
+  )}
+
+  {elements[4] && (
+    <div className="flex justify-center">
+      <ElementCard
+        el={elements[4]}
+        dark={dark}
+        textColor={textColor}
+        index={4}
+        isInView={isInView}
+      />
+    </div>
+  )}
+</div>
 
       </div>
     </motion.section>

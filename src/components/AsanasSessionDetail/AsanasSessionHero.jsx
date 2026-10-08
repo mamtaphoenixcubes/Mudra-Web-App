@@ -204,7 +204,7 @@ export default function AsanasSessionHero({
       ? `?id=${encodeURIComponent(sessionId)}`
       : "";
 
-    router.push(`/AsanasPlaySession${query}`);
+    router.push(`/AsanasMeditation${query}`);
   };
 
   // ─── Share handlers ────────────────────────────────────────────────────────

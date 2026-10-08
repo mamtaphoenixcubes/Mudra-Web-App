@@ -9,9 +9,9 @@ export default function AsanasMeditation() {
         <main className="w-full bg-white">
             < AsanasMeditationCard />
             <hr className="w-full border-t border-gray-200" />
-            <AsanasMeditationSection />
-            <hr className="w-full border-t border-gray-200" />
             <AsanasPracticeSteps />
+            <hr className="w-full border-t border-gray-200" />
+            <AsanasMeditationSection />
             <hr className="w-full border-t border-gray-200" />
             < AsanasMeditationBar />
         </main>
