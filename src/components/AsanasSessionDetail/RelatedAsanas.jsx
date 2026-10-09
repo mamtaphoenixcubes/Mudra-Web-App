@@ -1,40 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import { useRef } from "react";
+import Link from "next/link";
+import { useRef, useState, useEffect } from "react";
 import { motion, useInView } from "framer-motion";
 import { IMAGES } from "../../assets/assets";
-
-const staticRelated = [
-  {
-    title: "Chin Mudra",
-    description: "Enhances mental clarity and concentration.",
-    bg: "bg-[#FEF9C3]",
-    image: IMAGES.Mind,
-    isRemote: false,
-  },
-  {
-    title: "Dhyana Mudra",
-    description: "Promotes meditation and inner peace.",
-    bg: "bg-[#F3E8FF]",
-    image: IMAGES.ManaMudras,
-    isRemote: false,
-  },
-  {
-    title: "Prana Mudra",
-    description: "Boosts vitality and immunity.",
-    bg: "bg-[#BFDDF2]",
-    image: IMAGES.HolisticWellbeing,
-    isRemote: false,
-  },
-  {
-    title: "Vayu Mudra",
-    description: "Helps balance the air element.",
-    bg: "bg-[#FCE7F3]",
-    image: IMAGES.KayaMudras,
-    isRemote: false,
-  },
-];
+import { asanaService } from "../../services/apiService";
 
 function Card({ item }) {
   const isHex = item.bg?.startsWith("#");
@@ -76,17 +47,19 @@ function Card({ item }) {
         {item.description}
       </p>
 
-      {/* Static "View Mudra →" label (no navigation) */}
       <div className="mt-auto">
-        <span className="text-xs sm:text-sm font-semibold text-gray-800 inline-flex items-center gap-1 cursor-default select-none">
-          View Mudra &rarr;
-        </span>
+        <Link
+          href={item.href || "#"}
+          className="text-xs sm:text-sm font-semibold text-gray-800 hover:text-[#9A85FE] transition-colors inline-flex items-center gap-1"
+        >
+          View Asana &rarr;
+        </Link>
       </div>
     </div>
   );
 }
 
-export default function RelatedAsanas() {
+export default function RelatedAsanas({ asana = null }) {
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, {
     once: true,
@@ -94,18 +67,71 @@ export default function RelatedAsanas() {
     margin: "-50px",
   });
 
+  const [related, setRelated] = useState([]);
+  const currentId = asana?.documentId || asana?.id;
+
+  useEffect(() => {
+    if (!currentId) {
+      return;
+    }
+
+    async function fetchRelated() {
+      try {
+        const response = await asanaService.getAllAsanas();
+        const rawList = Array.isArray(response)
+          ? response
+          : response?.data && Array.isArray(response.data)
+            ? response.data
+            : response?.data?.data && Array.isArray(response.data.data)
+              ? response.data.data
+              : [];
+
+        const items = rawList
+          .filter((item) => (item?.documentId || item?.id) !== currentId)
+          .slice(0, 4)
+          .map((item, index) => {
+            const imageUrl =
+              item?.web?.IntroCardWeb?.IntrocardImage?.url ||
+              item?.thumbnail?.url ||
+              item?.ThumbnailImage?.[0]?.url ||
+              null;
+
+            return {
+              title: item?.name || item?.title || item?.Name || "Asana",
+              description:
+                item?.web?.IntroCardWeb?.Description ||
+                item?.description ||
+                item?.aboutSession ||
+                "A guided practice to support balance and wellbeing.",
+              bg: ["bg-[#FEF9C3]", "bg-[#F3E8FF]", "bg-[#BFDDF2]", "bg-[#FCE7F3]"][index % 4],
+              image: imageUrl
+                ? `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL || "http://192.168.1.14:1337"}${imageUrl}`
+                : IMAGES.Mind,
+              isRemote: !!imageUrl,
+              href: `/AsanasSessionDetail?id=${item?.documentId || item?.id}`,
+            };
+          });
+
+        setRelated(items);
+      } catch (error) {
+        console.warn("Failed to fetch related asanas:", error);
+        setRelated([]);
+      }
+    }
+
+    fetchRelated();
+  }, [currentId]);
+
   return (
     <section
       ref={sectionRef}
       className="w-full bg-white py-12 md:py-16 px-6 sm:px-10 lg:px-16"
     >
       <div className="max-w-7xl mx-auto">
-        {/* Section Heading */}
         <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-center text-[#9A85FE] mb-2">
-          Related Mudras
+          Related Asanas
         </h2>
 
-        {/* Lotus Divider */}
         <div className="flex items-center justify-center gap-4 max-w-xs mx-auto mb-10">
           <div className="flex-1 h-[1px] bg-gray-200" />
           <Image
@@ -118,25 +144,30 @@ export default function RelatedAsanas() {
           <div className="flex-1 h-[1px] bg-gray-200" />
         </div>
 
-        {/* 4-Column Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-5">
-          {staticRelated.map((item, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 20 }}
-              animate={
-                isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }
-              }
-              transition={{
-                duration: 0.4,
-                ease: "easeOut",
-                delay: i * 0.07,
-              }}
-            >
-              <Card item={item} />
-            </motion.div>
-          ))}
-        </div>
+        {related.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-5">
+            {related.map((item, i) => (
+              <motion.div
+                key={item.href || i}
+                initial={{ opacity: 0, y: 20 }}
+                animate={
+                  isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }
+                }
+                transition={{
+                  duration: 0.4,
+                  ease: "easeOut",
+                  delay: i * 0.07,
+                }}
+              >
+                <Card item={item} />
+              </motion.div>
+            ))}
+          </div>
+        ) : (
+          <div className="rounded-2xl border border-dashed border-gray-300 bg-gray-50 px-6 py-10 text-center text-sm text-gray-500">
+            Related asanas will appear here when available.
+          </div>
+        )}
       </div>
     </section>
   );

@@ -5,44 +5,6 @@ import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { IMAGES } from "../../assets/assets";
 
-const staticBenefits = [
-  {
-    title: "Improves Concentration",
-    description: "Enhances focus and improves memory.",
-    bg: "bg-[#FEF9C3]",
-    image: IMAGES.Mind,
-    isRemote: false,
-  },
-  {
-    title: "Calms the Mind",
-    description: "Reduces stress, anxiety, and mental chaos.",
-    bg: "bg-[#F3E8FF]",
-    image: IMAGES.ManaMudras,
-    isRemote: false,
-  },
-  {
-    title: "Enhances Learning",
-    description: "Supports better understanding and retention.",
-    bg: "bg-[#BFDDF2]",
-    image: IMAGES.HolisticWellbeing,
-    isRemote: false,
-  },
-  {
-    title: "Promotes Inner Peace",
-    description: "Brings a sense of calm, balance, and harmony.",
-    bg: "bg-[#FCE7F3]",
-    image: IMAGES.KayaMudras,
-    isRemote: false,
-  },
-  {
-    title: "Boosts Energy",
-    description: "Balances the flow of energy in the body.",
-    bg: "bg-[#DCFCE7]",
-    image: IMAGES.focus,
-    isRemote: false,
-  },
-];
-
 // Rotating fallback background palette used when API doesn't supply CardBg
 const FALLBACK_BGS = [
   "bg-[#FEF9C3]",
@@ -161,8 +123,7 @@ export default function AsanasSessionBenefits({
       })
     : [];
 
-  const benefits =
-    apiBenefits.length > 0 ? apiBenefits : staticBenefits;
+  const benefits = apiBenefits;
 
   return (
     <section
@@ -194,24 +155,30 @@ export default function AsanasSessionBenefits({
         </div>
 
         {/* Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 lg:gap-5">
-          {benefits.map((item, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 20 }}
-              animate={
-                isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }
-              }
-              transition={{
-                duration: 0.4,
-                ease: "easeOut",
-                delay: i * 0.06,
-              }}
-            >
-              <Card item={item} index={i} />
-            </motion.div>
-          ))}
-        </div>
+        {benefits.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 lg:gap-5">
+            {benefits.map((item, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                animate={
+                  isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }
+                }
+                transition={{
+                  duration: 0.4,
+                  ease: "easeOut",
+                  delay: i * 0.06,
+                }}
+              >
+                <Card item={item} index={i} />
+              </motion.div>
+            ))}
+          </div>
+        ) : (
+          <div className="rounded-2xl border border-dashed border-gray-300 bg-gray-50 px-6 py-10 text-center text-sm text-gray-500">
+            Benefits information will be available soon.
+          </div>
+        )}
       </div>
     </section>
   );

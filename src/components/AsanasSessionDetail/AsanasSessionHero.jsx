@@ -91,11 +91,10 @@ export default function AsanasSessionHero({
   // Can accept either an asana or a mudra object
   asana = null,
   mudra = null,
-  category: propCategory = "Asanas",
-  title: propTitle = "Asanas Session",
-  tags: propTags = ["Strength", "Balance", "Flexibility"],
-  description: propDescription =
-    "This asana practice helps build strength, improve balance, and increase flexibility. Regular practice supports overall physical and mental wellbeing.",
+  category: propCategory = "Asana",
+  title: propTitle = "Asana Session",
+  tags: propTags = [],
+  description: propDescription = "",
   onPracticeClick,
   onBenefitsClick,
   onLikeClick,

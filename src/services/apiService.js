@@ -11,6 +11,7 @@ const getApiBaseUrl = () => {
 };
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || getApiBaseUrl();
+const MOBILE_API_BASE_URL = API_BASE_URL.replace("/web", "/mobile");
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -213,6 +214,53 @@ export const mudraService = {
       }
       throw err;
     }
+  },
+};
+
+export const asanaService = {
+  getAllAsanas: async (params = {}) => {
+    const response = await api.get(`${MOBILE_API_BASE_URL}/asanas`, { params });
+    return response.data;
+  },
+  getAsanaById: async (id, profileDocumentId) => {
+    const params = profileDocumentId ? { profileDocumentId } : {};
+    const response = await api.get(`${API_BASE_URL}/asanas/${id}`, { params });
+    return response.data;
+  },
+  likeAsana: async (id, profileDocumentId) => {
+    const response = await api.post(`${API_BASE_URL}/asanas/${id}/like`, { profileDocumentId });
+    return response.data;
+  },
+  saveAsana: async (id, profileDocumentId) => {
+    const response = await api.post(`${MOBILE_API_BASE_URL}/asanas/${id}/save`, { profileDocumentId });
+    return response.data;
+  },
+  viewAsana: async (id, profileDocumentId) => {
+    const response = await api.post(`${MOBILE_API_BASE_URL}/asanas/${id}/view`, { profileDocumentId });
+    return response.data;
+  },
+  downloadAsana: async (id, profileDocumentId) => {
+    const response = await api.post(`${MOBILE_API_BASE_URL}/asanas/${id}/download`, { profileDocumentId });
+    return response.data;
+  },
+  shareAsana: async (id, profileDocumentId) => {
+    const response = await api.post(`${MOBILE_API_BASE_URL}/asanas/${id}/share`, { profileDocumentId });
+    return response.data;
+  },
+  saveAsanaProgress: async (id, profileDocumentId, remainingDuration, sessionDuration) => {
+    const response = await api.post(`${API_BASE_URL}/asanas/${id}/progress`, {
+      profileDocumentId,
+      remainingDuration,
+      sessionDuration,
+    });
+    return response.data;
+  },
+  completeAsana: async (id, profileDocumentId, sessionDuration) => {
+    const response = await api.post(`${API_BASE_URL}/asanas/${id}/complete`, {
+      profileDocumentId,
+      sessionDuration,
+    });
+    return response.data;
   },
 };
 

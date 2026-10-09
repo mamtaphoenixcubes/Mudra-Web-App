@@ -14,33 +14,6 @@ const FALLBACK_BGS = [
   "bg-[#DCFCE7]",
 ];
 
-const staticSteps = [
-  {
-    number: 1,
-    bg: "bg-[#FEF9C3]",
-    title: "Hand Position",
-    desc: "Sit in a comfortable position with your spine straight. Rest your hands on your knees.",
-  },
-  {
-    number: 2,
-    bg: "bg-[#F3E8FF]",
-    title: "Finger Placement",
-    desc: "Touch the tip of your index finger with the tip of your thumb.",
-  },
-  {
-    number: 3,
-    bg: "bg-[#BFDDF2]",
-    title: "Other Fingers",
-    desc: "Keep the remaining three fingers extended but relaxed.",
-  },
-  {
-    number: 4,
-    bg: "bg-[#FCE7F3]",
-    title: "Focus",
-    desc: "Close your eyes, take deep breaths, and focus on your breath or a positive affirmation.",
-  },
-];
-
 export default function HowToPracticeAsanas({
   // Accept either an asana or mudra object
   asana = null,
@@ -93,8 +66,7 @@ export default function HowToPracticeAsanas({
       }))
     : [];
 
-  const steps =
-    apiSteps.length > 0 ? apiSteps : staticSteps;
+  const steps = apiSteps;
 
   // ─── Resolve practice image ────────────────────────────────────────────────
 
@@ -141,67 +113,70 @@ export default function HowToPracticeAsanas({
         </div>
 
         {/* Content Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16 items-center">
-          {/* Left: Steps List */}
-          <div className="flex flex-col gap-6">
-            {steps.map((step, i) => (
-              <motion.div
-                key={step.number ?? i}
-                className="flex items-start gap-4"
-                initial={{ opacity: 0, x: -20 }}
-                animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
-                transition={{
-                  duration: 0.4,
-                  ease: "easeOut",
-                  delay: i * 0.08,
-                }}
-              >
-                {/* Step Badge */}
-                <div
-                  className={`w-9 h-9 rounded-full ${step.bg} text-gray-900 font-bold text-sm flex items-center justify-center shrink-0 shadow-2xs`}
+        {steps.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16 items-center">
+            {/* Left: Steps List */}
+            <div className="flex flex-col gap-6">
+              {steps.map((step, i) => (
+                <motion.div
+                  key={step.number ?? i}
+                  className="flex items-start gap-4"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
+                  transition={{
+                    duration: 0.4,
+                    ease: "easeOut",
+                    delay: i * 0.08,
+                  }}
                 >
-                  {step.number}
-                </div>
+                  <div
+                    className={`w-9 h-9 rounded-full ${step.bg} text-gray-900 font-bold text-sm flex items-center justify-center shrink-0 shadow-2xs`}
+                  >
+                    {step.number}
+                  </div>
 
-                {/* Step Text */}
-                <div>
-                  <h3 className="font-bold text-base sm:text-lg text-gray-900 mb-0.5">
-                    {step.title}
-                  </h3>
-                  <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
-                    {step.desc}
-                  </p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-
-          {/* Right: Practice Photo */}
-          <motion.div
-            className="w-full flex justify-center md:justify-end"
-            initial={{ opacity: 0, x: 20 }}
-            animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 20 }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
-          >
-            <div className="w-full max-w-[540px] aspect-[4/3] rounded-2xl overflow-hidden shadow-sm border border-gray-100 relative bg-gray-50">
-              {practiceImageUrl ? (
-                <img
-                  src={practiceImageUrl}
-                  alt={`Practicing ${sessionName}`}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <Image
-                  src={IMAGES.Practice}
-                  alt={`Practicing ${sessionName}`}
-                  width={600}
-                  height={450}
-                  className="w-full h-full object-cover"
-                />
-              )}
+                  <div>
+                    <h3 className="font-bold text-base sm:text-lg text-gray-900 mb-0.5">
+                      {step.title}
+                    </h3>
+                    <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
+                      {step.desc}
+                    </p>
+                  </div>
+                </motion.div>
+              ))}
             </div>
-          </motion.div>
-        </div>
+
+            <motion.div
+              className="w-full flex justify-center md:justify-end"
+              initial={{ opacity: 0, x: 20 }}
+              animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 20 }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
+            >
+              <div className="w-full max-w-[540px] aspect-[4/3] rounded-2xl overflow-hidden shadow-sm border border-gray-100 relative bg-gray-50">
+                {practiceImageUrl ? (
+                  <img
+                    src={practiceImageUrl}
+                    alt={`Practicing ${sessionName}`}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <Image
+                    src={IMAGES.Practice}
+                    alt={`Practicing ${sessionName}`}
+                    width={600}
+                    height={450}
+                    className="w-full h-full object-cover"
+                  />
+                )}
+              </div>
+            </motion.div>
+          </div>
+        ) : (
+          <div className="rounded-2xl border border-dashed border-gray-300 bg-gray-50 px-6 py-10 text-center text-sm text-gray-500">
+            Practice steps will be available soon.
+          </div>
+        )}
       </div>
     </section>
   );

@@ -73,7 +73,7 @@ export default function PracticeInfoGridAsanas({
     normalizeText(advice?.BestPracticeTime) ||
     normalizeText(advice?.bestPracticeTime) ||
     normalizeText(advice?.bestTime) ||
-    "Early morning (Brahma Muhurta) or during meditation sessions.";
+    "Timing details will be updated soon.";
 
   // ─── Precautions ───────────────────────────────────────────────────────────
 
@@ -85,13 +85,7 @@ export default function PracticeInfoGridAsanas({
 
   const normalizedPrecautions = normalizeText(rawPrecautions);
 
-  const precautions =
-    normalizedPrecautions ||
-    [
-      "Practice on an empty stomach.",
-      "Keep your back straight while practicing.",
-      "If you have any medical condition, consult your doctor.",
-    ];
+  const precautions = normalizedPrecautions || [];
 
   // ─── Ideal Duration ────────────────────────────────────────────────────────
 
@@ -100,7 +94,7 @@ export default function PracticeInfoGridAsanas({
     normalizeText(advice?.IdealDuration) ||
     normalizeText(advice?.idealDuration) ||
     normalizeText(advice?.duration) ||
-    "15-30 minutes daily for best results.";
+    "Duration details will be shared soon.";
 
   // ─── Who Can Practice ──────────────────────────────────────────────────────
 
@@ -109,7 +103,7 @@ export default function PracticeInfoGridAsanas({
     normalizeText(advice?.WhoCanPractice) ||
     normalizeText(advice?.whoCanPractice) ||
     normalizeText(advice?.whoCanDo) ||
-    "This practice is suitable for anyone. It is especially beneficial for those seeking physical strength, flexibility, and mental clarity.";
+    "Details for suitable participants will be added soon.";
 
   // ─── Layout items ──────────────────────────────────────────────────────────
 
@@ -119,11 +113,13 @@ export default function PracticeInfoGridAsanas({
       title: "Best Time to Practice",
       desc: bestTime,
     },
-    {
-      icon: IMAGES.ShieldTick,
-      title: "Precautions",
-      desc: precautions,
-    },
+    ...(precautions.length > 0
+      ? [{
+          icon: IMAGES.ShieldTick,
+          title: "Precautions",
+          desc: precautions,
+        }]
+      : []),
   ];
 
   const rightItems = [
@@ -150,10 +146,8 @@ export default function PracticeInfoGridAsanas({
         animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
       >
-        {/* Thin vertical divider on desktop */}
         <div className="hidden md:block absolute left-1/2 top-8 bottom-8 w-px bg-gray-200/80 -translate-x-1/2" />
 
-        {/* Left Column */}
         <div className="flex flex-col gap-8">
           {leftItems.map((item, i) => (
             <div key={i} className="flex items-start gap-4">
@@ -188,7 +182,6 @@ export default function PracticeInfoGridAsanas({
           ))}
         </div>
 
-        {/* Right Column */}
         <div className="flex flex-col gap-8">
           {rightItems.map((item, i) => (
             <div key={i} className="flex items-start gap-4">
