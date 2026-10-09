@@ -152,8 +152,8 @@ const NAV_ITEMS: NavItem[] = [
 
 const FEATURE_SUBMENU: NavItem[] = [
   { label: "Asanas", path: "/Asanas" },
-  { label: "Meditation", path: "/feature-four" },
-  { label: "Pranayam", path: "/feature-five" },
+  { label: "Meditation", path: "/Meditation" },
+  { label: "Pranayam", path: "/Pranayam" },
   { label: "Yoga Mudra", path: "/MudraLibrary" },
   { label: "Yoga Nidra", path: "/YogaNidraLibrary" },
 ];

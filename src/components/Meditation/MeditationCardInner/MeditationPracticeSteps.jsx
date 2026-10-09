@@ -1,15 +1,15 @@
 "use client";
 
 import Image from "next/image";
-import { spacing, typography } from "../../theme";
-import { useTheme } from "../../context/ThemeContext";
-import { IMAGES } from "../../assets/assets";
+import { spacing, typography } from "../../../theme";
+import { useTheme } from "../../../context/ThemeContext";
+import { IMAGES } from "../../../assets/assets";
 
 // ─── Config ─────────────────────────────────────────────────────────────────
 const STEPS = [
   {
     id: 1,
-    title: "1. Sit",
+    title: "1. Settle In",
     lines: [
       "Sit comfortably with your spine tall.",
       "Close your eyes and relax your shoulders.",
@@ -20,20 +20,9 @@ const STEPS = [
   },
   {
     id: 2,
-    title: "2. Hand Placement",
+    title: "2. Breathe Naturally",
     lines: [
-      "Touch the tip of your index finger to the tip of your thumb.",
-      "Keep the other three fingers extended gently.",
-      "This is the Gyan Mudra — the mudra of knowledge.",
-    ],
-    imageSrc: IMAGES.HastaMudras,
-    bg: "#E4D3F5",
-  },
-  {
-    id: 3,
-    title: "3. Breathing",
-    lines: [
-      "Breathe naturally through your nose.",
+      "Breathe in and out through your nose.",
       "Inhale deeply, exhale slowly.",
       "Let each breath be calm and steady.",
     ],
@@ -41,15 +30,26 @@ const STEPS = [
     bg: "#DCEFC7",
   },
   {
-    id: 4,
-    title: "4. Meditation Cue",
+    id: 3,
+    title: "3. Anchor the Mind",
     lines: [
       "Bring your awareness to the breath.",
-      "Observe your thoughts without judgment.",
-      "If the mind wanders, gently return to the breath.",
+      "Follow the sensation of each inhale and exhale.",
+      "Let the mind rest on this single point.",
     ],
     imageSrc: IMAGES.Energy,
     bg: "#C7E7EF",
+  },
+  {
+    id: 4,
+    title: "4. Observe & Return",
+    lines: [
+      "Notice your thoughts without judgment.",
+      "If the mind wanders, gently return to the breath.",
+      "Practice with patience and kindness.",
+    ],
+    imageSrc: IMAGES.Mind,
+    bg: "#E4D3F5",
   },
 ];
 
@@ -122,7 +122,11 @@ function StepRow({ step, isLast, dark, textColor }) {
 }
 
 // ─── Practice Steps ─────────────────────────────────────────────────────────
-export default function MeditationCard({ steps = STEPS }) {
+export default function MeditationPracticeSteps({
+  // Accept a meditation object (not required for rendering)
+  meditation = null,
+  steps = STEPS,
+}) {
   const { dark, textColor } = useTheme();
 
   return (
@@ -142,7 +146,7 @@ export default function MeditationCard({ steps = STEPS }) {
           className={typography.playerHeading + " mb-4 sm:mb-5 md:mb-6"}
           style={{ color: textColor }}
         >
-          Asanas & Meditation — Practice Steps
+          Meditation — Practice Steps
         </h2>
 
         <div className="flex flex-col">

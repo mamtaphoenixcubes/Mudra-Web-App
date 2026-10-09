@@ -1,55 +1,55 @@
 "use client";
 
 import Image from "next/image";
-import { spacing, typography } from "../../theme";
-import { useTheme } from "../../context/ThemeContext";
-import { IMAGES } from "../../assets/assets";
+import { spacing, typography } from "../../../theme";
+import { useTheme } from "../../../context/ThemeContext";
+import { IMAGES } from "../../../assets/assets";
 
 // ─── Config ─────────────────────────────────────────────────────────────────
 const STEPS = [
   {
     id: 1,
-    title: "1. Sit",
+    title: "1. Sit in a Steady Posture",
     lines: [
-      "Sit comfortably with your spine tall.",
-      "Close your eyes and relax your shoulders.",
-      "Rest your hands gently on your knees.",
+      "Sit comfortably with your spine tall and relaxed.",
+      "Close your eyes and soften your facial muscles.",
+      "Rest your hands on your knees or in your lap.",
     ],
     imageSrc: IMAGES.BodyBalance,
     bg: "#FBE3B8",
   },
   {
     id: 2,
-    title: "2. Hand Placement",
+    title: "2. Establish Natural Breath",
     lines: [
-      "Touch the tip of your index finger to the tip of your thumb.",
-      "Keep the other three fingers extended gently.",
-      "This is the Gyan Mudra — the mudra of knowledge.",
-    ],
-    imageSrc: IMAGES.HastaMudras,
-    bg: "#E4D3F5",
-  },
-  {
-    id: 3,
-    title: "3. Breathing",
-    lines: [
-      "Breathe naturally through your nose.",
-      "Inhale deeply, exhale slowly.",
-      "Let each breath be calm and steady.",
+      "Breathe in and out through your nose.",
+      "Let the breath be smooth, slow, and steady.",
+      "Do not force — observe the natural rhythm.",
     ],
     imageSrc: IMAGES.AirIcon,
     bg: "#DCEFC7",
   },
   {
-    id: 4,
-    title: "4. Meditation Cue",
+    id: 3,
+    title: "3. Apply the Pranayama Technique",
     lines: [
-      "Bring your awareness to the breath.",
-      "Observe your thoughts without judgment.",
-      "If the mind wanders, gently return to the breath.",
+      "Begin the specific breathing pattern with awareness.",
+      "Keep the breath even, controlled, and comfortable.",
+      "Maintain a gentle rhythm without strain.",
     ],
     imageSrc: IMAGES.Energy,
     bg: "#C7E7EF",
+  },
+  {
+    id: 4,
+    title: "4. Observe & Return",
+    lines: [
+      "Notice the flow of prana — the life force within.",
+      "If the mind wanders, gently bring it back to the breath.",
+      "End slowly and rest in the stillness.",
+    ],
+    imageSrc: IMAGES.Mind,
+    bg: "#E4D3F5",
   },
 ];
 
@@ -121,8 +121,12 @@ function StepRow({ step, isLast, dark, textColor }) {
   );
 }
 
-// ─── Practice Steps ─────────────────────────────────────────────────────────
-export default function MeditationCard({ steps = STEPS }) {
+// ─── Pranayam Practice Steps ────────────────────────────────────────────────
+export default function PranaymPracticeSteps({
+  // Accept a meditation object (not required for rendering)
+  meditation = null,
+  steps = STEPS,
+}) {
   const { dark, textColor } = useTheme();
 
   return (
@@ -142,7 +146,7 @@ export default function MeditationCard({ steps = STEPS }) {
           className={typography.playerHeading + " mb-4 sm:mb-5 md:mb-6"}
           style={{ color: textColor }}
         >
-          Asanas & Meditation — Practice Steps
+          Pranayama — Practice Steps
         </h2>
 
         <div className="flex flex-col">

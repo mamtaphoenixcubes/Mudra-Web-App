@@ -28,12 +28,12 @@ import {
   Trash2,
   FolderHeart,
 } from "lucide-react";
-import { spacing, typography } from "../../theme";
-import { useTheme } from "../../context/ThemeContext";
-import { IMAGES } from "../../assets/assets";
-import { useAuthStore } from "../../store/useAuthStore";
-import { yogaNidraService, mudraService, playlistService } from "../../services/apiService";
-import AddToPlaylistModal from "../AddToPlaylistModal";
+import { spacing, typography } from "../../../theme";
+import { useTheme } from "../../../context/ThemeContext";
+import { IMAGES } from "../../../assets/assets";
+import { useAuthStore } from "../../../store/useAuthStore";
+import { yogaNidraService, mudraService, playlistService } from "../../../services/apiService";
+import AddToPlaylistModal from "../../AddToPlaylistModal";
 import { useRouter } from "next/navigation";
 
 const getImgBaseUrl = () => {
@@ -663,7 +663,7 @@ const buildSessionCompleteUrl = (
 };
 
 // ─── Session Player ─────────────────────────────────────────────────────────
-export default function AsanasPlayHero({
+export default function MeditationPlaylistHero({
   sessionData = null,
   type = "yoganidra",
   mode = "guided",
@@ -1444,7 +1444,7 @@ export default function AsanasPlayHero({
           className={`${typography.playerTitle}`}
           style={{ color: textColor }}
         >
-          Asanas Plays
+          Meditation Playlist
         </h1>
       </div>
 
