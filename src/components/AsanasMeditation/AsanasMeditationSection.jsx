@@ -7,7 +7,7 @@ import { spacing, typography } from "../../theme";
 import { useTheme } from "../../context/ThemeContext";
 import { IMAGES } from "../../assets/assets";
 import { useAuthStore } from "../../store/useAuthStore";
-import { mudraService } from "../../services/apiService";
+import { asanaService } from "../../services/apiService";
 
 function QuoteIcon({ color }) {
   return (
@@ -97,7 +97,7 @@ const TIP_TEXT =
   "Practice daily for best results. You can increase the duration as you feel comfortable";
 
 // ─── Meditation Timer Popup ─────────────────────────────────
-function MeditationTimerModal({ dark, duration, mudra = null, onClose }) {
+function MeditationTimerModal({ dark, duration, asana = null, onClose }) {
   const { textColor } = useTheme();
   const totalSeconds = duration * 60;
   const [secondsLeft, setSecondsLeft] = useState(totalSeconds);
@@ -107,19 +107,19 @@ function MeditationTimerModal({ dark, duration, mudra = null, onClose }) {
 
   const { user } = useAuthStore();
   const profileDocId = user?.profileDocumentId || user?.profileDocId || (typeof user?.id === "string" && user.id.length > 5 ? user.id : null) || "nh0p1vtynpr7mge2orest5mt";
-  const mudraDocId = mudra?.documentId || mudra?.id;
+  const asanaDocId = asana?.data?.documentId || asana?.id;
 
   useEffect(() => {
     setSecondsLeft(totalSeconds);
     setIsRunning(false);
   }, [totalSeconds]);
 
-  const sendTimerProgress = async (secondsLeftVal) => {
-    if (!mudraDocId) return;
+  const sendTimerProgress = async (secondsLeftVal) => {    
+    if (!asanaDocId) return;
     try {
-      await mudraService.saveMudraProgress(mudraDocId, profileDocId, secondsLeftVal, totalSeconds);
+      await asanaService.saveAsanaProgress(asanaDocId, profileDocId, secondsLeftVal, totalSeconds, duration);
     } catch (err) {
-      console.warn("Failed to save mudra progress:", err);
+      console.warn("Failed to save asana progress:", err);
     }
   };
 
@@ -128,11 +128,11 @@ function MeditationTimerModal({ dark, duration, mudra = null, onClose }) {
     if (playTune) {
       playSingingBowlSound();
     }
-    if (mudraDocId) {
+    if (asanaDocId) {
       try {
-        await mudraService.completeMudra(mudraDocId, profileDocId, totalSeconds);
+        await asanaService.completeAsana(asanaDocId, profileDocId, totalSeconds, duration);
       } catch (err) {
-        console.warn("Failed to complete mudra session:", err);
+        console.warn("Failed to complete asana session:", err);
       }
     }
   };
@@ -190,22 +190,11 @@ function MeditationTimerModal({ dark, duration, mudra = null, onClose }) {
     };
   }, [isRunning, secondsLeft]);
 
-  // Separate effect to handle side-effects safely outside state updater
-  const prevModalSecondsRef = useRef(secondsLeft);
   useEffect(() => {
     if (secondsLeft === 0 && isRunning) {
       handleTimerComplete();
-      return;
     }
-
-    if (isRunning) {
-      const elapsed = totalSeconds - secondsLeft;
-      if (elapsed > 0 && elapsed % 10 === 0 && prevModalSecondsRef.current !== secondsLeft) {
-        sendTimerProgress(secondsLeft);
-      }
-    }
-    prevModalSecondsRef.current = secondsLeft;
-  }, [isRunning, secondsLeft, totalSeconds]);
+  }, [secondsLeft, isRunning]);
 
   const handleStart = () => {
     if (secondsLeft === 0) setSecondsLeft(totalSeconds);
@@ -214,10 +203,12 @@ function MeditationTimerModal({ dark, duration, mudra = null, onClose }) {
 
   const handlePauseToggle = async () => {
     const nextRunning = !isRunning;
-    setIsRunning(nextRunning);
+
     if (!nextRunning) {
       await sendTimerProgress(secondsLeft);
     }
+
+    setIsRunning(nextRunning);
   };
 
   const handleStop = async () => {
@@ -225,11 +216,11 @@ function MeditationTimerModal({ dark, duration, mudra = null, onClose }) {
     setSecondsLeft(totalSeconds);
     
     const elapsed = totalSeconds - secondsLeft;
-    if (mudraDocId && elapsed > 0) {
+    if (asanaDocId && elapsed > 0) {
       try {
-        await mudraService.completeMudra(mudraDocId, profileDocId, elapsed);
+        await asanaService.completeAsana(asanaDocId, profileDocId, elapsed, duration);
       } catch (err) {
-        console.warn("Failed to complete mudra session on stop:", err);
+        console.warn("Failed to complete asana session on stop:", err);
       }
     }
   };
@@ -400,9 +391,9 @@ function AffirmationCard({ dark }) {
 }
 
 // ─── Duration Card ─────────────────────────────────────────
-function DurationCard({ dark, textColor, duration, setDuration, mudra, onOpenTimer }) {
-  const picker = mudra?.durationPickerCard;
-  const options = picker 
+function DurationCard({ dark, textColor, duration, setDuration, asana, onOpenTimer }) {  
+  const picker = asana?.data?.durationPickerCard;
+  const options = picker
     ? [picker.beginnerDuration, picker.intermediateDuration, picker.expertDuration, picker.advancedDuration].filter(Boolean)
     : [5, 10, 15, 20];
 
@@ -493,13 +484,20 @@ function TipBanner({ dark }) {
 }
 
 // ─── Combined Component ──────────────────────────────────────
-export default function AffirmationDurationSection({ mudra = null, duration, setDuration }) {
+export default function AffirmationDurationSection({ asana = null, duration, setDuration }) {
   const { dark, textColor } = useTheme();
-  const [localDuration, setLocalDuration] = useState(10);
+  const defaultDuration = asana?.data?.durationPickerCard?.defaultDuration || 5;
+  const [localDuration, setLocalDuration] = useState(defaultDuration);
   const activeDuration = duration !== undefined ? duration : localDuration;
   const activeSetDuration = setDuration || setLocalDuration;
 
   const [timerOpen, setTimerOpen] = useState(false);
+
+  useEffect(() => {
+    if (duration === undefined) {
+      setLocalDuration(defaultDuration);
+    }
+  }, [defaultDuration, duration]);
 
   return (
     <div
@@ -514,7 +512,7 @@ export default function AffirmationDurationSection({ mudra = null, duration, set
             textColor={textColor}
             duration={activeDuration}
             setDuration={activeSetDuration}
-            mudra={mudra}
+            asana={asana}
             onOpenTimer={() => setTimerOpen(true)}
           />
         </div>
@@ -526,7 +524,7 @@ export default function AffirmationDurationSection({ mudra = null, duration, set
         <MeditationTimerModal
           dark={dark}
           duration={activeDuration}
-          mudra={mudra}
+          asana={asana}
           onClose={() => setTimerOpen(false)}
         />
       )}

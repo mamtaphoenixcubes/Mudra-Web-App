@@ -4,49 +4,67 @@ import Image from "next/image";
 import { Leaf, BarChart2, Hand } from "lucide-react";
 import { spacing, typography } from "../../theme";
 import { useTheme } from "../../context/ThemeContext";
-import { IMAGES } from "../../assets/assets";
 
-// ─── Config ─────────────────────────────────────────────────────────────────
-const MUDRAS = [
-  {
-    id: 1,
-    name: "Jnana Mudra",
-    sanskrit: "ज्ञान मुद्रा",
-    tags: ["Mind", "Clarity", "Awareness"],
-    description:
-      "Enhances focus, memory and inner wisdom. Calms the mind and reduces stress.",
-    image: IMAGES.JnanaMudra,
-    element: "Air",
-    level: "Beginner",
-    type: "Hand Mudra",
-  },
-  {
-    id: 2,
-    name: "Prana Mudra",
-    sanskrit: "प्राण मुद्रा",
-    tags: ["Energy", "Vitality", "Healing"],
-    description:
-      "Activates the root chakra and boosts vitality. Improves eyesight and reduces fatigue.",
-    image: IMAGES.BuddhistMudras,
-    element: "Earth",
-    level: "Beginner",
-    type: "Hand Mudra",
-  },
-  {
-    id: 3,
-    name: "Shuni Mudra",
-    sanskrit: "शूनी मुद्रा",
-    tags: ["Patience", "Discipline", "Grounding"],
-    description:
-      "Cultivates patience and inner discipline. Supports emotional balance and focus.",
-    image: IMAGES.ElementTracker,
-    element: "Space",
-    level: "Intermediate",
-    type: "Hand Mudra",
-  },
-];
+const IMAGE_BASE_URL = process.env.NEXT_PUBLIC_IMAGE_BASE_URL || "http://192.168.1.14:1337";
 
-// ─── Meta Item ──────────────────────────────────────────────────────────────
+function getImageUrl(value) {
+  if (!value) return null;
+
+  if (typeof value === "string") {
+    if (value.startsWith("http") || value.startsWith("data:")) {
+      return value;
+    }
+    return `${IMAGE_BASE_URL}${value}`;
+  }
+
+  if (Array.isArray(value)) {
+    return value[0]?.url ? getImageUrl(value[0].url) : null;
+  }
+
+  if (value?.url) {
+    return getImageUrl(value.url);
+  }
+
+  return null;
+}
+
+function normalizeAsana(asana) {
+  const source = asana?.data || asana || {};
+
+  const tags =
+    Array.isArray(source.intentions)
+      ? source.intentions.map((item) => item?.name || item?.title || item?.Name).filter(Boolean)
+      : Array.isArray(source.tags)
+        ? source.tags.filter(Boolean)
+        : ["Focus", "Balance", "Awareness"];
+
+  return {
+    id: source.documentId || source.id || Date.now(),
+    name: source.name || source.title || source.Name || "Asana Practice",
+    description:
+      source.web?.HeroSection?.Description ||
+      source.WebDetailsPage?.HeroSectionWeb?.HeroDescription ||
+      source.description ||
+      source.aboutSession ||
+      "A guided asana practice designed to bring balance, focus, and calm.",
+    image:
+      getImageUrl(
+        source.web?.HeroSection?.HeroImage ||
+          source.WebDetailsPage?.HeroSectionWeb?.HeroImages?.[0] ||
+          source.thumbnail ||
+          source.thumbnailImage ||
+          source.image ||
+          source.bannerImage ||
+          source.introCard?.introCardImage
+      ) ||
+      null,
+    element: source.element || source.Element || "Balanced",
+    level: source.level || source.Level || "Beginner",
+    type: source.type || source.category || source.categories?.[0]?.Name || source.Category?.Name || "Asana",
+    tags: tags.length ? tags : ["Focus", "Balance", "Awareness"],
+  };
+}
+
 function MetaItem({ icon, label, value, dark, textColor }) {
   return (
     <div className="flex items-center gap-2">
@@ -63,10 +81,9 @@ function MetaItem({ icon, label, value, dark, textColor }) {
   );
 }
 
-// ─── Mudra Meditation Card (presentational only) ───────────────────────────
-export default function AsanasMeditationCard() {
+export default function AsanasMeditationCard({ asana = null }) {
   const { dark, textColor } = useTheme();
-  const mudra = MUDRAS[0]; // static — first mudra shown
+  const mudra = normalizeAsana(asana);
 
   return (
     <div
@@ -74,44 +91,34 @@ export default function AsanasMeditationCard() {
       style={{ backgroundColor: dark ? "#111827" : "#ffffff" }}
     >
       <div className="mx-auto rounded-[24px] overflow-hidden">
-        {/* Header */}
         <div className="text-center pt-5 pb-4 md:pt-6 md:pb-5 lg:pt-8 lg:pb-15">
-          <h2
-            className={`${typography.sectionHeading}`}
-            style={{ color: textColor }}
-          >
+          <h2 className={`${typography.sectionHeading}`} style={{ color: textColor }}>
             Asanas Meditation Card
           </h2>
         </div>
 
-        {/* Body */}
         <div className="px-4 pb-5 md:px-6 md:pb-6 lg:px-8 lg:pb-8">
           <div className="grid grid-cols-1 md:grid-cols-[250px_1fr] lg:grid-cols-[350px_1fr] gap-4 md:gap-6 lg:gap-8 items-start">
-            {/* ── Image ── */}
             <div>
               <div
                 className="relative rounded-[18px] overflow-hidden aspect-[4/3] md:aspect-[3/3] lg:aspect-[4/4]"
                 style={{ backgroundColor: dark ? "#374151" : "#EDE7FE" }}
               >
-                <Image
-                  src={mudra.image}
-                  alt={mudra.name}
-                  fill
-                  className="object-cover"
-                />
+                {mudra.image ? (
+                  <Image src={mudra.image} alt={mudra.name} fill className="object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-sm" style={{ color: textColor }}>
+                    No image
+                  </div>
+                )}
               </div>
             </div>
 
-            {/* ── Details ── */}
             <div className="space-y-3 md:space-y-4 lg:space-y-5">
-              <h3
-                className={`${typography.playerHeading}`}
-                style={{ color: textColor }}
-              >
+              <h3 className={`${typography.playerHeading}`} style={{ color: textColor }}>
                 {mudra.name}
               </h3>
 
-              {/* Tag pills */}
               <div className="flex flex-wrap gap-1.5 md:gap-2">
                 {mudra.tags.map((tag, idx) => (
                   <span
@@ -128,7 +135,6 @@ export default function AsanasMeditationCard() {
                 ))}
               </div>
 
-              {/* Description */}
               <p
                 className="text-[13px] md:text-[14px] lg:text-[19px] leading-relaxed"
                 style={{ color: dark ? "#9ca3af" : "#8A8577" }}
@@ -136,37 +142,12 @@ export default function AsanasMeditationCard() {
                 {mudra.description}
               </p>
 
-              {/* Meta row */}
               <div className="flex items-center gap-3 md:gap-4 lg:gap-6 pt-1 md:pt-2">
-                <MetaItem
-                  icon={<Leaf size={16} />}
-                  label="Element"
-                  value={mudra.element}
-                  dark={dark}
-                  textColor={textColor}
-                />
-                <div
-                  className="w-px h-7 md:h-9"
-                  style={{ backgroundColor: dark ? "#374151" : "#E9E3D6" }}
-                />
-                <MetaItem
-                  icon={<BarChart2 size={16} />}
-                  label="Level"
-                  value={mudra.level}
-                  dark={dark}
-                  textColor={textColor}
-                />
-                <div
-                  className="w-px h-7 md:h-8"
-                  style={{ backgroundColor: dark ? "#374151" : "#E9E3D6" }}
-                />
-                <MetaItem
-                  icon={<Hand size={16} />}
-                  label="Type"
-                  value={mudra.type}
-                  dark={dark}
-                  textColor={textColor}
-                />
+                <MetaItem icon={<Leaf size={16} />} label="Element" value={mudra.element} dark={dark} textColor={textColor} />
+                <div className="w-px h-7 md:h-9" style={{ backgroundColor: dark ? "#374151" : "#E9E3D6" }} />
+                <MetaItem icon={<BarChart2 size={16} />} label="Level" value={mudra.level} dark={dark} textColor={textColor} />
+                <div className="w-px h-7 md:h-8" style={{ backgroundColor: dark ? "#374151" : "#E9E3D6" }} />
+                <MetaItem icon={<Hand size={16} />} label="Type" value={mudra.type} dark={dark} textColor={textColor} />
               </div>
             </div>
           </div>

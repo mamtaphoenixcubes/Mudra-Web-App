@@ -247,19 +247,26 @@ export const asanaService = {
     const response = await api.post(`${MOBILE_API_BASE_URL}/asanas/${id}/share`, { profileDocumentId });
     return response.data;
   },
-  saveAsanaProgress: async (id, profileDocumentId, remainingDuration, sessionDuration) => {
-    const response = await api.post(`${API_BASE_URL}/asanas/${id}/progress`, {
+  saveAsanaProgress: async (id, profileDocumentId, remainingDuration, sessionDuration, payment = null) => {
+    const payload = {
       profileDocumentId,
       remainingDuration,
       sessionDuration,
-    });
+    };
+
+    if (payment !== null && payment !== undefined) {
+      payload.payment = Number(payment);
+    }
+
+    const response = await api.post(`${API_BASE_URL}/asanas/${id}/progress`, payload);
     return response.data;
   },
   completeAsana: async (id, profileDocumentId, sessionDuration) => {
-    const response = await api.post(`${API_BASE_URL}/asanas/${id}/complete`, {
+    const payload = {
       profileDocumentId,
       sessionDuration,
-    });
+    };
+    const response = await api.post(`${API_BASE_URL}/asanas/${id}/complete`, payload);
     return response.data;
   },
 };
