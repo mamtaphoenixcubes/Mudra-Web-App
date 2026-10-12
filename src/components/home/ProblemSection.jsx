@@ -3,48 +3,72 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { Box, Typography } from "@mui/material";
 import { IMAGES } from "../../assets/assets";
 import { mudraService } from "../../services/apiService";
+import { useTheme } from "../../context/ThemeContext";
+import { motion } from "framer-motion";
+import Section from "../../common/Section";
+import SiteContainer from "../../common/SiteContainer";
+import SectionHeader from "../../common/SectionHeader";
 
 const FIGMA_CARDS = [
   {
     key: "stress",
     title: "Stress & Anxiety",
     description: "Constant stress drains your energy and peace of mind.",
-    bg: "bg-[#FEF9C3]",
+    bg: "#FEF9C3",
     image: IMAGES.StressRelief || IMAGES.StressAnxiety,
   },
   {
     key: "mental",
     title: "Mental Overload",
     description: "Too much thinking, too little clarity and focus.",
-    bg: "bg-[#F3E8FF]",
+    bg: "#F3E8FF",
     image: IMAGES.HealingRecovery || IMAGES.Meditation,
   },
   {
     key: "sleep",
     title: "Poor Sleep",
     description: "Restless nights lead to tired mornings and low energy.",
-    bg: "bg-[#E0F2FE]",
+    bg: "#E0F2FE",
     image: IMAGES.SleepDeep || IMAGES.RestfulSleep,
   },
   {
     key: "emotional",
     title: "Emotional Imbalance",
     description: "Unmanaged emotions affect your well-being and relationships.",
-    bg: "bg-[#FCE7F3]",
+    bg: "#FCE7F3",
     image: IMAGES.EmotionalBalance || IMAGES.Relaxation,
   },
   {
     key: "disconnected",
     title: "Disconnected Self",
     description: "You feel out of balance and far from your true self.",
-    bg: "bg-[#DCFCE7]",
+    bg: "#DCFCE7",
     image: IMAGES.PeacefulSleep || IMAGES.MeditationBeach,
   },
 ];
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.15 },
+  },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: "easeOut" },
+  },
+};
+
 export default function ProblemSection() {
+  const { dark, textColor } = useTheme();
   const [cards, setCards] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -68,7 +92,9 @@ export default function ProblemSection() {
             let img = defaultCard.image;
             if (item.icon?.url) {
               const url = item.icon.url;
-              const assetBase = process.env.NEXT_PUBLIC_IMAGE_BASE_URL || "http://192.168.1.14:1337";
+              const assetBase =
+                process.env.NEXT_PUBLIC_IMAGE_BASE_URL ||
+                "http://192.168.1.14:1337";
               if (url.includes("/uploads/")) {
                 img = `${assetBase}${url.substring(url.indexOf("/uploads/"))}`;
               } else if (url.startsWith("http")) {
@@ -82,7 +108,10 @@ export default function ProblemSection() {
               id: item.id,
               documentId: item.documentId,
               title: item.Name || defaultCard.title,
-              description: item.cardText || item.shortDescription || defaultCard.description,
+              description:
+                item.cardText ||
+                item.shortDescription ||
+                defaultCard.description,
               bg: defaultCard.bg,
               image: img,
             };
@@ -102,86 +131,249 @@ export default function ProblemSection() {
   }, []);
 
   return (
-    <section className="w-full py-14 md:py-18 bg-white px-4 sm:px-8 lg:px-12">
-      <div className="max-w-7xl mx-auto">
-
+    <Section
+      sx={{
+        backgroundColor: dark ? "#111827" : "#ffffff",
+        py: { xs: 6, sm: 8, md: 10, lg: 12 },
+        overflow: "visible", // allow card hover lift to show
+      }}
+    >
+      <SiteContainer>
         {/* Heading */}
-        <div className="text-center mb-10">
-          <p className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">
-            THE PROBLEM
-          </p>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-3" style={{ color: "#9A85FE" }}>
-            Life Feels Overwhelming
-          </h2>
-          <p className="text-sm sm:text-base text-gray-700 max-w-2xl mx-auto font-medium leading-relaxed">
-            Stress, anxiety, poor sleep, emotional imbalance and constant
-            <br className="hidden sm:inline" />
-            overload keep you away from your best self.
-          </p>
-        </div>
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+        >
+          <SectionHeader
+            title="Life Feels Overwhelming"
+            subtitle="Stress, anxiety, poor sleep, emotional imbalance and constant overload keep you away from your best self."
+            align="center"
+            sx={{
+              "& .MuiTypography-root": {
+                color: dark ? "#e5e7eb" : undefined,
+              },
+              mb: { xs: 4, sm: 5, md: 6 },
+            }}
+          />
+          <Typography
+            sx={{
+              textAlign: "center",
+              fontFamily: "var(--font-redhat)",
+              fontWeight: 600,
+              fontSize: { xs: "12px", sm: "13px" },
+              letterSpacing: "0.1em",
+              textTransform: "uppercase",
+              color: dark ? "#9ca3af" : "#6b7280",
+              mb: 1,
+              mt: -4,
+            }}
+          >
+            The Problem
+          </Typography>
+        </motion.div>
 
-        {/* Shimmer / Skeleton Loader or Cards Row */}
+        {/* Cards */}
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 lg:gap-5">
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: {
+                xs: "repeat(2, 1fr)",
+                sm: "repeat(2, 1fr)",
+                md: "repeat(5, 1fr)",
+                lg: "repeat(5, 1fr)",
+              },
+              gap: { xs: 2, md: 2.5 },
+            }}
+          >
             {[1, 2, 3, 4, 5].map((idx) => (
-              <div
+              <Box
                 key={idx}
-                className="rounded-2xl p-5 sm:p-6 text-center flex flex-col items-center justify-start h-full bg-gray-100/90 animate-pulse border border-gray-200/50 min-h-[270px]"
+                sx={{
+                  p: 2,
+                  textAlign: "center",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  minHeight: 180,
+                  borderRadius: "24px",
+                  backgroundColor: dark ? "#1f2937" : "#f3f4f6",
+                  border: "1px solid",
+                  borderColor: dark ? "#374151" : "#e5e7eb",
+                }}
               >
-                {/* Shimmer Thumbnail */}
-                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-gray-200 animate-pulse mb-4 shrink-0" />
-
-                {/* Shimmer Title */}
-                <div className="h-4.5 w-28 bg-gray-200 rounded-md animate-pulse mb-2.5" />
-
-                {/* Shimmer Description */}
-                <div className="h-3 w-full bg-gray-200 rounded-xs animate-pulse mb-1.5" />
-                <div className="h-3 w-4/5 bg-gray-200 rounded-xs animate-pulse" />
-              </div>
+                <Box
+                  sx={{
+                    width: 56,
+                    height: 56,
+                    borderRadius: "16px",
+                    mb: 1.5,
+                    backgroundColor: dark ? "#374151" : "#e5e7eb",
+                  }}
+                />
+                <Box
+                  sx={{
+                    height: 16,
+                    width: 96,
+                    borderRadius: "6px",
+                    mb: 1,
+                    backgroundColor: dark ? "#374151" : "#e5e7eb",
+                  }}
+                />
+                <Box
+                  sx={{
+                    height: 10,
+                    width: "100%",
+                    borderRadius: "4px",
+                    mb: 0.5,
+                    backgroundColor: dark ? "#374151" : "#e5e7eb",
+                  }}
+                />
+                <Box
+                  sx={{
+                    height: 10,
+                    width: "80%",
+                    borderRadius: "4px",
+                    backgroundColor: dark ? "#374151" : "#e5e7eb",
+                  }}
+                />
+              </Box>
             ))}
-          </div>
+          </Box>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 lg:gap-5">
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-50px" }}
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(2, 1fr)",
+              gap: "16px",
+            }}
+            className="problem-cards-grid"
+          >
             {cards.map((card, i) => (
-              <Card key={card.documentId || card.key || i} card={card} />
+              <motion.div
+                key={card.documentId || card.key || i}
+                variants={cardVariants}
+              >
+                <ProblemCard card={card} dark={dark} />
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         )}
+      </SiteContainer>
 
-      </div>
-    </section>
+      {/* Responsive grid override for md+ (5 columns) */}
+      <style jsx global>{`
+        @media (min-width: 900px) {
+          .problem-cards-grid {
+            grid-template-columns: repeat(5, 1fr) !important;
+            gap: 20px !important;
+          }
+        }
+      `}</style>
+    </Section>
   );
 }
 
-function Card({ card }) {
+function ProblemCard({ card, dark }) {
   const content = (
-    <div
-      className={`rounded-2xl p-5 sm:p-6 text-center flex flex-col items-center justify-start h-full min-h-[270px] ${card.bg} text-gray-900 transition-transform duration-200 hover:-translate-y-1`}
+    <motion.div
+      className="problem-card"
+      whileHover={{ y: -8, scale: 1.02, transition: { duration: 0.3 } }}
+      whileTap={{ scale: 0.98 }}
+      style={{
+        height: "100%",
+        borderRadius: "24px",
+        padding: "16px",
+        textAlign: "center",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        minHeight: 180,
+        backgroundColor: card.bg,
+        color: "#111827",
+      }}
     >
       {/* Thumbnail */}
-      <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden mb-4 shrink-0 bg-white/40 shadow-xs">
+      <motion.div
+        whileHover={{
+          scale: 1.1,
+          rotate: [0, -5, 5, 0],
+          transition: { duration: 0.4 },
+        }}
+        style={{
+          width: 56,
+          height: 56,
+          borderRadius: 16,
+          overflow: "hidden",
+          marginBottom: 12,
+          flexShrink: 0,
+          backgroundColor: "rgba(255,255,255,0.4)",
+          boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
+        }}
+      >
         {typeof card.image === "string" ? (
-          <img src={card.image} alt={card.title} className="w-full h-full object-cover" />
+          <img
+            src={card.image}
+            alt={card.title}
+            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+          />
         ) : (
-          <Image src={card.image} alt={card.title} className="w-full h-full object-cover" />
+          <Image
+            src={card.image}
+            alt={card.title}
+            width={56}
+            height={56}
+            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+          />
         )}
-      </div>
+      </motion.div>
 
       {/* Title */}
-      <h3 className="text-base font-bold text-gray-900 mb-2 leading-snug">
+      <Typography
+        component="h3"
+        sx={{
+          fontFamily: "var(--font-redhat)",
+          fontWeight: 600,
+          fontSize: { xs: "14px", sm: "15px", md: "16px" },
+          color: "#111827",
+          mb: 0.75,
+          textAlign: "center",
+        }}
+      >
         {card.title}
-      </h3>
+      </Typography>
 
       {/* Description */}
-      <p className="text-xs text-gray-600/90 font-medium leading-relaxed max-w-[200px]">
+      <Typography
+        sx={{
+          fontFamily: "var(--font-redhat)",
+          fontWeight: 400,
+          fontSize: { xs: "12px", sm: "13px" },
+          color: "rgba(17, 24, 39, 0.7)",
+          maxWidth: 180,
+          textAlign: "center",
+          lineHeight: 1.5,
+        }}
+      >
         {card.description}
-      </p>
-    </div>
+      </Typography>
+    </motion.div>
   );
 
   if (card.documentId) {
     return (
-      <Link href={`/AilmentDetailTemplate?id=${card.documentId}`} className="block h-full">
+      <Link
+        href={`/AilmentDetailTemplate?id=${card.documentId}`}
+        style={{ display: "block", height: "100%", textDecoration: "none" }}
+      >
         {content}
       </Link>
     );

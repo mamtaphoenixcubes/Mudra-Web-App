@@ -1,7 +1,11 @@
 "use client";
 
 import Image from "next/image";
+import { useRef } from "react";
+import { motion, useInView } from "framer-motion";
 import { IMAGES } from "../../assets/assets";
+import { spacing, typography } from "../../theme";
+import { useTheme } from "../../context/ThemeContext";
 
 const pillars = [
   {
@@ -27,34 +31,97 @@ const pillars = [
 ];
 
 export default function OurPhilosophy() {
+  const sectionRef = useRef(null);
+  const isInView = useInView(sectionRef, { once: true, amount: 0.3 });
+  const { dark, textColor } = useTheme();
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.15,
+        delayChildren: 0.2,
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.6,
+        ease: [0.22, 1, 0.36, 1]
+      }
+    }
+  };
+
   return (
-    <section id="our-philosophy" className="w-full py-16 md:py-20 bg-[#EDE9FE] px-6 sm:px-10 lg:px-16">
-      <div className="max-w-7xl mx-auto">
+    <motion.section
+      id="our-philosophy"
+      ref={sectionRef}
+      className={`
+        w-full
+        ${spacing.sectionPaddingX}
+        ${spacing.sectionPaddingY}
+        bg-philosophy-bg
+      `}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.6 }}
+    >
+      <div className="mx-auto">
 
         {/* Heading */}
-        <div className="text-center mb-12">
-          <p className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">
+        <motion.div 
+          className="text-center mb-12"
+          initial={{ opacity: 0, y: -20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: -20 }}
+          transition={{ duration: 0.6 }}
+        >
+          <p className={`${typography.sectionLabel} mb-2`} style={{ color: dark ? "#44484e" : "#44484e" }}>
             OUR PHILOSOPHY
           </p>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4" style={{ color: "#9A85FE" }}>
+          <h2 className={`${typography.sectionHeading} mb-3`} style={{ color: textColor }}>
             Ancient Wisdom. Modern Life. Real Transformation.
           </h2>
-          <p className="text-sm sm:text-base text-gray-800 font-bold max-w-2xl mx-auto leading-relaxed">
+          <p className={`${typography.sectionMb} max-w-2xl mx-auto`} style={{ color: dark ? "#000000" : "#374151" }}>
             We believe true well-being comes from aligning body, mind, and
             <br className="hidden sm:inline" />
             energy. Mudras, Yoga Nidra and the five elements work together to
             <br className="hidden sm:inline" />
             help you live a balanced, mindful and fulfilling life
           </p>
-        </div>
+        </motion.div>
 
         {/* 4 Pillars Row */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 relative">
+        <motion.div 
+          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 relative"
+          variants={containerVariants}
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
+        >
           {pillars.map((item, i) => (
-            <div key={i} className="relative flex flex-col items-center text-center px-4">
-              
+            <motion.div 
+              key={i} 
+              className="relative flex flex-col items-center text-center px-4"
+              variants={itemVariants}
+              whileHover={{
+                y: -4,
+                transition: { duration: 0.2 }
+              }}
+            >
               {/* Circular Photo */}
-              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden mb-4 shrink-0 bg-white shadow-xs border border-purple-100">
+              <motion.div 
+                className="w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden mb-4 shrink-0 bg-white shadow-xs border border-purple-100"
+                whileHover={{
+                  scale: 1.1,
+                  rotate: 5,
+                  transition: { duration: 0.3 }
+                }}
+              >
                 {item.image && (
                   <Image
                     src={item.image}
@@ -64,15 +131,15 @@ export default function OurPhilosophy() {
                     className="w-full h-full object-cover"
                   />
                 )}
-              </div>
+              </motion.div>
 
               {/* Title */}
-              <h3 className="text-base font-bold text-gray-900 mb-2 leading-snug">
+              <h3 className={`${typography.benefitTitle} text-gray-900 mb-2`}>
                 {item.title}
               </h3>
 
               {/* Text */}
-              <p className="text-xs text-gray-600 font-medium leading-relaxed max-w-[200px]">
+              <p className={`${typography.benefitBody} text-gray-600/90 max-w-[200px]`}>
                 {item.description}
               </p>
 
@@ -80,11 +147,11 @@ export default function OurPhilosophy() {
               {i < pillars.length - 1 && (
                 <div className="hidden md:block absolute right-0 top-1/2 -translate-y-1/2 w-px h-32 bg-purple-300/50" />
               )}
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
       </div>
-    </section>
+    </motion.section>
   );
 }

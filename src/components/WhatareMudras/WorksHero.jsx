@@ -51,20 +51,28 @@ export default function WorksHero() {
         </motion.div>
 
         {/* RIGHT COLUMN — Lotus illustration */}
+        {/* RIGHT COLUMN */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.95 }}
-          transition={{ duration: 0.7, delay: 0.2 }}
+          initial={{ opacity: 0 }}
+          animate={isInView ? { opacity: 1 } : {}}
+          transition={{ duration: 0.6 }}
           className="flex justify-center md:justify-end items-center"
         >
-          <div className="relative w-full max-w-[460px] lg:max-w-[520px]">
-            <Image
-              src={IMAGES.hero}
-              alt="Mudra Hand"
-              priority
-              className="w-full h-auto object-contain"
-            />
-          </div>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.7, delay: 0.2 }}
+            className="flex justify-center md:justify-end items-center"
+          >
+            <div className="relative w-full max-w-[440px] lg:max-w-[800px]">
+              <Image
+                src={IMAGES.hero}
+                alt="Mudra Lotus Hand"
+                priority
+                className="w-full h-auto object-contain"
+              />
+            </div>
+          </motion.div>
         </motion.div>
 
       </div>

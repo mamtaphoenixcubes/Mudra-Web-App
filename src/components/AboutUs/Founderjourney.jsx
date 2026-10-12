@@ -143,7 +143,7 @@ export default function FounderJourney() {
                 whileInView="visible"
                 viewport={{ once: true }}
             >
-                <div className="flex flex-col md:flex-row gap-8 md:gap-12 max-w-7xl mx-auto px-4 md:px-6">
+                <div className="flex flex-col md:flex-row gap-8 md:gap-12 mx-auto px-4 md:px-6">
                     
                     {/* Text Column - on left (desktop), below image (mobile) */}
                     <motion.div 

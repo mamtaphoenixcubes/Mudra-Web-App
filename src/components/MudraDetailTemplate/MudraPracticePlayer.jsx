@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { motion, useInView } from "framer-motion";
 import { 
   Play, 
   Pause, 
@@ -24,6 +25,11 @@ export default function MudraPracticePlayer({ mudra }) {
   const { dark, textColor } = useTheme();
   const { user } = useAuthStore();
   const sectionRef = useRef(null);
+  const isInView = useInView(sectionRef, {
+    once: true,
+    amount: 0.1,
+    margin: "-50px"
+  });
 
   // Dynamic Image / Media Server URL resolver
   const getImgBaseUrl = () => {
@@ -310,15 +316,24 @@ export default function MudraPracticePlayer({ mudra }) {
       style={{ backgroundColor: dark ? "#111827" : "#ffffff" }}
     >
       <div className="w-full max-w-5xl">
-        <div 
+        <motion.div 
           className="rounded-2xl p-6 sm:p-8 md:p-10 shadow-lg border relative transition-all duration-300 overflow-hidden"
           style={{
             backgroundColor: dark ? "#1f2937" : "#f9fafb",
             borderColor: dark ? "#374151" : "#e5e7eb"
           }}
+          initial={{ opacity: 0, y: 25 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 25 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         >
           {/* Header */}
-          <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b pb-6" style={{ borderColor: dark ? "#374151" : "#e5e7eb" }}>
+          <motion.div
+            className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b pb-6"
+            style={{ borderColor: dark ? "#374151" : "#e5e7eb" }}
+            initial={{ opacity: 0, y: 15 }}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 15 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+          >
             <div>
               <span className="text-xs uppercase tracking-widest font-semibold" style={{ color: textColor }}>
                 {mediaType === "TIMER" ? "Self-Guided" : "Guided Session"}
@@ -345,16 +360,24 @@ export default function MudraPracticePlayer({ mudra }) {
                 </>
               )}
             </div>
-          </div>
+          </motion.div>
 
           {/* ── TYPE 1: AUDIO_SINGLE / AUDIO_PLAYLIST ── */}
           {mediaType.startsWith("AUDIO") && (
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+            <motion.div
+              className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch"
+              initial={{ opacity: 0, y: 20 }}
+              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
               {/* Left column: Player card */}
               <div className={`${isPlaylist ? "lg:col-span-7" : "lg:col-span-12"} flex flex-col justify-between bg-white dark:bg-gray-800 rounded-xl p-6 border`} style={{ borderColor: dark ? "#374151" : "#e5e7eb" }}>
                 <div className="flex flex-col items-center text-center">
                   {/* Track Info */}
-                  <div className="w-36 h-36 rounded-2xl relative shadow-md overflow-hidden bg-primary/10 flex items-center justify-center mb-6">
+                  <motion.div
+                    className="w-36 h-36 rounded-2xl relative shadow-md overflow-hidden bg-primary/10 flex items-center justify-center mb-6"
+                    whileHover={{ scale: 1.03, transition: { duration: 0.2 } }}
+                  >
                     {audioTracks[currentTrackIndex]?.thumbnail?.url ? (
                       <img 
                         src={getMediaSourceUrl(audioTracks[currentTrackIndex].thumbnail)} 
@@ -364,7 +387,7 @@ export default function MudraPracticePlayer({ mudra }) {
                     ) : (
                       <Music className="w-12 h-12" style={{ color: textColor }} />
                     )}
-                  </div>
+                  </motion.div>
                   <h3 className="font-semibold text-lg" style={{ color: dark ? "#ffffff" : "#1f2937" }}>
                     {audioTracks[currentTrackIndex]?.title || mudra?.name || "Guided Audio"}
                   </h3>
@@ -403,23 +426,27 @@ export default function MudraPracticePlayer({ mudra }) {
 
                   {/* Play & Vol controls */}
                   <div className="flex items-center justify-between mt-6">
-                    <button
+                    <motion.button
                       onClick={toggleMute}
                       className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition"
                       style={{ color: dark ? "#ffffff" : "#4b5563" }}
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
                     >
                       {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
-                    </button>
+                    </motion.button>
 
-                    <button
+                    <motion.button
                       onClick={() => setIsPlaying(!isPlaying)}
-                      className="w-14 h-14 rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-105"
+                      className="w-14 h-14 rounded-full flex items-center justify-center shadow-lg"
                       style={{ backgroundColor: textColor, color: "#ffffff" }}
+                      whileHover={{ scale: 1.08 }}
+                      whileTap={{ scale: 0.92 }}
                     >
                       {isPlaying ? <Pause className="w-6 h-6 fill-current" /> : <Play className="w-6 h-6 fill-current translate-x-0.5" />}
-                    </button>
+                    </motion.button>
 
-                    <button
+                    <motion.button
                       onClick={() => {
                         setIsPlaying(false);
                         setCurrentTime(0);
@@ -427,9 +454,11 @@ export default function MudraPracticePlayer({ mudra }) {
                       }}
                       className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition"
                       style={{ color: dark ? "#ffffff" : "#4b5563" }}
+                      whileHover={{ scale: 1.1, rotate: -30 }}
+                      whileTap={{ scale: 0.9 }}
                     >
                       <RotateCcw className="w-5 h-5" />
-                    </button>
+                    </motion.button>
                   </div>
                 </div>
               </div>
@@ -443,7 +472,7 @@ export default function MudraPracticePlayer({ mudra }) {
                   </h3>
                   <div className="flex-1 overflow-y-auto space-y-2 max-h-[290px] pr-2 scrollbar-thin">
                     {audioTracks.map((track, i) => (
-                      <button
+                      <motion.button
                         key={track.id || i}
                         onClick={() => {
                           setCurrentTrackIndex(i);
@@ -454,6 +483,10 @@ export default function MudraPracticePlayer({ mudra }) {
                             ? "bg-primary/10 border-primary"
                             : "hover:bg-gray-50 dark:hover:bg-gray-700/50 border-gray-100 dark:border-gray-700"
                         }`}
+                        initial={{ opacity: 0, x: 15 }}
+                        animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 15 }}
+                        transition={{ duration: 0.4, delay: 0.05 * i }}
+                        whileHover={{ x: 3 }}
                       >
                         <div className="w-10 h-10 rounded bg-gray-100 dark:bg-gray-900 flex items-center justify-center overflow-hidden shrink-0">
                           {track.thumbnail?.url ? (
@@ -477,22 +510,28 @@ export default function MudraPracticePlayer({ mudra }) {
                             <span className="w-0.5 h-1 bg-primary animate-[bounce_0.8s_infinite_0.4s]" />
                           </div>
                         )}
-                      </button>
+                      </motion.button>
                     ))}
                   </div>
                 </div>
               )}
-            </div>
+            </motion.div>
           )}
 
           {/* ── TYPE 2: VIDEO_SINGLE / VIDEO_PLAYLIST ── */}
           {mediaType.startsWith("VIDEO") && (
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+            <motion.div
+              className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch"
+              initial={{ opacity: 0, y: 20 }}
+              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
               {/* Left Column: Video player element */}
               <div className={`${isPlaylist ? "lg:col-span-8" : "lg:col-span-12"} flex flex-col justify-between`}>
-                <div 
+                <motion.div 
                   className="w-full aspect-video rounded-xl overflow-hidden relative border shadow bg-black flex items-center justify-center"
                   style={{ borderColor: dark ? "#374151" : "#e5e7eb" }}
+                  whileHover={{ scale: 1.01, transition: { duration: 0.3 } }}
                 >
                   {videoTracks[currentVideoIndex] ? (
                     <video
@@ -510,7 +549,7 @@ export default function MudraPracticePlayer({ mudra }) {
                       <span>No Video Media Available</span>
                     </div>
                   )}
-                </div>
+                </motion.div>
                 {videoTracks[currentVideoIndex] && (
                   <div className="mt-4">
                     <h3 className="font-semibold text-lg" style={{ color: dark ? "#ffffff" : "#1f2937" }}>
@@ -532,7 +571,7 @@ export default function MudraPracticePlayer({ mudra }) {
                   </h3>
                   <div className="flex-1 overflow-y-auto space-y-2 max-h-[290px] pr-2 scrollbar-thin">
                     {videoTracks.map((track, i) => (
-                      <button
+                      <motion.button
                         key={track.id || i}
                         onClick={() => {
                           setCurrentVideoIndex(i);
@@ -543,6 +582,10 @@ export default function MudraPracticePlayer({ mudra }) {
                             ? "bg-primary/10 border-primary"
                             : "hover:bg-gray-50 dark:hover:bg-gray-700/50 border-gray-100 dark:border-gray-700"
                         }`}
+                        initial={{ opacity: 0, x: 15 }}
+                        animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 15 }}
+                        transition={{ duration: 0.4, delay: 0.05 * i }}
+                        whileHover={{ x: 3 }}
                       >
                         <div className="w-16 aspect-video rounded bg-gray-100 dark:bg-gray-900 flex items-center justify-center overflow-hidden shrink-0 relative">
                           {track.thumbnail?.url ? (
@@ -559,20 +602,25 @@ export default function MudraPracticePlayer({ mudra }) {
                             Session {i + 1}
                           </p>
                         </div>
-                      </button>
+                      </motion.button>
                     ))}
                   </div>
                 </div>
               )}
-            </div>
+            </motion.div>
           )}
 
           {/* ── TYPE 3: TIMER ── */}
           {mediaType === "TIMER" && (
-            <div className="flex flex-col items-center py-4">
+            <motion.div
+              className="flex flex-col items-center py-4"
+              initial={{ opacity: 0, y: 20 }}
+              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
               {/* Duration Options */}
               <div className="flex flex-wrap justify-center gap-2 mb-8">
-                <button
+                <motion.button
                   onClick={() => handleSelectDurationLevel("beginner", durationCard.beginnerDuration)}
                   className={`px-4 py-2 rounded-xl text-xs font-semibold border transition ${
                     activeDurationLevel === "beginner"
@@ -584,10 +632,12 @@ export default function MudraPracticePlayer({ mudra }) {
                     borderColor: activeDurationLevel === "beginner" ? "#9A85FE" : undefined,
                     color: activeDurationLevel === "beginner" ? "#ffffff" : (dark ? "#e5e7eb" : "#374151")
                   }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                 >
                   Beginner ({durationCard.beginnerDuration}m)
-                </button>
-                <button
+                </motion.button>
+                <motion.button
                   onClick={() => handleSelectDurationLevel("intermediate", durationCard.intermediateDuration)}
                   className={`px-4 py-2 rounded-xl text-xs font-semibold border transition ${
                     activeDurationLevel === "intermediate"
@@ -599,10 +649,12 @@ export default function MudraPracticePlayer({ mudra }) {
                     borderColor: activeDurationLevel === "intermediate" ? "#9A85FE" : undefined,
                     color: activeDurationLevel === "intermediate" ? "#ffffff" : (dark ? "#e5e7eb" : "#374151")
                   }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                 >
                   Intermediate ({durationCard.intermediateDuration}m)
-                </button>
-                <button
+                </motion.button>
+                <motion.button
                   onClick={() => handleSelectDurationLevel("expert", durationCard.expertDuration)}
                   className={`px-4 py-2 rounded-xl text-xs font-semibold border transition ${
                     activeDurationLevel === "expert"
@@ -614,10 +666,12 @@ export default function MudraPracticePlayer({ mudra }) {
                     borderColor: activeDurationLevel === "expert" ? "#9A85FE" : undefined,
                     color: activeDurationLevel === "expert" ? "#ffffff" : (dark ? "#e5e7eb" : "#374151")
                   }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                 >
                   Expert ({durationCard.expertDuration}m)
-                </button>
-                <button
+                </motion.button>
+                <motion.button
                   onClick={() => handleSelectDurationLevel("advanced", durationCard.advancedDuration)}
                   className={`px-4 py-2 rounded-xl text-xs font-semibold border transition ${
                     activeDurationLevel === "advanced"
@@ -629,13 +683,20 @@ export default function MudraPracticePlayer({ mudra }) {
                     borderColor: activeDurationLevel === "advanced" ? "#9A85FE" : undefined,
                     color: activeDurationLevel === "advanced" ? "#ffffff" : (dark ? "#e5e7eb" : "#374151")
                   }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                 >
                   Advanced ({durationCard.advancedDuration}m)
-                </button>
+                </motion.button>
               </div>
 
               {/* Countdown Circular Progress Ring */}
-              <div className="relative w-44 h-44 flex items-center justify-center mb-8">
+              <motion.div
+                className="relative w-44 h-44 flex items-center justify-center mb-8"
+                initial={{ opacity: 0, scale: 0.85 }}
+                animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.85 }}
+                transition={{ duration: 0.6, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
+              >
                 <svg className="w-full h-full transform -rotate-90">
                   <circle
                     cx="88"
@@ -668,11 +729,11 @@ export default function MudraPracticePlayer({ mudra }) {
                     {timerRunning ? "Meditating" : "Paused"}
                   </span>
                 </div>
-              </div>
+              </motion.div>
 
               {/* Action buttons */}
               <div className="flex items-center gap-6">
-                <button
+                <motion.button
                   onClick={() => {
                     setTimerRunning(false);
                     setTimerRemaining(timerDuration);
@@ -683,23 +744,27 @@ export default function MudraPracticePlayer({ mudra }) {
                     backgroundColor: dark ? "#1f2937" : "#ffffff",
                     color: dark ? "#e5e7eb" : "#4b5563"
                   }}
+                  whileHover={{ scale: 1.1, rotate: -30 }}
+                  whileTap={{ scale: 0.9 }}
                 >
                   <RotateCcw className="w-5 h-5" />
-                </button>
+                </motion.button>
 
-                <button
+                <motion.button
                   onClick={() => setTimerRunning(!timerRunning)}
-                  className="w-16 h-16 rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-105"
+                  className="w-16 h-16 rounded-full flex items-center justify-center shadow-lg"
                   style={{ backgroundColor: textColor, color: "#ffffff" }}
+                  whileHover={{ scale: 1.08 }}
+                  whileTap={{ scale: 0.92 }}
                 >
                   {timerRunning ? <Pause className="w-7 h-7 fill-current" /> : <Play className="w-7 h-7 fill-current translate-x-0.5" />}
-                </button>
+                </motion.button>
 
                 <div className="w-11" /> {/* Spacer to center the play button */}
               </div>
-            </div>
+            </motion.div>
           )}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

@@ -4,13 +4,15 @@ import Image from "next/image";
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { IMAGES } from "../../assets/assets";
+import { useTheme } from "../../context/ThemeContext";
 
 export default function HowToPractice({ mudra }) {
+  const { dark, textColor } = useTheme();
   const sectionRef = useRef(null);
-  const isInView = useInView(sectionRef, { 
-    once: true, 
+  const isInView = useInView(sectionRef, {
+    once: true,
     amount: 0.1,
-    margin: "-50px"
+    margin: "-50px",
   });
 
   const IMAGE_BASE_URL = process.env.NEXT_PUBLIC_IMAGE_BASE_URL || "http://192.168.1.14:1337";
@@ -55,59 +57,146 @@ export default function HowToPractice({ mudra }) {
     ? `${IMAGE_BASE_URL}${mudra.web.WebPracticeSteps.StepImages[0].url}`
     : null;
 
+  // Animation variants
+  const stepVariants = {
+    hidden: { opacity: 0, x: -20 },
+    visible: (i) => ({
+      opacity: 1,
+      x: 0,
+      transition: {
+        delay: i * 0.12,
+        duration: 0.5,
+        ease: [0.22, 1, 0.36, 1],
+      },
+    }),
+  };
+
   return (
-    <section 
+    <motion.section
       ref={sectionRef}
-      className="w-full bg-white py-12 md:py-16 px-6 sm:px-10 lg:px-16" 
+      className="w-full py-12 md:py-16 px-6 sm:px-10 lg:px-16"
+      style={{
+        backgroundColor: dark ? "#111827" : "#ffffff",
+      }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.6 }}
     >
       <div className="max-w-7xl mx-auto">
-        
-        {/* Section Heading matching Figma */}
-        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-center text-[#9A85FE] mb-2">
+
+        {/* Section Heading */}
+        <motion.h2
+          className="text-3xl sm:text-4xl lg:text-5xl font-bold text-center text-[#9A85FE] mb-2"
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+        >
           How to Practice
-        </h2>
+        </motion.h2>
 
         {/* Lotus Icon Graphic Divider */}
-        <div className="flex items-center justify-center gap-4 max-w-xs mx-auto mb-10">
-          <div className="flex-1 h-[1px] bg-gray-200" />
-          <Image
-            src={IMAGES.Energy}
-            alt="Lotus vector"
-            width={24}
-            height={24}
-            className="w-6 h-6 object-contain opacity-75"
+        <motion.div
+          className="flex items-center justify-center gap-4 max-w-xs mx-auto mb-10"
+          initial={{ opacity: 0 }}
+          animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+          transition={{ duration: 0.6, delay: 0.15 }}
+        >
+          <motion.div
+            className="flex-1 h-[1px]"
+            style={{ backgroundColor: dark ? "#374151" : "#e5e7eb", originX: 1 }}
+            initial={{ scaleX: 0 }}
+            animate={isInView ? { scaleX: 1 } : { scaleX: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
           />
-          <div className="flex-1 h-[1px] bg-gray-200" />
-        </div>
+          <motion.div
+            initial={{ opacity: 0, scale: 0 }}
+            animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0 }}
+            transition={{ duration: 0.4, delay: 0.3 }}
+          >
+            <Image
+              src={IMAGES.Energy}
+              alt="Lotus decorative icon"
+              width={24}
+              height={24}
+              className="w-9 h-9 object-contain opacity-75"
+              style={{
+                filter: dark ? "brightness(0) invert(1)" : "brightness(0)",
+              }}
+              priority={false}
+            />
+          </motion.div>
+          <motion.div
+            className="flex-1 h-[1px]"
+            style={{ backgroundColor: dark ? "#374151" : "#e5e7eb", originX: 0 }}
+            initial={{ scaleX: 0 }}
+            animate={isInView ? { scaleX: 1 } : { scaleX: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          />
+        </motion.div>
 
         {/* Content Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16 items-center">
 
-          {/* Left: Steps List matching Figma */}
+          {/* Left: Steps List */}
           <div className="flex flex-col gap-6">
-            {steps.map((step) => (
-              <div key={step.number} className="flex items-start gap-4">
+            {steps.map((step, i) => (
+              <motion.div
+                key={step.number}
+                className="flex items-start gap-4"
+                custom={i}
+                variants={stepVariants}
+                initial="hidden"
+                animate={isInView ? "visible" : "hidden"}
+                whileHover={{ x: 5, transition: { duration: 0.2 } }}
+              >
                 {/* Step Circle Badge */}
-                <div className={`w-9 h-9 rounded-full ${step.bg} text-gray-900 font-bold text-sm flex items-center justify-center shrink-0 shadow-2xs`}>
+                <motion.div
+                  className={`w-9 h-9 rounded-full ${step.bg} text-gray-900 font-bold text-sm flex items-center justify-center shrink-0 shadow-2xs`}
+                  whileHover={{ scale: 1.1, rotate: 5, transition: { duration: 0.2 } }}
+                >
                   {step.number}
-                </div>
+                </motion.div>
 
                 {/* Step Text */}
                 <div>
-                  <h3 className="font-bold text-base sm:text-lg text-gray-900 mb-0.5">
+                  <h3
+                    className="font-bold text-base sm:text-lg mb-0.5"
+                    style={{ color: dark ? "#e5e7eb" : "#111827" }}
+                  >
                     {step.title}
                   </h3>
-                  <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
+                  <p
+                    className="text-xs sm:text-sm leading-relaxed"
+                    style={{ color: dark ? "#9ca3af" : "#4b5563" }}
+                  >
                     {step.desc}
                   </p>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
 
-          {/* Right: Practice Photo matching Figma */}
-          <div className="w-full flex justify-center md:justify-end">
-            <div className="w-full max-w-[540px] aspect-[4/3] rounded-2xl overflow-hidden shadow-sm border border-gray-100 relative bg-gray-50">
+          {/* Right: Practice Photo */}
+          <motion.div
+            className="w-full flex justify-center md:justify-end"
+            initial={{ opacity: 0, x: 40 }}
+            animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 40 }}
+            transition={{ duration: 0.7, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <motion.div
+              className="w-full max-w-[540px] aspect-[4/3] rounded-2xl overflow-hidden shadow-sm border relative"
+              style={{
+                borderColor: dark ? "#374151" : "#f3f4f6",
+                backgroundColor: dark ? "#1f2937" : "#f9fafb",
+              }}
+              whileHover={{
+                scale: 1.02,
+                boxShadow: dark
+                  ? "0 8px 30px rgba(0,0,0,0.3)"
+                  : "0 8px 30px rgba(0,0,0,0.08)",
+                transition: { duration: 0.3 },
+              }}
+            >
               {practiceImageUrl ? (
                 <img
                   src={practiceImageUrl}
@@ -123,12 +212,12 @@ export default function HowToPractice({ mudra }) {
                   className="w-full h-full object-cover"
                 />
               )}
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
 
         </div>
 
       </div>
-    </section>
+    </motion.section>
   );
 }

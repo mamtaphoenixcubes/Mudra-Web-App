@@ -1,7 +1,11 @@
 "use client";
 
 import Image from "next/image";
+import { useRef } from "react";
+import { motion, useInView } from "framer-motion";
 import { IMAGES } from "../../assets/assets";
+import { spacing, typography } from "../../theme";
+import { useTheme } from "../../context/ThemeContext";
 
 const approaches = [
   {
@@ -33,30 +37,98 @@ const approaches = [
 ];
 
 export default function ApproachSection() {
+  const sectionRef = useRef(null);
+  const isInView = useInView(sectionRef, { once: true, amount: 0.3 });
+  const { dark, textColor } = useTheme();
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.15,
+        delayChildren: 0.2,
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.6,
+        ease: [0.22, 1, 0.36, 1]
+      }
+    }
+  };
+
   return (
-    <section className="w-full py-16 md:py-20 bg-white px-6 sm:px-10 lg:px-16">
-      <div className="max-w-7xl mx-auto">
+    <motion.section
+      ref={sectionRef}
+      className={`
+        w-full
+        ${spacing.sectionPaddingX}
+        ${spacing.sectionPaddingY}
+      `}
+      style={{
+        backgroundColor: dark ? "#111827" : "#ffffff",
+      }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.6 }}
+    >
+      <div className=" mx-auto">
 
         {/* Heading */}
-        <div className="text-center mb-12">
-          <p className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">
+        <motion.div 
+          className="text-center mb-12"
+          initial={{ opacity: 0, y: -20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: -20 }}
+          transition={{ duration: 0.6 }}
+        >
+          <p className={`${typography.sectionLabel} mb-2`} style={{ color: dark ? "#9ca3af" : "#6b7280" }}>
             OUR APPROACH
           </p>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-3" style={{ color: "#9A85FE" }}>
+          <h2 className={`${typography.sectionHeading} mb-3`} style={{ color: textColor }}>
             Intro to Mudras & Yoga Nidra
           </h2>
-          <p className="text-sm sm:text-base text-gray-800 font-bold leading-relaxed">
+          <p className={`${typography.sectionMb} max-w-2xl mx-auto`} style={{ color: dark ? "#e5e7eb" : "#374151" }}>
             Ancient practices. Holistic healing. Everyday transformation.
           </p>
-        </div>
+        </motion.div>
 
         {/* 2 Columns Row */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 relative items-center">
+        <motion.div 
+          className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 relative items-center"
+          variants={containerVariants}
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
+        >
           {approaches.map((item, index) => (
-            <div key={item.id} className="relative flex items-start gap-5 px-4">
-              
+            <motion.div 
+              key={item.id} 
+              className="relative flex items-start gap-5 px-4"
+              variants={itemVariants}
+              whileHover={{
+                y: -4,
+                transition: { duration: 0.2 }
+              }}
+            >
               {/* Circular Photo */}
-              <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden shrink-0 bg-gray-100 border border-gray-200">
+              <motion.div 
+                className="w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden shrink-0 border"
+                style={{
+                  backgroundColor: dark ? "#374151" : "#f3f4f6",
+                  borderColor: dark ? "#4b5563" : "#e5e7eb"
+                }}
+                whileHover={{
+                  scale: 1.1,
+                  rotate: 5,
+                  transition: { duration: 0.3 }
+                }}
+              >
                 <Image
                   src={item.image}
                   alt={item.imageAlt}
@@ -64,22 +136,22 @@ export default function ApproachSection() {
                   height={112}
                   className="w-full h-full object-cover"
                 />
-              </div>
+              </motion.div>
 
               {/* Text Content */}
               <div className="flex-1 min-w-0">
-                <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-1">
+                <h3 className={`${typography.cardTitle} mb-1`} style={{ color: dark ? "#f9fafb" : "#111827" }}>
                   {item.title}
                 </h3>
-                <p className="text-xs text-gray-500 font-medium mb-3 leading-relaxed">
+                <p className={`${typography.cardBody} mb-3 leading-relaxed`} style={{ color: dark ? "#d1d5db" : "#4b5563" }}>
                   {item.description}
                 </p>
 
                 {/* Bullets */}
                 <ul className="space-y-1.5">
                   {item.bullets.map((b, i) => (
-                    <li key={i} className="text-xs text-gray-500 font-medium flex items-start gap-2 leading-tight">
-                      <span className="text-gray-400 font-bold">•</span>
+                    <li key={i} className={`${typography.cardBody} flex items-start gap-2 leading-tight`} style={{ color: dark ? "#d1d5db" : "#4b5563" }}>
+                      <span className="font-bold" style={{ color: dark ? "#9ca3af" : "#9ca3af" }}>•</span>
                       <span>{b}</span>
                     </li>
                   ))}
@@ -88,13 +160,18 @@ export default function ApproachSection() {
 
               {/* Vertical line divider for desktop */}
               {index === 0 && (
-                <div className="hidden md:block absolute right-0 top-1/2 -translate-y-1/2 w-px h-36 bg-gray-200" />
+                <div 
+                  className="hidden md:block absolute right-0 top-1/2 -translate-y-1/2 w-px h-36"
+                  style={{ 
+                    backgroundColor: dark ? "#374151" : "#e5e7eb"
+                  }}
+                />
               )}
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
       </div>
-    </section>
+    </motion.section>
   );
 }

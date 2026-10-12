@@ -85,7 +85,7 @@ export default function CommonSymptoms({ symptoms = [] }) {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.6 }}
     >
-      <div className="w-full max-w-7xl sm:max-w-[90%] md:max-w-[1100px] lg:max-w-[1200px] xl:max-w-[1300px] 2xl:max-w-[2100px] mx-auto">
+      <div className="w-full sm:max-w-[90%] md:max-w-[1100px] lg:max-w-[1200px] xl:max-w-[1300px] 2xl:max-w-[2100px] mx-auto">
 
         {/* Heading - Character by character */}
         <motion.h2 

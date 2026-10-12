@@ -2,6 +2,9 @@
 
 import Image from "next/image";
 import { IMAGES } from "../../assets/assets";
+import { motion } from "framer-motion";
+import { spacing, typography } from "../../theme";
+import { useTheme } from "../../context/ThemeContext";
 
 const features = [
   {
@@ -36,27 +39,79 @@ const features = [
   },
 ];
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.5,
+      ease: "easeOut",
+    },
+  },
+};
+
 export default function FeaturesSection() {
+  const { dark, textColor } = useTheme();
+
   return (
-    <section className="w-full py-16 md:py-20 bg-[#EDE9FE] px-6 sm:px-10 lg:px-16">
-      <div className="max-w-7xl mx-auto">
+    <section className={`${spacing.sectionPaddingX} ${spacing.sectionPaddingY}`} style={{ backgroundColor: dark ? "#111827" : "#EDE9FE" }}>
+      <div>
 
         {/* Heading */}
-        <div className="text-center mb-12">
-          <p className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">
+        <motion.div 
+          className="text-center mb-12"
+          initial={{ opacity: 0, y: -20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+        >
+          <p className={`${typography.sectionLabel} mb-2`} style={{ color: dark ? "#9ca3af" : "#6b7280" }}>
             KEY FEATURES
           </p>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4" style={{ color: "#9A85FE" }}>
+          <h2 className={`${typography.sectionSbHeading} mb-4`} style={{ color: textColor }}>
             Everything You Need For Inner Balance
           </h2>
-        </div>
+        </motion.div>
 
         {/* 6 Features Row */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 sm:gap-6 relative">
+        <motion.div 
+          className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 sm:gap-6 relative"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-50px" }}
+        >
           {features.map((item, i) => (
-            <div key={i} className="relative flex flex-col items-center text-center px-2">
+            <motion.div 
+              key={i} 
+              className="relative flex flex-col items-center text-center px-2"
+              variants={itemVariants}
+              whileHover={{ 
+                y: -5,
+                transition: { duration: 0.3 }
+              }}
+            >
               {/* Thumbnail */}
-              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl overflow-hidden mb-3 bg-white/70 shadow-xs border border-purple-100 shrink-0">
+              <motion.div 
+                className="w-20 h-20 md:w-14 md:h-14 lg:w-24 lg:h-24 rounded-xl overflow-hidden mb-3 bg-white/70 shadow-xs border border-purple-100 shrink-0"
+                style={{ borderColor: dark ? "#4b5563" : "#e9d5ff" }}
+                whileHover={{ 
+                  scale: 1.08,
+                  rotate: [0, -3, 3, 0],
+                  transition: { duration: 0.4 }
+                }}
+              >
                 {item.image && (
                   <Image
                     src={item.image}
@@ -66,25 +121,25 @@ export default function FeaturesSection() {
                     className="w-full h-full object-cover"
                   />
                 )}
-              </div>
+              </motion.div>
 
               {/* Title */}
-              <h3 className="text-sm font-bold text-gray-900 mb-1 leading-snug">
+              <h3 className={`${typography.fingerName} mb-1`} style={{ color: dark ? "#f3f4f6" : "#111827" }}>
                 {item.title}
               </h3>
 
               {/* Text */}
-              <p className="text-[11px] text-gray-600 font-medium leading-relaxed">
+              <p className={`${typography.playerAboutBody}`} style={{ color: dark ? "#9ca3af" : "#4b5563" }}>
                 {item.description}
               </p>
 
               {/* Vertical divider */}
               {i < features.length - 1 && (
-                <div className="hidden md:block absolute right-0 top-1/2 -translate-y-1/2 w-px h-28 bg-purple-300/50" />
+                <div className="hidden md:block absolute right-[-10] top-1/2 -translate-y-1/2 w-px h-38" style={{ backgroundColor: dark ? "#374151" : "#c4b5fd" }} />
               )}
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
       </div>
     </section>

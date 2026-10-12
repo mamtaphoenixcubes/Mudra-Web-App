@@ -173,7 +173,7 @@ export default function AilmentDetailTemplateBanner() {
         >
             <div className={spacing.container}>
                 <motion.div 
-                    className="w-full max-w-7xl mx-auto rounded-2xl flex flex-col md:flex-row md:items-stretch px-3 py-3 sm:px-4 sm:py-4 md:px-5 md:py-5 lg:px-6 lg:py-6 gap-3 md:gap-3" 
+                    className="w-full  mx-auto rounded-2xl flex flex-col md:flex-row md:items-stretch px-3 py-3 sm:px-4 sm:py-4 md:px-5 md:py-5 lg:px-6 lg:py-6 gap-3 md:gap-3" 
                     style={{
                         backgroundColor: dark ? "#FFD6E0" : "#FFD6E0",
                     }}

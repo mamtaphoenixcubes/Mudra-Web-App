@@ -4,10 +4,13 @@ import Image from "next/image";
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { IMAGES } from "../../assets/assets";
+import { heroImage, typography, spacing, btn, mudraHand } from "../../theme";
+import { useTheme } from "../../context/ThemeContext";
 
 export default function AboutHero() {
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, amount: 0.3 });
+  const { dark, textColor } = useTheme();
 
   const scrollToPhilosophy = () => {
     const el = document.getElementById("our-philosophy");
@@ -16,61 +19,150 @@ export default function AboutHero() {
     }
   };
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.12,
+        delayChildren: 0.2,
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 40 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.7,
+        ease: [0.22, 1, 0.36, 1]
+      }
+    }
+  };
+
+  const buttonVariants = {
+    hidden: { opacity: 0, y: 30, scale: 0.9 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: {
+        duration: 0.6,
+        ease: [0.22, 1, 0.36, 1],
+        delay: 0.2
+      }
+    }
+  };
+
   return (
-    <section
+    <motion.section
       ref={sectionRef}
-      className="w-full bg-white py-12 md:py-16 lg:py-20 px-6 sm:px-10 lg:px-16"
+      className={`
+        relative
+        grid grid-cols-2 md:grid-cols-2
+        items-center
+        ${spacing.sectionPaddingX}
+        ${spacing.sectionPaddingY}
+        ${spacing.heroGap}
+      `}
+      style={{
+        backgroundColor: dark ? "#111827" : "#ffffff",
+      }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.6 }}
     >
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-[1.15fr_0.85fr] items-center gap-8 lg:gap-12">
 
-        {/* LEFT COLUMN */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-          transition={{ duration: 0.6 }}
-          className="flex flex-col items-start w-full justify-center"
-        >
+      {/* LEFT COLUMN */}
+      <motion.div
+        className={`flex flex-col md:block ${spacing.heroLeftColWb} ${spacing.heroLeftColOffset} relative z-10`}
+        variants={containerVariants}
+        initial="hidden"
+        animate={isInView ? "visible" : "hidden"}
+      >
+        <div className={spacing.contentColumn}>
           {/* Section Label */}
-          <p className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">
+          <motion.p
+            className={`${typography.sectionLabel} mb-2`}
+            style={{ color: dark ? "#9ca3af" : "#6b7280" }}
+            variants={itemVariants}
+          >
             THE PROBLEM
-          </p>
+          </motion.p>
 
-          {/* Main Title (Guaranteed 3 lines matching Figma exact layout) */}
-          <h1
-            className="text-3xl sm:text-4xl lg:text-[48px] xl:text-[54px] 2xl:text-[58px] font-medium tracking-normal mb-4 leading-[1.2]"
+          {/* Main Title */}
+          <motion.h1
+            className={`${typography.MainHeading}`}
             style={{
-              color: "#9A85FE",
+              color: textColor,
               fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Inter", sans-serif',
             }}
+            variants={itemVariants}
           >
-            <span className="block md:whitespace-nowrap">The smallest gesture</span>
-            <span className="block md:whitespace-nowrap">becomes a doorway</span>
-            <span className="block md:whitespace-nowrap">to deep transformation.</span>
-          </h1>
+            The smallest gesture<br />
+            becomes a doorway<br />
+            to deep transformation.<br />
+          </motion.h1>
 
           {/* Subtitle */}
-          <p className="text-sm sm:text-base lg:text-lg text-gray-900 font-semibold mb-8 max-w-lg leading-relaxed">
-            At Mudras, we blend ancient wisdom with modern science to help you restore balance, reduce stress, and live with clarity and purpose.
-          </p>
+          <motion.p
+            className={`${typography.heroBody} ${spacing.maxWHeroBody} mt-2 sm:mt-6 mb-2`}
+            style={{ color: dark ? "#9ca3af" : "#4b5563" }}
+            variants={itemVariants}
+          >
+            At Mudras, we blend ancient wisdom with modern science to help you restore balance,
+            <br />
+            reduce stress, and live with clarity and purpose.
+          </motion.p>
 
           {/* Action Button */}
-          <button
+          <motion.button
             onClick={scrollToPhilosophy}
-            className="px-6 py-3 rounded-lg font-semibold text-xs sm:text-sm text-white shadow-xs hover:bg-[#8B74F6] transition-all cursor-pointer"
-            style={{ backgroundColor: "#9A85FE" }}
+            className={btn.primary + " relative overflow-hidden group"}
+            style={{
+              backgroundColor: textColor,
+            }}
+            variants={buttonVariants}
+            whileHover={{
+              scale: 1.05,
+              boxShadow: `0 8px 40px ${textColor}50`,
+              transition: { duration: 0.2 }
+            }}
+            whileTap={{ scale: 0.95 }}
           >
-            Our Philosophy
-          </button>
-        </motion.div>
+            <span className="relative flex items-center gap-2">
+              Our Philosophy
+              <motion.span
+                animate={{ x: [0, 5, 0] }}
+                transition={{
+                  duration: 1.5,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              >
+                →
+              </motion.span>
+            </span>
+          </motion.button>
+        </div>
+      </motion.div>
 
-        {/* RIGHT COLUMN — Lotus illustration */}
+      {/* RIGHT COLUMN - Using theme */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={isInView ? { opacity: 1 } : {}}
+        transition={{ duration: 0.6 }}
+        className="flex justify-center md:justify-end items-center"
+      >
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.95 }}
           transition={{ duration: 0.7, delay: 0.2 }}
           className="flex justify-center md:justify-end items-center"
         >
-          <div className="relative w-full max-w-[440px] lg:max-w-[500px]">
+          <div className="relative w-full max-w-[440px] lg:max-w-[800px]">
             <Image
               src={IMAGES.hero}
               alt="Mudra Lotus Hand"
@@ -79,8 +171,8 @@ export default function AboutHero() {
             />
           </div>
         </motion.div>
+      </motion.div>
 
-      </div>
-    </section>
+    </motion.section>
   );
 }
