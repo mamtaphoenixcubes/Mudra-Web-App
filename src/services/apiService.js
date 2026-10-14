@@ -228,13 +228,8 @@ export const asanaService = {
     return response.data;
   },
   likeAsana: async (id, profileDocumentId) => {
-    try {
-      const response = await api.post(`${MOBILE_API_BASE_URL}/asanas/${id}/like`, { profileDocumentId });
-      return response.data;
-    } catch (error) {
-      const fallbackResponse = await api.post(`${API_BASE_URL}/asanas/${id}/like`, { profileDocumentId });
-      return fallbackResponse.data;
-    }
+    const response = await api.post(`${API_BASE_URL}/asanas/${id}/like`, { profileDocumentId });
+    return response.data;
   },
   saveAsana: async (id, profileDocumentId) => {
     const response = await api.post(`${MOBILE_API_BASE_URL}/asanas/${id}/save`, { profileDocumentId });
@@ -273,39 +268,6 @@ export const asanaService = {
     };
     const response = await api.post(`${API_BASE_URL}/asanas/${id}/complete`, payload);
     return response.data;
-  },
-  saveAsanaMediaProgress: async (payload) => {
-    try {
-      const response = await api.post(`${MOBILE_API_BASE_URL}/user-asana-activities/media-progress`, payload);
-      return response.data;
-    } catch (err) {
-      const targetId = payload.asanaDocumentId || payload.mediaDocumentId;
-      if (targetId) {
-        return await asanaService.saveAsanaProgress(
-          targetId,
-          payload.profileDocumentId,
-          payload.remainingDuration,
-          payload.sessionDuration
-        );
-      }
-      throw err;
-    }
-  },
-  completeAsanaMedia: async (payload) => {
-    try {
-      const response = await api.post(`${MOBILE_API_BASE_URL}/user-asana-activities/media-complete`, payload);
-      return response.data;
-    } catch (err) {
-      const targetId = payload.asanaDocumentId || payload.mediaDocumentId;
-      if (targetId) {
-        return await asanaService.completeAsana(
-          targetId,
-          payload.profileDocumentId,
-          payload.completedDuration || payload.sessionDuration || 0
-        );
-      }
-      throw err;
-    }
   },
 };
 
