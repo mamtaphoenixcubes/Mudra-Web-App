@@ -12,7 +12,13 @@ export default function AsanasMeditation() {
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
   const [asana, setAsana] = useState(null);
+  const [selectedDuration, setSelectedDuration] = useState(5);
   const [isLoading, setIsLoading] = useState(Boolean(id));
+
+  useEffect(() => {
+    const nextDefault = asana?.data?.durationPickerCard?.defaultDuration || 5;
+    setSelectedDuration(nextDefault);
+  }, [asana]);
 
   useEffect(() => {
     if (!id) {
@@ -79,9 +85,9 @@ export default function AsanasMeditation() {
       <hr className="w-full border-t border-gray-200" />
       <AsanasPracticeSteps asana={asana} />
       <hr className="w-full border-t border-gray-200" />
-      <AsanasMeditationSection asana={asana} />
+      <AsanasMeditationSection asana={asana} duration={selectedDuration} setDuration={setSelectedDuration} />
       <hr className="w-full border-t border-gray-200" />
-      <AsanasMeditationBar asana={asana} mudra={asana} />
+      <AsanasMeditationBar asana={asana} mudra={asana} duration={selectedDuration} />
     </main>
   );
 }

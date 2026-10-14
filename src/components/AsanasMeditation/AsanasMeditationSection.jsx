@@ -114,12 +114,19 @@ function MeditationTimerModal({ dark, duration, asana = null, onClose }) {
     setIsRunning(false);
   }, [totalSeconds]);
 
-  const sendTimerProgress = async (secondsLeftVal) => {    
+  const sendTimerProgress = async (secondsLeftVal) => {
     if (!asanaDocId) return;
     try {
-      await asanaService.saveAsanaProgress(asanaDocId, profileDocId, secondsLeftVal, totalSeconds, duration);
+      await asanaService.saveAsanaMediaProgress({
+        profileDocumentId: profileDocId,
+        mediaType: "AUDIO_SINGLE",
+        mediaDocumentId: asanaDocId,
+        asanaDocumentId: asanaDocId,
+        remainingDuration: secondsLeftVal,
+        sessionDuration: totalSeconds,
+      });
     } catch (err) {
-      console.warn("Failed to save asana progress:", err);
+      console.warn("Failed to save asana media progress:", err);
     }
   };
 
@@ -130,9 +137,15 @@ function MeditationTimerModal({ dark, duration, asana = null, onClose }) {
     }
     if (asanaDocId) {
       try {
-        await asanaService.completeAsana(asanaDocId, profileDocId, totalSeconds, duration);
+        await asanaService.completeAsanaMedia({
+          profileDocumentId: profileDocId,
+          mediaType: "AUDIO_SINGLE",
+          mediaDocumentId: asanaDocId,
+          asanaDocumentId: asanaDocId,
+          completedDuration: totalSeconds,
+        });
       } catch (err) {
-        console.warn("Failed to complete asana session:", err);
+        console.warn("Failed to complete asana media session:", err);
       }
     }
   };
@@ -214,13 +227,19 @@ function MeditationTimerModal({ dark, duration, asana = null, onClose }) {
   const handleStop = async () => {
     setIsRunning(false);
     setSecondsLeft(totalSeconds);
-    
+
     const elapsed = totalSeconds - secondsLeft;
     if (asanaDocId && elapsed > 0) {
       try {
-        await asanaService.completeAsana(asanaDocId, profileDocId, elapsed, duration);
+        await asanaService.completeAsanaMedia({
+          profileDocumentId: profileDocId,
+          mediaType: "AUDIO_SINGLE",
+          mediaDocumentId: asanaDocId,
+          asanaDocumentId: asanaDocId,
+          completedDuration: elapsed,
+        });
       } catch (err) {
-        console.warn("Failed to complete asana session on stop:", err);
+        console.warn("Failed to complete asana media session on stop:", err);
       }
     }
   };

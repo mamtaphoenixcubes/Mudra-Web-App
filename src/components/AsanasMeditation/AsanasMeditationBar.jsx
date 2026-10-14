@@ -10,15 +10,16 @@ export default function AsanasMeditationBar({
   onOpenSettings,
   mudra = null,
   asana = null,
+  duration: selectedDuration,
 }) {
   const { dark, textColor } = useTheme();
   const router = useRouter();
 
   const source = mudra || asana || session || {};
   const title = session?.title || source?.name || source?.title || "Practice Session";
-  const level = source?.level || source?.Level || "Beginner";
-  const element = source?.element || source?.Element || "Balanced";
-  const duration = session?.duration || source?.duration || 10;
+  const level = source?.data?.level || source?.data?.Level || "Beginner";
+  const element = source?.data?.element || source?.data?.Element || "Balanced";
+  const duration = selectedDuration ?? source?.data?.duration ?? source?.duration ?? 10;
   const subtitle = session?.subtitle || `${duration} min · ${level} · ${element} Element`;
   const musicLabel = session?.musicLabel || "Gentle Rain";
   const settingsLabel = session?.settingsLabel || "Settings";
@@ -27,10 +28,10 @@ export default function AsanasMeditationBar({
 
   const handleStartPractice = () => {
     const params = new URLSearchParams();
-    const sourceId = source?.documentId || source?.id;
+    const sourceId = source?.data?.documentId || source?.id;
 
     if (sourceId) {
-      params.set("mudraId", String(sourceId));
+      params.set("asanaId", String(sourceId));
     }
 
     if (duration) {

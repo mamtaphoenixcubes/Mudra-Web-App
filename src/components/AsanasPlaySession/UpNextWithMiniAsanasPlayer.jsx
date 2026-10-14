@@ -5,6 +5,7 @@ import {
   MoreHorizontal,
   SkipBack,
   Play,
+  Pause,
   SkipForward,
 } from "lucide-react";
 import { spacing, typography } from "../../theme";
@@ -18,11 +19,13 @@ const UP_NEXT_ITEMS = [
   { id: 4, title: "Evening Body Scan", duration: "25 min", mode: "Audio" },
 ];
 
-// ─── Up Next Row (presentational only) ─────────────────────────────────────
-function UpNextRow({ item, isLast, dark, textColor }) {
+// ─── Up Next Row (clickable) ─────────────────────────────────────
+function UpNextRow({ item, isLast, dark, textColor, onSelect }) {
   return (
-    <div
-      className="relative flex items-center gap-3 md:gap-4 px-4 md:px-5 py-4"
+    <button
+      type="button"
+      onClick={() => onSelect?.(item)}
+      className="relative flex w-full items-center gap-3 md:gap-4 px-4 md:px-5 py-4 text-left"
       style={{
         borderBottom: isLast ? "none" : `1px solid ${dark ? "#374151" : "#EDEBE4"}`,
       }}
@@ -52,29 +55,29 @@ function UpNextRow({ item, isLast, dark, textColor }) {
       </div>
 
       <div className="relative flex-shrink-0">
-        <button
+        <span
           aria-label={`More options for ${item.title}`}
           className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-black/5 transition-colors"
         >
           <MoreHorizontal size={18} style={{ color: dark ? "#9ca3af" : "#8A8577" }} />
-        </button>
+        </span>
       </div>
-    </div>
+    </button>
   );
 }
 
-// ─── Up Next Section (presentational only) ─────────────────────────────────
-export function UpNextSection({ items = UP_NEXT_ITEMS }) {
+// ─── Up Next Section (clickable) ─────────────────────────────────
+export function UpNextSection({ items = UP_NEXT_ITEMS, onSelectTrack }) {
   const { dark, textColor } = useTheme();
 
   return (
     <div className={spacing.sectionPaddingX}>
-      {/* Header */}
       <div className="flex items-center justify-between mb-3 md:mb-4">
         <h2 className={`${typography.playerHeading}`} style={{ color: textColor }}>
           Up Next
         </h2>
         <button
+          type="button"
           className="flex items-center gap-1 text-[13px] md:text-[14px] font-medium hover:opacity-70 transition-opacity"
           style={{ color: "#9A85FE" }}
         >
@@ -83,7 +86,6 @@ export function UpNextSection({ items = UP_NEXT_ITEMS }) {
         </button>
       </div>
 
-      {/* List card */}
       <div
         className="rounded-[20px] border overflow-visible"
         style={{
@@ -98,6 +100,7 @@ export function UpNextSection({ items = UP_NEXT_ITEMS }) {
             isLast={i === items.length - 1}
             dark={dark}
             textColor={textColor}
+            onSelect={onSelectTrack}
           />
         ))}
       </div>
@@ -105,11 +108,15 @@ export function UpNextSection({ items = UP_NEXT_ITEMS }) {
   );
 }
 
-// ─── Mini Player Bar (presentational only) ─────────────────────────────────
+// ─── Mini Player Bar (bound to current selection) ─────────────────────────
 export function MiniPlayerBar({
   title = "Deep Sleep Yoga Nidra",
   current = "00:00",
   total = "30:00",
+  playing = false,
+  onTogglePlay,
+  onPrev,
+  onNext,
 }) {
   const { dark, textColor } = useTheme();
 
@@ -124,7 +131,6 @@ export function MiniPlayerBar({
       <div
         className={`${spacing.sectionPaddingX} flex items-center justify-between gap-3 py-3 md:py-4`}
       >
-        {/* Track info */}
         <div className="flex items-center gap-3 min-w-0 flex-1">
           <span
             className="w-11 h-11 md:w-12 md:h-12 rounded-xl flex items-center justify-center flex-shrink-0"
@@ -148,24 +154,33 @@ export function MiniPlayerBar({
           </div>
         </div>
 
-        {/* Transport controls (visual only) */}
         <div className="flex items-center gap-4 md:gap-5 flex-shrink-0">
           <button
+            type="button"
             aria-label="Previous"
+            onClick={onPrev}
             style={{ color: textColor }}
             className="hover:scale-110 transition-transform"
           >
             <SkipBack size={20} fill="currentColor" />
           </button>
           <button
-            aria-label="Play"
+            type="button"
+            aria-label={playing ? "Pause" : "Play"}
+            onClick={onTogglePlay}
             className="w-11 h-11 md:w-12 md:h-12 rounded-full text-white flex items-center justify-center hover:scale-105 active:scale-95 transition-transform shadow-md"
             style={{ backgroundColor: dark ? "#374151" : "#3A362E" }}
           >
-            <Play size={18} fill="white" className="ml-0.5" />
+            {playing ? (
+              <Pause size={18} fill="white" />
+            ) : (
+              <Play size={18} fill="white" className="ml-0.5" />
+            )}
           </button>
           <button
+            type="button"
             aria-label="Next"
+            onClick={onNext}
             style={{ color: textColor }}
             className="hover:scale-110 transition-transform"
           >
@@ -177,24 +192,112 @@ export function MiniPlayerBar({
   );
 }
 
-// ─── Combined default export (presentational only) ─────────────────────────
-export default function UpNextWithMiniAsanasPlayer() {
+// ─── Combined default export ─────────────────────────
+export default function UpNextWithMiniAsanasPlayer({
+  asana = null,
+  selectedMedia = null,
+  selectedMediaId = null,
+  mediaType = null,
+  playlistTracks = [],
+  currentTrackIndex = 0,
+  setCurrentTrackIndex,
+  playing = false,
+  setPlaying,
+  current = 0,
+  totalSecs = 0,
+}) {
   const { dark } = useTheme();
+  const resolvedMediaType = mediaType || selectedMedia?.mediaType || null;
+
+  const dataTracks = playlistTracks.length > 0
+    ? playlistTracks
+    : (() => {
+        if (!selectedMedia && !asana) return [];
+        const data = asana?.data || asana || {};
+
+        if (resolvedMediaType === "AUDIO_SINGLE" || resolvedMediaType === "VIDEO_SINGLE") {
+          return [selectedMedia].filter(Boolean);
+        }
+
+        if (resolvedMediaType === "AUDIO_PLAYLIST") {
+          return [...(selectedMedia?.audios || data?.audio_playlists?.[0]?.audios || [])];
+        }
+
+        if (resolvedMediaType === "VIDEO_PLAYLIST") {
+          return [...(selectedMedia?.videos || data?.video_playlists?.[0]?.videos || [])];
+        }
+
+        return [];
+      })();
+
+  const items = dataTracks.map((track, idx) => ({
+    id: track?.documentId || track?.id || idx,
+    title: track?.title || selectedMedia?.title || "Session",
+    duration: track?.durationInSeconds ? `${Math.floor(track.durationInSeconds / 60)} min` : "15 min",
+    mode: (resolvedMediaType === "VIDEO_SINGLE" || resolvedMediaType === "VIDEO_PLAYLIST") ? "Video" : "Audio",
+  }));
+
+  const activeTrack = dataTracks[currentTrackIndex] || dataTracks[0];
+
+  const handleSelectTrack = (item) => {
+    if (!setCurrentTrackIndex || dataTracks.length === 0) return;
+    const nextIndex = dataTracks.findIndex((track) => {
+      const currentId = track?.documentId || track?.id;
+      return String(currentId) === String(item.id);
+    });
+
+    if (nextIndex !== -1) {
+      setCurrentTrackIndex(nextIndex);
+      if (setPlaying) setPlaying(true);
+    }
+  };
+
+  const handlePrev = () => {
+    if (dataTracks.length > 1 && setCurrentTrackIndex) {
+      const prevIdx = (currentTrackIndex - 1 + dataTracks.length) % dataTracks.length;
+      setCurrentTrackIndex(prevIdx);
+      if (setPlaying) setPlaying(true);
+    }
+  };
+
+  const handleNext = () => {
+    if (dataTracks.length > 1 && setCurrentTrackIndex) {
+      const nextIdx = (currentTrackIndex + 1) % dataTracks.length;
+      setCurrentTrackIndex(nextIdx);
+      if (setPlaying) setPlaying(true);
+    }
+  };
+
+  const formatTime = (secs) => {
+    if (!secs || Number.isNaN(Number(secs))) return "00:00";
+    const total = Number(secs);
+    const m = Math.floor(total / 60).toString().padStart(2, "0");
+    const s = Math.floor(total % 60).toString().padStart(2, "0");
+    return `${m}:${s}`;
+  };
 
   return (
     <div
       className="w-full pb-2 flex flex-col justify-between"
       style={{ backgroundColor: dark ? "#111827" : "#ffffff" }}
     >
-      <div className="pt-6 md:pt-8 pb-6">
-        <UpNextSection items={UP_NEXT_ITEMS} />
-      </div>
+      {items.length > 0 && (
+        <div className="pt-6 md:pt-8 pb-6">
+          <UpNextSection items={items} onSelectTrack={handleSelectTrack} />
+        </div>
+      )}
 
-      <MiniPlayerBar
-        title="Deep Sleep Yoga Nidra"
-        current="00:00"
-        total="30:00"
-      />
+      {activeTrack && (
+        <MiniPlayerBar
+          title={activeTrack.title || selectedMedia?.title || "Asana session"}
+          current={formatTime(current)}
+          total={formatTime(totalSecs || activeTrack.durationInSeconds || 0)}
+          playing={playing}
+          onTogglePlay={() => setPlaying && setPlaying((prev) => !prev)}
+          onPrev={handlePrev}
+          onNext={handleNext}
+        />
+      )}
     </div>
   );
 }
