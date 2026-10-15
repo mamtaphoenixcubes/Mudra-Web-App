@@ -17,7 +17,7 @@ export default function SiteContainer({
           sm: "100%",
           md: "1200px",
           lg: "1360px",
-          xl: "1500px",
+          xl: "1600px",
         },
         mx: "auto",
         px: {
@@ -27,6 +27,15 @@ export default function SiteContainer({
           lg: 3,
           xl: 3,
         },
+
+        // Top and bottom gap
+        py: {
+          xs: 4,  // 32px
+          sm: 6,  // 48px
+          md: 8,  // 64px
+          lg: 10, // 80px
+        },
+
         ...sx,
       }}
     >

@@ -86,7 +86,7 @@ export default function FeaturesSection() {
 
         {/* 6 Features Row */}
         <motion.div 
-          className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 sm:gap-6 relative"
+          className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 sm:gap-10 relative"
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"

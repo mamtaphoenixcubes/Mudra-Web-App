@@ -67,6 +67,15 @@ const cardVariants = {
   },
 };
 
+const itemVariants = {
+  hidden: { opacity: 0, y: -20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: "easeOut" },
+  },
+};
+
 export default function ProblemSection() {
   const { dark, textColor } = useTheme();
   const [cards, setCards] = useState([]);
@@ -94,7 +103,7 @@ export default function ProblemSection() {
               const url = item.icon.url;
               const assetBase =
                 process.env.NEXT_PUBLIC_IMAGE_BASE_URL ||
-                "http://192.168.1.14:1337";
+                "http://192.168.1.14:1331";
               if (url.includes("/uploads/")) {
                 img = `${assetBase}${url.substring(url.indexOf("/uploads/"))}`;
               } else if (url.startsWith("http")) {
@@ -135,28 +144,17 @@ export default function ProblemSection() {
       sx={{
         backgroundColor: dark ? "#111827" : "#ffffff",
         py: { xs: 6, sm: 8, md: 10, lg: 12 },
-        overflow: "visible", // allow card hover lift to show
+        overflow: "visible",
       }}
     >
       <SiteContainer>
         {/* Heading */}
         <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          initial="hidden"
+          whileInView="visible"
           viewport={{ once: true }}
+          variants={itemVariants}
         >
-          <SectionHeader
-            title="Life Feels Overwhelming"
-            subtitle="Stress, anxiety, poor sleep, emotional imbalance and constant overload keep you away from your best self."
-            align="center"
-            sx={{
-              "& .MuiTypography-root": {
-                color: dark ? "#e5e7eb" : undefined,
-              },
-              mb: { xs: 4, sm: 5, md: 6 },
-            }}
-          />
           <Typography
             sx={{
               textAlign: "center",
@@ -165,13 +163,31 @@ export default function ProblemSection() {
               fontSize: { xs: "12px", sm: "13px" },
               letterSpacing: "0.1em",
               textTransform: "uppercase",
-              color: dark ? "#9ca3af" : "#6b7280",
               mb: 1,
               mt: -4,
             }}
           >
             The Problem
           </Typography>
+
+          <SectionHeader
+            title="Life Feels Overwhelming"
+            subtitle="Stress, anxiety, poor sleep, emotional imbalance and constant overload keep you away from your best self."
+            align="center"
+            titleColor={textColor}
+            subtitleColor={dark ? "#9ca3af" : "#0F0F0FCC"}
+            sx={{
+              mb: { xs: 4, sm: 5, md: 6 },
+              // Force title + subtitle to use textColor / correct dark-mode tone,
+              // overriding SectionHeader's internal Typography defaults.
+              "& h2": {
+                color: `${textColor} !important`,
+              },
+              "& p": {
+                color: `${dark ? "#9ca3af" : "#0F0F0FCC"} !important`,
+              },
+            }}
+          />
         </motion.div>
 
         {/* Cards */}
@@ -185,7 +201,9 @@ export default function ProblemSection() {
                 md: "repeat(5, 1fr)",
                 lg: "repeat(5, 1fr)",
               },
-              gap: { xs: 2, md: 2.5 },
+              gap: { xs: 2, sm: 2.5, md: 3, lg: 4 },
+              pl: { xs: 2, sm: 3, md: 4, lg: 6, xl: 8 },
+              pr: { xs: 2, sm: 3, md: 4, lg: 6, xl: 8 },
             }}
           >
             {[1, 2, 3, 4, 5].map((idx) => (
@@ -253,6 +271,8 @@ export default function ProblemSection() {
               display: "grid",
               gridTemplateColumns: "repeat(2, 1fr)",
               gap: "16px",
+              paddingLeft: "16px",
+              paddingRight: "16px",
             }}
             className="problem-cards-grid"
           >
@@ -268,12 +288,27 @@ export default function ProblemSection() {
         )}
       </SiteContainer>
 
-      {/* Responsive grid override for md+ (5 columns) */}
+      {/* Responsive grid override for md+ (5 columns + gap + side padding) */}
       <style jsx global>{`
+        @media (min-width: 600px) {
+          .problem-cards-grid {
+            padding-left: 24px !important;
+            padding-right: 24px !important;
+          }
+        }
         @media (min-width: 900px) {
           .problem-cards-grid {
             grid-template-columns: repeat(5, 1fr) !important;
-            gap: 20px !important;
+            gap: 24px !important;
+            padding-left: 32px !important;
+            padding-right: 32px !important;
+          }
+        }
+        @media (min-width: 1200px) {
+          .problem-cards-grid {
+            gap: 32px !important;
+            padding-left: 48px !important;
+            padding-right: 48px !important;
           }
         }
       `}</style>

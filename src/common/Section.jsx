@@ -1,15 +1,24 @@
+
 "use client";
 
-import { Box } from "@mui/material";
-
-export default function Section({ children, className = "", sx = {} }) {
+export default function Section({
+  children,
+  className = "",
+  sx = {},
+  ...props
+}) {
   return (
-    <Box
-      component="section"
-      className={`site-section ${className}`}
-      sx={{ width: "100%", overflow: "hidden", ...sx }}
+    <section
+      className={`site-section ${className}`.trim()}
+      style={{
+        width: "100%",
+        paddingTop: { xs: "40px", md: "80px" },   // object → React can't render
+        paddingBottom: { xs: "40px", md: "80px" },
+        ...sx,
+      }}
+      {...props}
     >
       {children}
-    </Box>
+    </section>
   );
 }

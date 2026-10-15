@@ -88,13 +88,13 @@ export default function ApproachSection() {
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: -20 }}
           transition={{ duration: 0.6 }}
         >
-          <p className={`${typography.sectionLabel} mb-2`} style={{ color: dark ? "#9ca3af" : "#6b7280" }}>
+          <p className={`${typography.sectionLabel} mb-2`} style={{ color: dark ? "#9ca3af" : "#0F0F0F99" }}>
             OUR APPROACH
           </p>
           <h2 className={`${typography.sectionHeading} mb-3`} style={{ color: textColor }}>
             Intro to Mudras & Yoga Nidra
           </h2>
-          <p className={`${typography.sectionMb} max-w-2xl mx-auto`} style={{ color: dark ? "#e5e7eb" : "#374151" }}>
+          <p className={`${typography.sectionMb} max-w-2xl mx-auto`} style={{ color: dark ? "#e5e7eb" : "#0F0F0FCC" }}>
             Ancient practices. Holistic healing. Everyday transformation.
           </p>
         </motion.div>
@@ -140,17 +140,17 @@ export default function ApproachSection() {
 
               {/* Text Content */}
               <div className="flex-1 min-w-0">
-                <h3 className={`${typography.cardTitle} mb-1`} style={{ color: dark ? "#f9fafb" : "#111827" }}>
+                <h3 className={`${typography.cardTitle} mb-1`} style={{ color: dark ? "#f9fafb" : "#0F0F0FCC" }}>
                   {item.title}
                 </h3>
-                <p className={`${typography.cardBody} mb-3 leading-relaxed`} style={{ color: dark ? "#d1d5db" : "#4b5563" }}>
+                <p className={`${typography.cardBody} mb-3 leading-relaxed`} style={{ color: dark ? "#d1d5db" : "#0F0F0F80" }}>
                   {item.description}
                 </p>
 
                 {/* Bullets */}
                 <ul className="space-y-1.5">
                   {item.bullets.map((b, i) => (
-                    <li key={i} className={`${typography.cardBody} flex items-start gap-2 leading-tight`} style={{ color: dark ? "#d1d5db" : "#4b5563" }}>
+                    <li key={i} className={`${typography.cardBody} flex items-start gap-2 leading-tight`} style={{ color: dark ? "#d1d5db" : "#0F0F0F80" }}>
                       <span className="font-bold" style={{ color: dark ? "#9ca3af" : "#9ca3af" }}>•</span>
                       <span>{b}</span>
                     </li>
@@ -161,9 +161,9 @@ export default function ApproachSection() {
               {/* Vertical line divider for desktop */}
               {index === 0 && (
                 <div 
-                  className="hidden md:block absolute right-0 top-1/2 -translate-y-1/2 w-px h-36"
+                  className="hidden md:block absolute right-0 top-1/2 -translate-y-1/2 w-px h-46"
                   style={{ 
-                    backgroundColor: dark ? "#374151" : "#e5e7eb"
+                    backgroundColor: dark ? "#374151" : "#00000066"
                   }}
                 />
               )}

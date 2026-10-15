@@ -97,7 +97,7 @@ export default function SolutionSection() {
             >
               {/* Icon Circle */}
               <motion.div 
-                className={`w-16 h-16 sm:w-20 sm:h-20 md:w-15 md:h-15 rounded-full flex items-center justify-center shrink-0 ${item.iconBg}`}
+                className={`w-16 h-16 sm:w-20 sm:h-20 md:w-25 md:h-25 rounded-full flex items-center justify-center shrink-0 ${item.iconBg}`}
                 whileHover={{ 
                   scale: 1.15,
                   rotate: [0, -10, 10, -5, 5, 0],
@@ -109,7 +109,7 @@ export default function SolutionSection() {
                   alt={item.title}
                   width={36}
                   height={36}
-                  className="w-8 h-8 sm:w-10 sm:h-10 md:w-10 md:h-10 object-contain"
+                  className="w-8 h-8 sm:w-10 sm:h-10 md:w-15 md:h-15 object-contain"
                 />
               </motion.div>
 

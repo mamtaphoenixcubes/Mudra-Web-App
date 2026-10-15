@@ -223,7 +223,7 @@ export const typography = {
     "text-[11px] sm:text-xs md:text-sm lg:text-base xl:text-lg 2xl:text-xl " +
     "font-semibold uppercase tracking-widest",
   sectionHeading:
-    "text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl " +
+    "text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-6xl " +
     "font-semibold leading-tight 2xl:leading-[1.2]",
   sectionMbHeading:
     "text-base sm:text-base md:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl " +
@@ -254,7 +254,7 @@ export const typography = {
 
   // ── Checklist / trust badges ───────────────────────────────
   checklistLabel:
-    "text-[5px] sm:text-[10px] md:text-[9px] lg:text-[13px] xl:text-[14px] " +
+    "text-[5px] sm:text-[10px] md:text-[9px] lg:text-[15px] xl:text-[19px] " +
     "font-medium whitespace-nowrap",
   checklistSub:
     "text-[5px] sm:text-[10px] md:text-[9px] lg:text-[15px] xl:text-[19px] " +
@@ -300,7 +300,7 @@ export const typography = {
     "text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl 2xl:text-3xl " +
     "leading-relaxed",
   ctaBtnText:
-    "text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl 2xl:text-2xl font-semibold",
+    "text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl 2xl:text-xl font-semibold",
   ctaNote:
     "text-[11px] sm:text-xs md:text-sm lg:text-base xl:text-lg 2xl:text-xl",
 

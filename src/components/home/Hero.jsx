@@ -89,28 +89,15 @@ export default function Hero() {
     >
       <motion.section
         ref={sectionRef}
-        className={`
-          relative
-          ${spacing.sectionPaddingY}
-          ${spacing.heroGap}
-          ${spacing.heroSectionMinH}
-        `}
+        className={`relative ${spacing.sectionPaddingY} ${spacing.heroGap} ${spacing.heroSectionMinH}`}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.6 }}
       >
-        {/* Responsive container connected to SiteContainer.jsx */}
-        <SiteContainer
-          className="grid grid-cols-1 md:grid-cols-2 items-center"
-        >
+        <SiteContainer className="grid grid-cols-1 md:grid-cols-2 items-center">
           {/* LEFT COLUMN */}
           <motion.div
-            className={`
-              flex flex-col md:block
-              ${spacing.heroLeftColWb}
-              ${spacing.heroLeftColOffset}
-              relative z-10
-            `}
+            className={`flex flex-col md:block ${spacing.heroLeftColWb} ${spacing.heroLeftColOffset} relative z-10`}
             variants={containerVariants}
             initial="hidden"
             animate={isInView ? "visible" : "hidden"}
@@ -122,9 +109,7 @@ export default function Hero() {
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-4"
                 style={{
                   backgroundColor: dark ? "#374151" : "#f3f4f6",
-                  border: `1px solid ${
-                    dark ? "#4b5563" : "#e5e7eb"
-                  }`,
+                  border: `1px solid ${dark ? "#4b5563" : "#e5e7eb"}`,
                 }}
                 whileHover={{
                   scale: 1.05,
@@ -167,13 +152,17 @@ export default function Hero() {
 
               {/* Subtitle */}
               <motion.p
-                className={`
-                  ${typography.heroBody}
-                  ${spacing.maxWHeroBody}
-                  mt-2 sm:mt-6 mb-2
-                `}
+                className="mt-2 mb-2 sm:mt-6"
                 style={{
-                  color: dark ? "#9ca3af" : "#4b5563",
+                  width: "100%",
+                  maxWidth: "380px",
+                  fontFamily:
+                    '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Inter", sans-serif',
+                  fontWeight: 500,
+                  fontSize: "24px",
+                  lineHeight: "140%",
+                  letterSpacing: "1%",
+                  color: dark ? "#9ca3af" : "#0F0F0F",
                 }}
                 variants={itemVariants}
               >
@@ -184,22 +173,32 @@ export default function Hero() {
                 deep balance and lasting well-being
               </motion.p>
 
-              {/* Action Buttons */}
+              {/* ACTION BUTTONS */}
               <motion.div
                 className="flex flex-wrap items-center gap-4 mb-10"
                 variants={itemVariants}
               >
+                {/* Start Your Journey */}
                 <motion.button
                   type="button"
                   onClick={() => router.push("/SignUp")}
                   className={`${btn.primary} relative overflow-hidden group`}
                   style={{
-                    backgroundColor: textColor,
+                    width: "220px",
+                    height: "46px",
+                    backgroundColor: "#9A85FE",
+                    borderRadius: "6px",
+                    color: "#FFFFFF",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    padding: 0,
+                    boxSizing: "border-box",
                   }}
                   variants={buttonVariants}
                   whileHover={{
                     scale: 1.05,
-                    boxShadow: `0 8px 40px ${textColor}50`,
+                    boxShadow: "0 8px 40px #9A85FE50",
                     transition: { duration: 0.2 },
                   }}
                   whileTap={{ scale: 0.95 }}
@@ -220,51 +219,44 @@ export default function Hero() {
                   </span>
                 </motion.button>
 
+                {/* Explore How It Works */}
                 <motion.button
                   type="button"
                   onClick={() => router.push("/WhatareMudras")}
                   className={`${btn.outline} relative group`}
                   style={{
-                    borderColor: textColor,
-                    color: textColor,
+                    width: "220px",
+                    height: "46px",
+                    border: "1px solid #0F0F0F",
+                    borderRadius: "6px",
+                    backgroundColor: "#FFFFFF",
+                    color: "#0F0F0F",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    padding: 0,
+                    boxSizing: "border-box",
                   }}
                   variants={buttonVariants}
                   whileHover={{
                     scale: 1.05,
-                    backgroundColor: textColor,
-                    color: "#ffffff",
-                    boxShadow: `0 8px 40px ${textColor}30`,
+                    backgroundColor: "#FFFFFF",
+                    color: "#0F0F0F",
+                    borderColor: "#0F0F0F",
+                    boxShadow: "0 8px 40px rgba(15, 15, 15, 0.12)",
                     transition: { duration: 0.2 },
                   }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  <span className="relative flex items-center gap-2">
+                  <span className="relative flex items-center justify-center">
                     Explore How It Works
-
-                    <motion.span
-                      animate={{
-                        rotate: [0, 360],
-                        opacity: [0.5, 1, 0.5],
-                      }}
-                      transition={{
-                        duration: 3,
-                        repeat: Infinity,
-                        ease: "linear",
-                      }}
-                    >
-                      ⟳
-                    </motion.span>
                   </span>
                 </motion.button>
               </motion.div>
 
-              {/* Checklist */}
+              {/* CHECKLIST */}
               <motion.div
-                className={`
-                  flex flex-row flex-wrap sm:flex-nowrap
-                  ${spacing.checklistGap}
-                  ${spacing.checklistMt}
-                `}
+                className={`flex flex-row flex-wrap sm:flex-nowrap ${spacing.checklistGap} ${spacing.checklistMt}`}
                 variants={containerVariants}
               >
                 {checklistItems.map((item, index) => (
@@ -277,28 +269,28 @@ export default function Hero() {
                       transition: { duration: 0.2 },
                     }}
                   >
-                    {/* Checklist icon */}
+                    {/* Checklist Icon Container */}
                     <motion.div
-                      className={`
-                        ${spacing.checkIconBox}
-                        ${spacing.checkIconText}
-                        flex items-center justify-center
-                        border rounded-sm
-                        overflow-hidden relative
-                      `}
+                      className="flex items-center justify-center rounded-sm overflow-hidden relative shrink-0"
                       style={{
-                        borderColor: dark ? "#4b5563" : "#d1d5db",
+                        width: "56px",
+                        height: "56px",
                         backgroundColor: dark ? "#374151" : "#f3f4f6",
                       }}
                       whileHover={{
-                        scale: 1.2,
+                        scale: 1.1,
                         rotate: 5,
                         transition: { duration: 0.2 },
                       }}
                     >
+                      {/* Checklist Image */}
                       <motion.div
-                        className="w-8 h-8 relative"
-                        animate={{ scale: [1, 1.2, 1] }}
+                        className="relative"
+                        style={{
+                          width: "40px",
+                          height: "40px",
+                        }}
+                        animate={{ scale: [1, 1.1, 1] }}
                         transition={{
                           duration: 2,
                           repeat: Infinity,
@@ -311,25 +303,23 @@ export default function Hero() {
                             src={item[2]}
                             alt={`${item[0]} icon`}
                             fill
-                            sizes="32px"
+                            sizes="40px"
                             className="object-contain"
                             style={{
-                              filter: dark
-                                ? "brightness(0) invert(1)"
-                                : "none",
-                              opacity: 0.8,
+                              filter: dark ? "brightness(0) invert(1)" : "none",
+                              opacity: 0.9,
                             }}
                           />
                         ) : null}
                       </motion.div>
                     </motion.div>
 
-                    {/* Checklist text */}
-                    <div>
+                    {/* Checklist Text */}
+                    <div className="min-w-0">
                       <motion.p
                         className={typography.checklistLabel}
                         style={{
-                          color: dark ? "#9ca3af" : "#6b7280",
+                          color: dark ? "#9ca3af" : "#0F0F0FCC",
                         }}
                       >
                         {item[0]}
@@ -338,7 +328,7 @@ export default function Hero() {
                       <motion.p
                         className={typography.checklistSub}
                         style={{
-                          color: dark ? "#e5e7eb" : "#111827",
+                          color: dark ? "#e5e7eb" : "#0F0F0FCC",
                         }}
                       >
                         {item[1]}
@@ -350,7 +340,7 @@ export default function Hero() {
             </div>
           </motion.div>
 
-          {/* RIGHT COLUMN — Hero Image */}
+          {/* RIGHT COLUMN — HERO IMAGE */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={isInView ? { opacity: 1 } : {}}

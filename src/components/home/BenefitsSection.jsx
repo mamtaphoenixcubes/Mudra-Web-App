@@ -72,7 +72,7 @@ export default function BenefitsSection() {
               key={i}
               className={`flex flex-col items-center text-center ${
                 // Center the last card (index 4) only on mobile
-                i === 4 ? 'col-span-2 sm:col-span-1 md:col-span-1 max-w-[200px] mx-auto sm:mx-0' : ''
+                i === 4 ? 'col-span-2 sm:col-span-1 md:col-span-1 max-w-[300px] mx-auto sm:mx-0' : ''
               }`}
               variants={itemVariants}
               whileHover={{

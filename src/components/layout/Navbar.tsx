@@ -810,6 +810,12 @@ function NavbarContent() {
   const [getStartedHovered, setGetStartedHovered] = useState(false);
   const { isLoggedIn, user, loading, logout } = useAuth();
 
+  // ✅ NEW: track mount so we don't render theme-dependent markup on server
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const handleLogout = () => {
     logout();
     router.push("/");
@@ -818,23 +824,17 @@ function NavbarContent() {
   const navBg = dark ? "bg-gray-900" : "bg-white";
   const borderColor = dark ? "border-gray-700" : "border-gray-200";
 
-  if (loading) {
+  // ✅ CHANGED: bail out until BOTH the component is mounted AND auth finished.
+  // Use fixed (non-theme) classes so server HTML === first client HTML.
+  if (!mounted || loading) {
     return (
-      <div
-        className={`sticky top-0 z-40 w-full border-b ${navBg} ${borderColor}`}
-      >
+      <div className="sticky top-0 z-40 w-full border-b bg-white border-gray-200">
         <nav className="mx-auto flex w-full max-w-[1440px] items-center justify-between px-4 md:px-8 py-5">
           <div className="flex items-center gap-2">
-            <div
-              className={`w-10 h-10 rounded animate-pulse ${dark ? "bg-gray-700" : "bg-gray-200"}`}
-            />
-            <div
-              className={`w-20 h-6 rounded animate-pulse ${dark ? "bg-gray-700" : "bg-gray-200"}`}
-            />
+            <div className="w-10 h-10 rounded animate-pulse bg-gray-200" />
+            <div className="w-20 h-6 rounded animate-pulse bg-gray-200" />
           </div>
-          <div
-            className={`w-24 h-10 rounded animate-pulse ${dark ? "bg-gray-700" : "bg-gray-200"}`}
-          />
+          <div className="w-24 h-10 rounded animate-pulse bg-gray-200" />
         </nav>
       </div>
     );
@@ -869,7 +869,7 @@ function NavbarContent() {
                   '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
                 fontWeight: 500,
                 fontStyle: "normal",
-                fontSize: "1.1rem", // mobile
+                fontSize: "1.1rem",
                 lineHeight: "100%",
                 letterSpacing: "0%",
                 textAlign: "right",
