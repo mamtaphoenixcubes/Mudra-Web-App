@@ -140,7 +140,7 @@ export default function CTASection() {
             {/* Heading - Character by character */}
             <motion.h2 
               className={`${typography.ctaHeading} ${spacing.ctaTitleMb}`} 
-              style={{ color: textColor }}
+              style={{ color: dark ? "#0F0F0F" : "#0F0F0F" }}
             >
               {headingChars.map((char, i) => (
                 <motion.span
@@ -159,7 +159,7 @@ export default function CTASection() {
             {/* Body - Word by word */}
             <motion.p 
               className={`${typography.ctaBody} ${spacing.ctaBodyMb}`} 
-              style={{ color: dark ? "#4b5563" : "#4b5563" }}
+              style={{ color: dark ? "#4b5563" : "#0F0F0F80" }}
             >
               {bodyWords.map((word, i) => (
                 <motion.span
@@ -186,8 +186,8 @@ export default function CTASection() {
                 relative overflow-hidden
               `}
               style={{
-                backgroundColor: textColor,
-                color: "#ffffff",
+                backgroundColor: "#ffff",
+                color: "#0F0F0F",
               }}
               whileHover={{
                 scale: 1.05,

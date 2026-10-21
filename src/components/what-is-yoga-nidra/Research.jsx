@@ -153,7 +153,7 @@ export default function Research() {
           {/* Label - Character by character */}
           <motion.p 
             className={`${typography.benefitsSectionLabel} mb-2 sm:mb-3`} 
-            style={{ color: dark ? "#ffffff" : "#9ca3af" }}
+            style={{ color: dark ? "#ffffff" : "#0F0F0F99" }}
           >
             {labelChars.map((char, i) => (
               <motion.span
@@ -203,7 +203,7 @@ export default function Research() {
             <motion.div 
               className="relative w-full aspect-[4/3] rounded-xl overflow-hidden cursor-pointer"
               style={{
-                backgroundColor: dark ? "#374151" : "#f3f4f6",
+                backgroundColor: dark ? "#374151" : "#0F0F0F",
               }}
               whileHover={{ 
                 scale: 1.05,
@@ -290,7 +290,7 @@ export default function Research() {
             >
               {/* Icon */}
               <motion.div 
-                className="shrink-0 mt-0.5 relative w-5 h-5 sm:w-6 sm:h-6 md:w-6 md:h-6 lg:w-7 lg:h-7 xl:w-8 xl:h-8 2xl:w-10 2xl:h-10"
+                className="shrink-0 mt-0.5 relative w-10 h-10 sm:w-10 sm:h-10 md:w-13 md:h-13 lg:w-13 lg:h-13 xl:w-15 xl:h-15 2xl:w-30 2xl:h-30"
                 variants={iconVariants}
                 initial="hidden"
                 animate={isInView ? "visible" : "hidden"}
@@ -327,7 +327,7 @@ export default function Research() {
                 {/* Card Body - Word by word */}
                 <motion.p 
                   className={`${typography.cardBody}`} 
-                  style={{ color: dark ? "#ffffff" : "#4b5563" }}
+                  style={{ color: dark ? "#ffffff" : "#0F0F0F" }}
                 >
                   {"Our content is for educational purposes only and is not a substitute for professional medical advice, diagnosis or treatment.".split(" ").map((word, i) => (
                     <motion.span

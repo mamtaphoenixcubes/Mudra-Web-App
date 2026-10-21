@@ -186,7 +186,7 @@ export default function FiveHero() {
                             ${typography.heroBody}
                             ${maxW.heroMbBody}
                         `}
-                        style={{ color: dark ? "#ffffff" : "#4b5563" }}
+                        style={{ color: dark ? "#ffffff" : "#0F0F0F" }}
                     >
                         {bodyWords.map((word, i) => (
                             <motion.span
@@ -263,7 +263,7 @@ export default function FiveHero() {
                                 <motion.p
                                     key={i}
                                     className={`${typography.yogaNidraCard}`}
-                                    style={{ color: textColor }}
+                                    style={{ color: dark ? "#ffffff" : "#0F0F0F" }}
                                     custom={i}
                                     variants={lineVariants}
                                     initial="hidden"
@@ -307,35 +307,6 @@ export default function FiveHero() {
                 </motion.div>
             </motion.div>
 
-            {/* Scroll indicator */}
-            <motion.div
-                className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-2"
-                animate={{
-                    y: [0, 10, 0],
-                    opacity: [0.5, 1, 0.5],
-                }}
-                transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                }}
-                style={{ color: textColor }}
-            >
-                <span className="text-xs uppercase tracking-widest opacity-50">Scroll</span>
-                <motion.div
-                    className="w-0.5 h-8 rounded-full"
-                    style={{ backgroundColor: textColor }}
-                    animate={{
-                        height: [8, 16, 8],
-                        opacity: [0.5, 1, 0.5],
-                    }}
-                    transition={{
-                        duration: 1.5,
-                        repeat: Infinity,
-                        ease: "easeInOut"
-                    }}
-                />
-            </motion.div>
         </motion.section>
     );
 }

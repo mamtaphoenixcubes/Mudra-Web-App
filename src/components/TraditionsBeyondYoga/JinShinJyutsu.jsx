@@ -118,15 +118,15 @@ export default function JinShinJyutsu() {
                     initial="hidden"
                     animate={isInView ? "visible" : "hidden"}
                 >
-                    <p className={`${typography.sectionLabel} mb-1 sm:mb-2`} style={{ color: dark ? "#ffffff" : "#6b7280" }}>
+                    <p className={`${typography.sectionLabel} mb-1 sm:mb-2`} style={{ color: dark ? "#ffffff" : "#0F0F0F99" }}>
                         JIN SHIN JYUTSU
                     </p>
                     <h2 className={`${typography.sectionMbHeading} mb-2 sm:mb-3`} style={{ color: textColor }}>
                         The Art of Harmonizing Life Energy
                     </h2>
                     <p
-                        className={`${typography.sectionMbBody} max-w-[260px] sm:max-w-[420px] md:max-w-[500px] lg:max-w-[580px] mx-auto`}
-                        style={{ color: dark ? "#ffffff" : "#6b7280" }}
+                        className={`${typography.sectionMbBody} max-w-[260px] sm:max-w-[420px] md:max-w-[500px] lg:max-w-[980px] mx-auto`}
+                        style={{ color: dark ? "#ffffff" : "#0F0F0FCC" }}
                     >
                         Jin Shin Jyutsu is a gentle healing art from Japan using hand positions to restore balance in the body's energy flow.
                     </p>
@@ -334,7 +334,7 @@ export default function JinShinJyutsu() {
                                     </motion.div>
                                     <motion.p 
                                         className={`${typography.benefitsCardTitle} ${spacing.cardTitleMb}`} 
-                                        style={{ color: textColor }}
+                                        style={{ color: "#0F0F0F" }}
                                         whileHover={{
                                             scale: 1.05,
                                             transition: { duration: 0.2 }
@@ -342,7 +342,7 @@ export default function JinShinJyutsu() {
                                     >
                                         {mudra.name}
                                     </motion.p>
-                                    <p className={`${typography.benefitsCardBody} ${spacing.benefitDescMaxW}`} style={{ color: dark ? "#ffffff" : "#6b7280" }}>
+                                    <p className={`${typography.benefitsCardBody} ${spacing.benefitDescMaxW}`} style={{ color: dark ? "#ffffff" : "#0F0F0F80" }}>
                                         {mudra.desc}
                                     </p>
                                 </motion.div>
@@ -386,7 +386,7 @@ export default function JinShinJyutsu() {
                                     }}
                                 />
                             </motion.div>
-                            <p className={`${typography.disclaimerBody}`} style={{ color: dark ? "#030303" : "#374151" }}>
+                            <p className={`${typography.disclaimerBody}`} style={{ color: dark ? "#030303" : "#0F0F0F" }}>
                                 Jin Shin Jyutsu helps harmonize life energy, reduce stress, and support the body's natural healing abilities.
                             </p>
                         </motion.div>

@@ -211,7 +211,7 @@ export const spacing = {
 
   contentColumn:
     "w-full max-w-[506px] xl:max-w-[650px] 2xl:max-w-[800px] " +
-    "mx-auto md:mx-0 px-2 sm:px-0 lg:pl-0 xl:pl-12 2xl:pl-16",
+    "mx-auto md:mx-0 px-2 sm:px-0 lg:pl-0 xl:pl-12 2xl:pl-1",
 
   headingBlockMb: "mb-8 sm:mb-10 md:mb-12 lg:mb-14 xl:mb-16 2xl:mb-20",
   labelMt: "mt-2 sm:mt-3 md:mt-4 lg:mt-5 xl:mt-6 2xl:mt-8",

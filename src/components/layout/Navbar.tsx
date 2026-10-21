@@ -855,13 +855,13 @@ function NavbarContent() {
             className="flex items-center gap-2 shrink-0 group"
           >
             <Image
-              src={IMAGES.hero}
+              src={IMAGES.LogoYoga}
               alt="Mudra Hand"
               width={44}
               height={36}
-              className="lg:w-[56px] lg:h-[46px] xl:w-[62px] xl:h-[52px] 2xl:w-[68px] 2xl:h-[60px]"
+              className="lg:w-[190px] lg:h-[50px] xl:w-[190px] xl:h-[42px] 2xl:w-[220px] 2xl:h-[70px]"
             />
-            <span
+            {/* <span
               className="whitespace-nowrap"
               style={{
                 color: NAV_ACCENT,
@@ -880,7 +880,7 @@ function NavbarContent() {
               </span>
               <span className="hidden xl:inline text-[22px]">MUDRAS</span>
               <span className="inline sm:hidden">MUDRAS</span>
-            </span>
+            </span> */}
           </Link>
 
           {/* Nav links */}
@@ -929,8 +929,8 @@ function NavbarContent() {
           className={`lg:hidden flex w-full max-w-[1440px] mx-auto items-center justify-between px-4 py-4 relative z-40 ${navBg}`}
         >
           <Link href="/Home" className="flex items-center gap-2">
-            <Image src={IMAGES.hero} alt="Mudra Hand" width={40} height={34} />
-            <span
+            <Image src={IMAGES.LogoYoga} alt="Mudra Hand" width={200} height={40} />
+            {/* <span
               className="whitespace-nowrap text-[22px]"
               style={{
                 color: NAV_ACCENT,
@@ -944,7 +944,7 @@ function NavbarContent() {
               }}
             >
               MUDRAS
-            </span>
+            </span> */}
           </Link>
 
           <div className="flex items-center gap-3">

@@ -61,10 +61,10 @@ function Tag({ item, mobile = false, dark, index }) {
           font-semibold leading-snug
           ${mobile
             ? "text-[13px]"
-            : "text-[10px] sm:text-[12px] md:text-[13px] lg:text-[15px] xl:text-[17px] 2xl:text-[22px]"
+            : "text-[10px] sm:text-[12px] md:text-[13px] lg:text-[15px] xl:text-[17px] 2xl:text-[20px]"
           }
         `}
-        style={{ color: dark ? "#000000" : "#1f2937" }}
+        style={{ color: dark ? "#000000" : "#0F0F0F" }}
       >
         {item.label}
       </span>
@@ -123,7 +123,7 @@ export default function MudraClaims() {
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
         >
-          <p className={`${typography.benefitsSectionLabel}`} style={{ color: dark ? "#ffffff" : "#9ca3af" }}>
+          <p className={`${typography.benefitsSectionLabel}`} style={{ color: dark ? "#ffffff" : "#0F0F0F99" }}>
             MUDRA CLAIMS
           </p>
           <h2
@@ -141,7 +141,7 @@ export default function MudraClaims() {
               mt-2 sm:mt-3
               max-w-[260px] sm:max-w-none mx-auto
             `}
-            style={{ color: dark ? "#ffffff" : "#6b7280" }}
+            style={{ color: dark ? "#ffffff" : "#0F0F0FCC" }}
           >
             Mudras can be supportive for a wide range of conditions and imbalances.
           </p>

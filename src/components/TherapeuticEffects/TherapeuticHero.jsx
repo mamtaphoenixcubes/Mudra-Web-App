@@ -3,247 +3,259 @@
 import Image from "next/image";
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
+import { Box, Typography } from "@mui/material";
 import { IMAGES } from "../../assets/assets";
 import { heroImage, maxW, spacing, typography } from "../../theme";
 import { useTheme } from "../../context/ThemeContext";
 
+// ✅ Import your common components
+import Section from "../../common/Section";
+import SiteContainer from "../../common/SiteContainer";
+
 export default function TherapeuticHero() {
-    const { dark, textColor } = useTheme();
-    const sectionRef = useRef(null);
-    const isInView = useInView(sectionRef, { 
-        once: true, 
-        amount: 0.2,
-        margin: "-50px"
-    });
+  const { dark, textColor } = useTheme();
+  const sectionRef = useRef(null);
+  const isInView = useInView(sectionRef, {
+    once: true,
+    amount: 0.2,
+    margin: "-50px",
+  });
 
-    // Animation variants
-    const fadeUp = {
-        hidden: { opacity: 0, y: 30 },
-        visible: { 
-            opacity: 1, 
-            y: 0, 
-            transition: { duration: 0.6, ease: "easeOut" } 
-        }
-    };
+  // Animation variants
+  const fadeUp = {
+    hidden: { opacity: 0, y: 30 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
+  };
 
-    const fadeInLeft = {
-        hidden: { opacity: 0, x: -40 },
-        visible: { 
-            opacity: 1, 
-            x: 0, 
-            transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } 
-        }
-    };
+  const fadeInLeft = {
+    hidden: { opacity: 0, x: -40 },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] },
+    },
+  };
 
-    const fadeInRight = {
-        hidden: { opacity: 0, x: 40 },
-        visible: { 
-            opacity: 1, 
-            x: 0, 
-            transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } 
-        }
-    };
+  const fadeInRight = {
+    hidden: { opacity: 0, x: 40 },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] },
+    },
+  };
 
-    // Character animation for heading
-    const charVariants = {
-        hidden: { opacity: 0, y: 20, rotateX: -10 },
-        visible: (i) => ({
-            opacity: 1,
-            y: 0,
-            rotateX: 0,
-            transition: {
-                delay: i * 0.04,
-                duration: 0.5,
-                ease: [0.22, 1, 0.36, 1],
-            },
-        }),
-    };
+  const wordVariants = {
+    hidden: { opacity: 0, y: 10 },
+    visible: (i) => ({
+      opacity: 1,
+      y: 0,
+      transition: {
+        delay: i * 0.05,
+        duration: 0.4,
+        ease: [0.22, 1, 0.36, 1],
+      },
+    }),
+  };
 
-    // Word animation for body text
-    const wordVariants = {
-        hidden: { opacity: 0, y: 10 },
-        visible: (i) => ({
-            opacity: 1,
-            y: 0,
-            transition: {
-                delay: i * 0.05,
-                duration: 0.4,
-                ease: [0.22, 1, 0.36, 1],
-            },
-        }),
-    };
+  const bodyText =
+    "Mudras are simple yet powerful tools that can support your physical, mental and emotional well-being.";
+  const bodyWords = bodyText.split(" ");
 
-    // Split text
-    const headingText = "Healing Hands. Transforming Lives.";
-    const headingChars = headingText.split("");
-    
-    const bodyText = "Mudras are simple yet powerful tools that can support your physical, mental and emotional well-being.";
-    const bodyWords = bodyText.split(" ");
-
-    return (
-        <motion.section
-            ref={sectionRef}
-            className={`
-                grid grid-cols-2 md:grid-cols-2
-                items-center
-                ${spacing.sectionPaddingX}
-                ${spacing.sectionPaddingY}
-                ${spacing.heroGap}
-                ${spacing.heroSectionMinH}
-            `}
-            style={{
-                backgroundColor: dark ? "#111827" : "#f9fafb",
-            }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6 }}
+  return (
+    // ✅ Section handles client-side, className, sx, and props forwarding
+    <Section
+      ref={sectionRef}
+      className="therapeutic-hero"
+      sx={{
+        backgroundColor: dark ? "#111827" : "#f9fafb",
+        display: "grid",
+        gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
+        alignItems: "center",
+        gap: { xs: 4, md: 6 },
+        minHeight: { md: "80vh" },
+        paddingTop: { xs: "40px", md: "80px" },
+        paddingBottom: { xs: "40px", md: "80px" },
+      }}
+    >
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6 }}
+        style={{ display: "contents" }}
+      >
+        {/* ✅ SiteContainer wraps inner content for consistent max-width & padding */}
+        <SiteContainer
+          sx={{
+            display: "grid",
+            gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
+            alignItems: "center",
+            gap: { xs: 4, md: 6 },
+            py: 0, // Section already provides padding
+            gridColumn: { xs: "1", md: "1 / -1" },
+          }}
         >
-            {/* LEFT */}
-            <motion.div 
-                className={`flex flex-col md:block ${spacing.heroLeftColWb} ${spacing.heroLeftColOffset}`}
-                variants={fadeInLeft}
+          {/* LEFT COLUMN */}
+          <motion.div
+            variants={fadeInLeft}
+            initial="hidden"
+            animate={isInView ? "visible" : "hidden"}
+          >
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                maxWidth: { xs: "100%", md: "560px" },
+              }}
+            >
+              {/* Heading */}
+              <Typography
+                component={motion.h1}
+                variants={fadeUp}
                 initial="hidden"
                 animate={isInView ? "visible" : "hidden"}
-            >
-                <div className={spacing.contentColumn}>
+                className={typography.MainHeading}
+                sx={{
+                  color: textColor,
+                  fontFamily: "var(--font-redhat)",
+                  fontWeight: 700,
+                  fontSize: {
+                    xs: "28px",
+                    sm: "34px",
+                    md: "40px",
+                    lg: "46px",
+                    xl: "52px",
+                  },
+                  lineHeight: 1.15,
+                }}
+              >
+                Healing Hands. Transforming Lives.
+              </Typography>
 
-                    {/* Heading - Character by character */}
-                      <motion.h1 
-                        className={`${typography.MainHeading}`} 
-                        style={{ color: textColor }}
-                        variants={fadeUp}
-                        initial="hidden"
-                        animate={isInView ? "visible" : "hidden"}
-                    >
-                        Healing Hands. Transforming Lives.
-                    </motion.h1>
+              {/* Underline */}
+              <Box
+                component={motion.div}
+                initial={{ width: 0 }}
+                animate={isInView ? { width: "3.5rem" } : { width: 0 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+                sx={{
+                  height: { xs: "2px", md: "3px" },
+                  backgroundColor: textColor,
+                  mt: { xs: 1, md: 2 },
+                  mb: { xs: 2, md: 4 },
+                }}
+              />
 
-                    {/* Underline */}
-                    <motion.div 
-                        className="w-8 sm:w-10 lg:w-14 h-[2px] sm:h-[3px] mt-1 sm:mt-2 mb-2 sm:mb-4" 
-                        style={{ backgroundColor: textColor }}
-                        initial={{ width: 0 }}
-                        animate={isInView ? { width: "3.5rem" } : { width: 0 }}
-                        transition={{ duration: 0.6, delay: 0.3 }}
-                    />
-
-                    {/* Body - Word by word */}
-                    <motion.p
-                        className={`
-                            ${typography.heroBody}
-                            ${maxW.heroMbBody}
-                        `}
-                        style={{ color: dark ? "#ffffff" : "#4b5563" }}
-                    >
-                        {bodyWords.map((word, i) => (
-                            <motion.span
-                                key={i}
-                                custom={i}
-                                variants={wordVariants}
-                                initial="hidden"
-                                animate={isInView ? "visible" : "hidden"}
-                                style={{ display: "inline-block", marginRight: "0.25em" }}
-                                transition={{ delay: i * 0.05 + 0.2 }}
-                            >
-                                {word}
-                            </motion.span>
-                        ))}
-                    </motion.p>
-
-                    {/* Info card */}
-                    <motion.div
-                        className={`
-                            rounded-lg sm:rounded-xl
-                            ${spacing.buttonGroupMt}
-                            px-2 py-2 sm:px-4 sm:py-3 lg:px-5 lg:py-4
-                            flex flex-row items-center gap-2 sm:gap-3 lg:gap-4
-                            ${maxW.yogaNidraCardW}
-                        `}
-                        style={{
-                            backgroundColor: dark ? "#374151" : textColor + "10",
-                        }}
-                        variants={fadeUp}
-                        initial="hidden"
-                        animate={isInView ? "visible" : "hidden"}
-                        transition={{ delay: 0.4 }}
-                        whileHover={{
-                            scale: 1.02,
-                            transition: { duration: 0.2 }
-                        }}
-                    >
-                        {/* Icon */}
-                        <motion.div 
-                            className="shrink-0"
-                            whileHover={{
-                                scale: 1.1,
-                                rotate: 5,
-                                transition: { duration: 0.2 }
-                            }}
-                        >
-                            <Image
-                                src={IMAGES.Energy}
-                                alt="Yoga Nidra icon"
-                                width={28}
-                                height={28}
-                                className="w-6 h-6 sm:w-8 sm:h-8 lg:w-12 lg:h-12 object-contain opacity-70"
-                                style={{
-                                    filter: dark ? "brightness(0.8) invert(1)" : "none",
-                                }}
-                            />
-                        </motion.div>
-
-                        {/* Text lines */}
-                        <div className="flex flex-col gap-0 sm:gap-0.5">
-                            <motion.p 
-                                className={`${typography.yogaNidraCard}`} 
-                                style={{ color: textColor }}
-                                initial={{ opacity: 0, x: -10 }}
-                                animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -10 }}
-                                transition={{ duration: 0.4, delay: 0.5 }}
-                            >
-                                Regular mudra practice can help bring 
-                            </motion.p>
-                            <motion.p 
-                                className={`${typography.yogaNidraCard}`} 
-                                style={{ color: textColor }}
-                                initial={{ opacity: 0, x: -10 }}
-                                animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -10 }}
-                                transition={{ duration: 0.4, delay: 0.6 }}
-                            >
-                                balance relief and resilience into daily life.
-                            </motion.p>
-                        </div>
-                    </motion.div>
-
-                </div>
-            </motion.div>
-
-            {/* RIGHT — hero image */}
-            <motion.div 
-                className={`${heroImage.wrapper} ${spacing.heroRightColW}`}
-                variants={fadeInRight}
-                initial="hidden"
-                animate={isInView ? "visible" : "hidden"}
-            >
-                <motion.div
-                    whileHover={{
-                        scale: 1.05,
-                        transition: { duration: 0.3 }
+              {/* Body */}
+              <Typography
+                component="p"
+                className={`${typography.heroBody} ${maxW.heroMbBody}`}
+                sx={{
+                  color: dark ? "#ffffff" : "#0F0F0F",
+                  mb: { xs: 3, md: 4 },
+                }}
+              >
+                {bodyWords.map((word, i) => (
+                  <motion.span
+                    key={i}
+                    custom={i}
+                    variants={wordVariants}
+                    initial="hidden"
+                    animate={isInView ? "visible" : "hidden"}
+                    style={{
+                      display: "inline-block",
+                      marginRight: "0.25em",
                     }}
+                  >
+                    {word}
+                  </motion.span>
+                ))}
+              </Typography>
+
+              {/* Info Card */}
+              <Box
+                component={motion.div}
+                variants={fadeUp}
+                initial="hidden"
+                animate={isInView ? "visible" : "hidden"}
+                transition={{ delay: 0.4 }}
+                whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
+                sx={{
+                  borderRadius: { xs: 1, sm: 2 },
+                  px: { xs: 2, sm: 3, lg: 4 },
+                  py: { xs: 2, sm: 3, lg: 4 },
+                  display: "flex",
+                  alignItems: "center",
+                  gap: { xs: 2, sm: 3, lg: 4 },
+                  maxWidth: { xs: "100%", md: 420 },
+                  backgroundColor: dark ? "#374151" : `${textColor}10`,
+                }}
+              >
+                <motion.div
+                  whileHover={{ scale: 1.1, rotate: 5 }}
+                  style={{ flexShrink: 0 }}
                 >
-                    <Image
-                        src={IMAGES.hero}
-                        alt="Mudra Hand"
-                        priority
-                        className={`
-                            ${heroImage.width}
-                            h-auto
-                            object-contain
-                            max-w-full md:max-w-none
-                        `}
-                    />
+                  <Image
+                    src={IMAGES.Energy}
+                    alt="Yoga Nidra icon"
+                    width={48}
+                    height={48}
+                    style={{
+                      width: "100%",
+                      maxWidth: 48,
+                      height: "auto",
+                      objectFit: "contain",
+                      opacity: 0.7,
+                      filter: dark ? "brightness(0.8) invert(1)" : "none",
+                    }}
+                  />
                 </motion.div>
+
+                <Box sx={{ display: "flex", flexDirection: "column" }}>
+                  <Typography
+                    className={typography.yogaNidraCard}
+                    style={{ color: dark ? "#ffffff" : "#0F0F0F" }}
+                  >
+                    Regular mudra practice can help bring
+                  </Typography>
+                  <Typography
+                    className={typography.yogaNidraCard}
+                     style={{ color: dark ? "#ffffff" : "#0F0F0F" }}
+                  >
+                    balance relief and resilience into daily life.
+                  </Typography>
+                </Box>
+              </Box>
+            </Box>
+          </motion.div>
+
+          {/* RIGHT COLUMN — Hero Image */}
+          <motion.div
+            variants={fadeInRight}
+            initial="hidden"
+            animate={isInView ? "visible" : "hidden"}
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <motion.div whileHover={{ scale: 1.05 }}>
+              <Image
+                src={IMAGES.hero}
+                alt="Mudra Hand"
+                priority
+                className={heroImage.width}
+                style={{
+                  width: "100%",
+                  height: "auto",
+                  objectFit: "contain",
+                }}
+              />
             </motion.div>
-        </motion.section>
-    );
+          </motion.div>
+        </SiteContainer>
+      </motion.div>
+    </Section>
+  );
 }

@@ -89,8 +89,8 @@ function Card({ item, dark, textColor, index, isInView }) {
       opacity: 1,
       y: 0,
       scale: 1,
-      transition: { 
-        duration: 0.6, 
+      transition: {
+        duration: 0.6,
         ease: [0.22, 1, 0.36, 1],
         delay: index * 0.08
       }
@@ -129,13 +129,13 @@ function Card({ item, dark, textColor, index, isInView }) {
   const titleChars = item.title.split("");
 
   return (
-    <motion.div 
+    <motion.div
       onClick={() => router.push(`/ElementDetailTemplate?id=${documentIds[element]}`)}
       className={`${item.bg} ${card.radius} ${card.hover} ${spacing.cardPadding} ${spacing.cardMinH} flex flex-col items-center w-full h-full relative overflow-hidden cursor-pointer`}
       variants={cardVariants}
       initial="hidden"
       animate={isInView ? "visible" : "hidden"}
-      whileHover={{ 
+      whileHover={{
         y: -8,
         scale: 1.02,
         boxShadow: `0 12px 40px ${item.color}30`,
@@ -159,26 +159,26 @@ function Card({ item, dark, textColor, index, isInView }) {
       />
 
       {/* Icon circle */}
-      <motion.div 
-        className={`rounded-full ${spacing.cardIconBox} ${spacing.cardIconBoxMb} flex items-center justify-center shrink-0 relative`} 
+      <motion.div
+        className={`rounded-full ${spacing.cardIconBox} ${spacing.cardIconBoxMb} flex items-center justify-center shrink-0 relative`}
         style={{
           backgroundColor: dark ? "#ffffff" : "#ffffff",
         }}
-        whileHover={{ 
+        whileHover={{
           scale: 1.15,
           rotate: 5,
           boxShadow: `0 8px 30px ${item.color}40`,
           transition: { duration: 0.3 }
         }}
       >
-        <Image 
-          src={item.icon} 
-          alt={item.title} 
-          width={28} 
-          height={28} 
-          className={`${spacing.cardIconInner} object-contain relative z-10`} 
+        <Image
+          src={item.icon}
+          alt={item.title}
+          width={28}
+          height={28}
+          className={`${spacing.cardIconInner} object-contain relative z-10`}
         />
-        
+
         {/* Pulsing ring */}
         <motion.div
           className="absolute inset-0 rounded-full"
@@ -197,10 +197,10 @@ function Card({ item, dark, textColor, index, isInView }) {
       </motion.div>
 
       {/* Title - Character by character */}
-      <motion.h3 
-        className={`${typography.cardTitle} ${spacing.cardTitleMb} text-center`} 
-        style={{ color: textColor }}
-        whileHover={{ 
+      <motion.h3
+        className={`${typography.cardTitle} ${spacing.cardTitleMb} text-center`}
+        style={{ color: dark ? "#ffffff" : "#0F0F0F" }}
+        whileHover={{
           color: item.color,
           scale: 1.05,
           transition: { duration: 0.2 }
@@ -223,19 +223,19 @@ function Card({ item, dark, textColor, index, isInView }) {
       {/* Bullet list */}
       <ul className="w-full mt-1 sm:mt-1.5 md:mt-2 space-y-0.5 sm:space-y-1">
         {item.bullets.map((b, i) => (
-          <motion.li 
-            key={i} 
+          <motion.li
+            key={i}
             custom={i}
             variants={bulletVariants}
             initial="hidden"
             animate={isInView ? "visible" : "hidden"}
-            className={`${typography.cardBody} flex items-start gap-1 sm:gap-1.5`} 
-            style={{ color: dark ? "#141414" : "#4b5563" }}
+            className={`${typography.cardBody} flex items-start gap-1 sm:gap-1.5`}
+            style={{ color: dark ? "#141414" : "#0F0F0F80" }}
           >
-            <motion.span 
-              className="mt-[3px] shrink-0 w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full inline-block" 
+            <motion.span
+              className="mt-[5px] sm:mt-[2px] md:mt-[4px] lg:mt-[5px] xl:mt-[5px] 2xl:mt-[12px] shrink-0 w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full inline-block"
               style={{
-                backgroundColor: textColor,
+                backgroundColor: "#0F0F0F80",
                 opacity: 0.6,
               }}
               animate={{
@@ -261,8 +261,8 @@ function Card({ item, dark, textColor, index, isInView }) {
 export default function ImbalanceStates() {
   const { dark, textColor } = useTheme();
   const sectionRef = useRef(null);
-  const isInView = useInView(sectionRef, { 
-    once: true, 
+  const isInView = useInView(sectionRef, {
+    once: true,
     amount: 0.15,
     margin: "-50px"
   });
@@ -300,14 +300,14 @@ export default function ImbalanceStates() {
   // Split text
   const labelText = "IMBALANCE STATES";
   const labelChars = labelText.split("");
-  
+
   const headingText = "Signs of Elemental Imbalance";
   const headingChars = headingText.split("");
 
   return (
-    <motion.section 
+    <motion.section
       ref={sectionRef}
-      className={`w-full ${spacing.sectionPadding} relative overflow-hidden`} 
+      className={`w-full ${spacing.sectionPadding} relative overflow-hidden`}
       style={{
         backgroundColor: dark ? "#111827" : "#ffffff",
       }}
@@ -349,9 +349,9 @@ export default function ImbalanceStates() {
         {/* Heading */}
         <div className={`text-center ${spacing.headingBlockMb}`}>
           {/* Label - Character by character */}
-          <motion.p 
-            className={`${typography.sectionLabel}`} 
-            style={{ color: dark ? "#ffffff" : "#9ca3af" }}
+          <motion.p
+            className={`${typography.sectionLabel}`}
+            style={{ color: dark ? "#ffffff" : "#0F0F0F99" }}
           >
             {labelChars.map((char, i) => (
               <motion.span
@@ -366,10 +366,10 @@ export default function ImbalanceStates() {
               </motion.span>
             ))}
           </motion.p>
-          
+
           {/* Heading - Character by character */}
-          <motion.h2 
-            className={`${typography.sectionMbHeading} ${spacing.labelMt}`} 
+          <motion.h2
+            className={`${typography.sectionMbHeading} ${spacing.labelMt}`}
             style={{ color: textColor }}
           >
             {headingChars.map((char, i) => (
@@ -402,7 +402,7 @@ export default function ImbalanceStates() {
               <Card key={i} item={item} dark={dark} textColor={textColor} index={i} isInView={isInView} />
             ))}
           </div>
-          <motion.div 
+          <motion.div
             className="flex justify-center mt-3 sm:mt-4"
             initial={{ opacity: 0, y: 30 }}
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}

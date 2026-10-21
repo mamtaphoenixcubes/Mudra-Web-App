@@ -87,13 +87,13 @@ export default function DisclaimerSection() {
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
         >
-          <p className={`${typography.benefitsSectionLabel}`} style={{ color: dark ? "#ffffff" : "#9ca3af" }}>
+          <p className={`${typography.benefitsSectionLabel}`} style={{ color: dark ? "#ffffff" : "#0F0F0F99" }}>
             DISCLAIMER
           </p>
           <h2 className={`${typography.benefitsSectionHeading} ${spacing.labelMt}`} style={{ color: textColor }}>
             Responsible &amp; Respectful
           </h2>
-          <p className={`${typography.sectionMbBody} mt-2 sm:mt-3`} style={{ color: dark ? "#ffffff" : "#6b7280" }}>
+          <p className={`${typography.sectionMbBody} mt-2 sm:mt-3`} style={{ color: dark ? "#ffffff" : "#0F0F0FCC" }}>
             We value your health and trust.
           </p>
         </motion.div>
@@ -164,16 +164,16 @@ export default function DisclaimerSection() {
                 }}
               >
                 <motion.span 
-                  className={`mt-[5px] shrink-0 ${spacing.disclaimerDot} rounded-full`} 
+                  className={`mt-[12px] shrink-0 ${spacing.disclaimerDot} rounded-full`} 
                   style={{
-                    backgroundColor: textColor,
+                    backgroundColor: "#0F0F0F",
                   }}
                   whileHover={{
                     scale: 1.5,
                     transition: { duration: 0.2 }
                   }}
                 />
-                <span className={`${typography.disclaimerBody}`} style={{ color: dark ? "#e5e7eb" : "#374151" }}>
+                <span className={`${typography.disclaimerBody}`} style={{ color: dark ? "#e5e7eb" : "#0F0F0F" }}>
                   {b}
                 </span>
               </motion.li>

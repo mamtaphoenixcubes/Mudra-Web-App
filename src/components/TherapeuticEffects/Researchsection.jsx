@@ -81,7 +81,7 @@ function ResearchCard({ item, dark, textColor, index }) {
 
             <motion.h3 
                 className={`${typography.cardTitle} mb-1 sm:mb-1.5 md:mb-2 lg:mb-2.5`} 
-                style={{ color: textColor }}
+                style={{ color: dark ? "#020202" : "#0F0F0F" }}
                 whileHover={{
                     scale: 1.05,
                     transition: { duration: 0.2 },
@@ -89,7 +89,7 @@ function ResearchCard({ item, dark, textColor, index }) {
             >
                 {item.title}
             </motion.h3>
-            <p className={`${typography.cardBody}`} style={{ color: dark ? "#020202" : "#4b5563" }}>
+            <p className={`${typography.cardBody}`} style={{ color: dark ? "#020202" : "#0F0F0F80" }}>
                 {item.description}
             </p>
         </motion.div>
@@ -147,13 +147,13 @@ export default function ResearchSection() {
                     initial="hidden"
                     animate={isInView ? "visible" : "hidden"}
                 >
-                    <p className={`${typography.benefitsSectionLabel}`} style={{ color: dark ? "#ffffff" : "#9ca3af" }}>
+                    <p className={`${typography.benefitsSectionLabel}`} style={{ color: dark ? "#ffffff" : "#0F0F0F99" }}>
                         RESEARCH EXPLANATION
                     </p>
                     <h2 className={`${typography.benefitsSectionHeading} ${spacing.labelMt}`} style={{ color: textColor }}>
                         What Does Research Say?
                     </h2>
-                    <p className={`${typography.sectionMbBody} mt-2 sm:mt-3`} style={{ color: dark ? "rgb(255, 255, 255)" : "#4b5563" }}>
+                    <p className={`${typography.sectionMbBody} mt-2 sm:mt-3`} style={{ color: dark ? "rgb(255, 255, 255)" : "#0F0F0FCC" }}>
                         Modern science is beginning to explore the effects of mudras.
                     </p>
                 </motion.div>

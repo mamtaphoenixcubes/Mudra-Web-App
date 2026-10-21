@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useRef } from "react";
@@ -6,6 +7,9 @@ import { typography, spacing } from "../../theme";
 import { IMAGES } from "../../assets/assets";
 import Image from "next/image";
 import { useTheme } from "../../context/ThemeContext";
+
+import Container from "../../common/Container";
+import SiteContainer from "../../common/SiteContainer";
 
 const features = [
   {
@@ -42,26 +46,36 @@ const features = [
 
 export default function CompletePracticeSection() {
   const { dark, textColor } = useTheme();
+
   const sectionRef = useRef(null);
-  const isInView = useInView(sectionRef, { 
-    once: true, 
+
+  const isInView = useInView(sectionRef, {
+    once: true,
     amount: 0.1,
-    margin: "-50px"
+    margin: "-50px",
   });
 
   // Animation variants
   const fadeUp = {
-    hidden: { opacity: 0, y: 30 },
-    visible: { 
-      opacity: 1, 
-      y: 0, 
-      transition: { duration: 0.6, ease: "easeOut" } 
-    }
+    hidden: {
+      opacity: 0,
+      y: 30,
+    },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.6,
+        ease: "easeOut",
+      },
+    },
   };
 
-  // Container variants for stagger
+  // Container variants for stagger animation
   const containerVariants = {
-    hidden: { opacity: 0 },
+    hidden: {
+      opacity: 0,
+    },
     visible: {
       opacity: 1,
       transition: {
@@ -71,9 +85,13 @@ export default function CompletePracticeSection() {
     },
   };
 
-  // Item variants
+  // Feature item animation variants
   const itemVariants = {
-    hidden: { opacity: 0, y: 20, scale: 0.9 },
+    hidden: {
+      opacity: 0,
+      y: 20,
+      scale: 0.9,
+    },
     visible: {
       opacity: 1,
       y: 0,
@@ -87,7 +105,11 @@ export default function CompletePracticeSection() {
 
   // Character animation for heading
   const charVariants = {
-    hidden: { opacity: 0, y: 20, rotateX: -10 },
+    hidden: {
+      opacity: 0,
+      y: 20,
+      rotateX: -10,
+    },
     visible: (i) => ({
       opacity: 1,
       y: 0,
@@ -104,100 +126,157 @@ export default function CompletePracticeSection() {
   const headingChars = headingText.split("");
 
   return (
-    <motion.section 
+    <motion.section
       ref={sectionRef}
-      className={`${spacing.sectionPaddingX} py-8 sm:py-10 md:py-12 lg:py-16`} 
+      className={`${spacing.sectionPaddingX} py-8 sm:py-10 md:py-12 lg:py-16`}
       style={{
+        width: "100%",
+        boxSizing: "border-box",
         backgroundColor: dark ? "#111827" : "#ffffff",
       }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.6 }}
     >
-      <motion.div 
-        className="bg-primary/10 border border-primary/20 rounded-2xl p-6 sm:p-8 md:p-10"
-        variants={fadeUp}
-        initial="hidden"
-        animate={isInView ? "visible" : "hidden"}
-        whileHover={{
-          boxShadow: dark 
-            ? "0 8px 30px rgba(0,0,0,0.3)"
-            : "0 8px 30px rgba(0,0,0,0.06)",
-          transition: { duration: 0.3 }
+      <SiteContainer
+        sx={{
+          width: "100%",
+          maxWidth: {
+            xs: "100%",
+            sm: "100%",
+            md: "1200px",
+            lg: "1360px",
+            xl: "1600px",
+          },
+          mx: "auto",
+          py: 0,
+          boxSizing: "border-box",
         }}
       >
-        {/* Heading - Character by character */}
-        <motion.h2
-          className={`${typography.sectionMbHeading} text-center mb-8 sm:mb-10`}
-          style={{ color: textColor }}
-        >
-          {headingChars.map((char, i) => (
-            <motion.span
-              key={i}
-              custom={i}
-              variants={charVariants}
-              initial="hidden"
-              animate={isInView ? "visible" : "hidden"}
-              style={{ display: "inline-block" }}
-            >
-              {char === " " ? "\u00A0" : char}
-            </motion.span>
-          ))}
-        </motion.h2>
-
-        <motion.div 
-          className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-6 sm:gap-8"
-          variants={containerVariants}
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
-        >
-          {features.map((item, index) => (
-            <motion.div
-              key={item.title}
-              className="flex flex-col items-center text-center gap-3"
-              variants={itemVariants}
-              whileHover={{
-                y: -6,
-                transition: { duration: 0.2 }
+        <Container className="w-full">
+          {/* Main feature card */}
+          <motion.div
+            className="w-full box-border bg-primary/10 border border-primary/20 rounded-2xl p-6 sm:p-8 md:p-10"
+            style={{
+              backgroundColor: dark
+                ? "rgba(55, 65, 81, 0.35)"
+                : "#f0f9ff",
+              borderColor: dark ? "#374151" : "#dbeafe",
+            }}
+            variants={fadeUp}
+            initial="hidden"
+            animate={isInView ? "visible" : "hidden"}
+            whileHover={{
+              boxShadow: dark
+                ? "0 8px 30px rgba(0,0,0,0.3)"
+                : "0 8px 30px rgba(0,0,0,0.06)",
+              transition: {
+                duration: 0.3,
+              },
+            }}
+          >
+            {/* Heading - Character by character */}
+            <motion.h2
+              className={`${typography.sectionMbHeading} text-center mb-8 sm:mb-10`}
+              style={{
+                color: textColor,
               }}
             >
-              <motion.div 
-                className="w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center shadow-sm" 
-                style={{
-                  backgroundColor: dark ? "#374151" : "#ffffff",
-                }}
-                whileHover={{
-                  scale: 1.12,
-                  rotate: 5,
-                  transition: { duration: 0.2 }
-                }}
-              >
-                <Image
-                  src={item.icon}
-                  alt={item.title}
-                  className="w-6 h-6 sm:w-7 sm:h-7 object-contain"
+              {headingChars.map((char, i) => (
+                <motion.span
+                  key={i}
+                  custom={i}
+                  variants={charVariants}
+                  initial="hidden"
+                  animate={isInView ? "visible" : "hidden"}
                   style={{
-                    filter: dark ? "brightness(0.8) invert(1)" : "none",
+                    display: "inline-block",
                   }}
-                />
-              </motion.div>
-              <motion.h3 
-                className={`${typography.cardTitle} font-semibold`} 
-                style={{ color: textColor }}
-                whileHover={{
-                  scale: 1.05,
-                  transition: { duration: 0.2 }
-                }}
-              >
-                {item.title}
-              </motion.h3>
-              <p className={`${typography.cardBody}`} style={{ color: dark ? "#ffffff" : "#6b7280" }}>
-                {item.desc}
-              </p>
+                >
+                  {char === " " ? "\u00A0" : char}
+                </motion.span>
+              ))}
+            </motion.h2>
+
+            {/* Responsive feature grid */}
+            <motion.div
+              className="grid w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-6 sm:gap-8"
+              variants={containerVariants}
+              initial="hidden"
+              animate={isInView ? "visible" : "hidden"}
+            >
+              {features.map((item) => (
+                <motion.div
+                  key={item.title}
+                  className="flex min-w-0 flex-col items-center text-center gap-3"
+                  variants={itemVariants}
+                  whileHover={{
+                    y: -6,
+                    transition: {
+                      duration: 0.2,
+                    },
+                  }}
+                >
+                  {/* Feature icon */}
+                  <motion.div
+                    className="w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center shadow-sm shrink-0"
+                    style={{
+                      backgroundColor: dark ? "#374151" : "#ffffff",
+                    }}
+                    whileHover={{
+                      scale: 1.12,
+                      rotate: 5,
+                      transition: {
+                        duration: 0.2,
+                      },
+                    }}
+                  >
+                    <Image
+                      src={item.icon}
+                      alt={item.title}
+                      width={28}
+                      height={28}
+                      className="w-6 h-6 sm:w-7 sm:h-7 object-contain"
+                      style={{
+                        filter: dark
+                          ? "brightness(0.8) invert(1)"
+                          : "none",
+                      }}
+                    />
+                  </motion.div>
+
+                  {/* Feature title */}
+                  <motion.h3
+                    className={`${typography.cardTitle} font-semibold`}
+                    style={{
+                      color: textColor,
+                      overflowWrap: "anywhere",
+                    }}
+                    whileHover={{
+                      scale: 1.05,
+                      transition: {
+                        duration: 0.2,
+                      },
+                    }}
+                  >
+                    {item.title}
+                  </motion.h3>
+
+                  {/* Feature description */}
+                  <p
+                    className={typography.cardBody}
+                    style={{
+                      color: dark ? "#ffffff" : "#6b7280",
+                    }}
+                  >
+                    {item.desc}
+                  </p>
+                </motion.div>
+              ))}
             </motion.div>
-          ))}
-        </motion.div>
-      </motion.div>
+          </motion.div>
+        </Container>
+      </SiteContainer>
     </motion.section>
   );
 }

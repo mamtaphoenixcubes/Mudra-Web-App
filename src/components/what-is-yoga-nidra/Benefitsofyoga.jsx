@@ -246,7 +246,7 @@ export default function BenefitsOfYoga() {
           {/* Label - Character by character */}
           <motion.p 
             className={`${typography.benefitsSectionLabel}`} 
-            style={{ color: dark ? "#ffffff" : "#9ca3af" }}
+            style={{ color: dark ? "#ffffff" : "#0F0F0F99" }}
           >
             {labelChars.map((char, i) => (
               <motion.span
@@ -398,7 +398,7 @@ function Card({ item, dark, textColor, index, isInView }) {
       {/* Title - Character by character */}
       <motion.h3 
         className={`${typography.benefitsCardTitle} ${spacing.cardTitleMb}`} 
-        style={{ color: textColor }}
+        style={{ color: dark ? "#ffffff" : "#0F0F0F" }}
         whileHover={{ 
           color: item.color,
           scale: 1.05,
@@ -423,7 +423,7 @@ function Card({ item, dark, textColor, index, isInView }) {
       {/* Description - Word by word */}
       <motion.p 
         className={`${typography.benefitsCardBody}`} 
-        style={{ color: dark ? "#ffffff" : "#4b5563" }}
+        style={{ color: dark ? "#ffffff" : "#0F0F0F80" }}
       >
         {descWords.map((word, i) => (
           <motion.span

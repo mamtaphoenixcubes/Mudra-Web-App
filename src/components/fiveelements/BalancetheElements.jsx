@@ -253,7 +253,7 @@ export default function BalancetheElements() {
             {/* Heading - Character by character with line breaks */}
             <motion.h2 
               className={`${typography.ctaHeading} ${spacing.ctaTitleMb}`} 
-              style={{ color: textColor }}
+               style={{ color: dark ? "#141414" : "#0F0F0F" }}
             >
               {headingLines.map((line, lineIndex) => (
                 <motion.span
@@ -288,7 +288,7 @@ export default function BalancetheElements() {
             {/* Body - Word by word */}
             <motion.p 
               className={`${typography.ctaBody} ${spacing.ctaBodyMb}`} 
-              style={{ color: dark ? "#000000" : "#4b5563" }}
+              style={{ color: dark ? "#000000" : "#0F0F0F80" }}
             >
               {bodyWords.map((word, i) => (
                 <motion.span
@@ -315,8 +315,8 @@ export default function BalancetheElements() {
                 relative overflow-hidden group
               `}
               style={{
-                backgroundColor: textColor,
-                color: "#ffffff",
+                backgroundColor: "#ffffff",
+                color: "#0F0F0F",
               }}
               variants={buttonVariants}
               whileHover={{ 

@@ -125,11 +125,11 @@ export default function BuddhistMudrasSection() {
             Gestures of Enlightenment and Compassion
           </h2>
           <p
-            className={`${typography.sectionMbBody} max-w-[260px] sm:max-w-[420px] md:max-w-[500px] lg:max-w-[580px] mx-auto`}
-            style={{ color: dark ? "#ffffff" : "#6b7280" }}
+            className={`${typography.sectionMbBody} max-w-[260px] sm:max-w-[420px] md:max-w-[500px] lg:max-w-[9080px] mx-auto`}
+            style={{ color: dark ? "#ffffff" : "#0F0F0FCC" }}
           >
             In Buddhism, mudras are sacred hand gestures that convey specific teachings,
-            states of mind and spiritual qualities.
+            <br/>states of mind and spiritual qualities.
           </p>
         </motion.div>
 
@@ -344,7 +344,7 @@ export default function BuddhistMudrasSection() {
                   </motion.div>
                   <motion.p 
                     className={`${typography.benefitTitle} mb-1 md:mb-1.5`} 
-                    style={{ color: textColor }}
+                    style={{ color: dark ? "#ffffff" : "#0F0F0F" }}
                     whileHover={{
                       scale: 1.05,
                       transition: { duration: 0.2 }
@@ -352,7 +352,7 @@ export default function BuddhistMudrasSection() {
                   >
                     {mudra.name}
                   </motion.p>
-                  <p className={`${typography.benefitBody} ${spacing.benefitDescMaxW}`} style={{ color: dark ? "#ffffff" : "#6b7280" }}>
+                  <p className={`${typography.benefitBody} ${spacing.benefitDescMaxW}`} style={{ color: dark ? "#ffffff" : "#0F0F0F80" }}>
                     {mudra.desc}
                   </p>
                 </motion.div>
@@ -390,13 +390,13 @@ export default function BuddhistMudrasSection() {
                   alt="Holistic Wellbeing"
                   width={28}
                   height={28}
-                  className="w-6 h-6 md:w-7 md:h-7 object-contain"
+                  className="w-6 h-6 md:w-15 md:h-20 object-contain"
                   style={{
                     filter: dark ? "none" : "none",
                   }}
                 />
               </motion.div>
-              <p className={`${typography.sectionMbBody}`} style={{ color: dark ? "#000000" : "#374151" }}>
+              <p className={`${typography.sectionMbBody}`} style={{ color: dark ? "#000000" : "#0F0F0F" }}>
                 Buddhist mudras are used in meditation, ritual, art and daily practice to
                 inspire and embody enlightened qualities.
               </p>

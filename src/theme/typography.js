@@ -7,7 +7,7 @@ export const typography = {
     "text-[28px] sm:text-[22px] md:text-[20px] lg:text-[34px] xl:text-[40px] 2xl:text-[56px] " +
     "font-medium leading-[120%] 2xl:leading-[110%]",
   MainHeading:
-    "text-[10px] sm:text-[12px] md:text-[22px] lg:text-[30px] xl:text-[35px] 2xl:text-[50px] " +
+    "text-[10px] sm:text-[12px] md:text-[22px] lg:text-[30px] xl:text-[35px] 2xl:text-[60px] " +
     "font-medium leading-[120%] 2xl:leading-[110%]",
   heroBody:
     "text-[16px] sm:text-[16px] md:text-[15px] lg:text-[20px] xl:text-[22px] 2xl:text-[25px] " +
@@ -331,10 +331,10 @@ export const typography = {
     "text-[11px] sm:text-xs md:text-sm lg:text-base xl:text-lg 2xl:text-xl " +
     "font-semibold uppercase tracking-widest",
   fingerHeading:
-    "text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl " +
+    "text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-5xl " +
     "font-semibold leading-tight",
   fingerSubheading:
-    "text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl 2xl:text-3xl " +
+    "text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl 2xl:text-2xl " +
     "leading-relaxed",
   fingerName:
     "text-[13px] sm:text-sm md:text-sm lg:text-base xl:text-lg 2xl:text-xl " +

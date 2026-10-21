@@ -144,7 +144,7 @@ export default function AncientWisdom() {
             {/* Heading - Word by word */}
             <motion.h2 
               className={`${typography.ctaHeading} ${spacing.ctaTitleMb}`} 
-              style={{ color: textColor }}
+              style={{ color: dark ? "#4b5563" : "#0F0F0F" }}
             >
               {headingWords.map((word, i) => (
                 <motion.span
@@ -163,7 +163,7 @@ export default function AncientWisdom() {
             {/* Description - Character by character */}
             <motion.p 
               className={`${typography.ctaBody} ${spacing.ctaBodyMb}`} 
-              style={{ color: dark ? "#4b5563" : "#4b5563" }}
+              style={{ color: dark ? "#4b5563" : "#0F0F0F80" }}
             >
               {descriptionChars.map((char, i) => (
                 <motion.span
@@ -189,8 +189,8 @@ export default function AncientWisdom() {
                 relative overflow-hidden
               `}
               style={{
-                backgroundColor: textColor,
-                color: "#ffffff",
+                backgroundColor: "#ffff",
+                color: "#0F0F0F",
               }}
               whileHover={{ 
                 scale: 1.05,

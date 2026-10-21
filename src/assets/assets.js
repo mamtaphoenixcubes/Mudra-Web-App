@@ -201,6 +201,7 @@ import favourites from "./icons/favourites.png";
 import Home from "./icons/Home.png";
 import Consistency from "./icons/Consistency.png";
 import Share from "./icons/Share.png";
+import LogoYoga from "./Image/LogoYoga.png"
 
 export const IMAGES = {
   hero,
@@ -403,5 +404,6 @@ export const IMAGES = {
   favourites,
   Home,
   Consistency,
-  Share
+  Share,
+  LogoYoga
 };

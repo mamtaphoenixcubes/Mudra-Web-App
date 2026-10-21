@@ -94,7 +94,7 @@ function StepNumber({ n, textColor }) {
       }}
     >
       <div className="flex items-center justify-center shrink-0 w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 lg:w-10 lg:h-10 xl:w-12 xl:h-12 2xl:w-14 2xl:h-14 rounded-full border text-[10px] sm:text-xs md:text-sm lg:text-base xl:text-lg 2xl:text-xl font-medium bg-white relative z-10" style={{
-        borderColor: textColor,
+        borderColor: "#0F0F0F80",
         color: textColor,
       }}>
         {n}
@@ -147,13 +147,13 @@ function ItemLeft({ item, dark, textColor, index }) {
 
       {/* Title + period + body */}
       <div className="flex flex-col gap-0.5 sm:gap-1">
-        <h3 className="text-[13px] sm:text-[15px] md:text-[16px] lg:text-[19px] xl:text-[22px] 2xl:text-[28px] font-semibold leading-tight" style={{ color: textColor }}>
+        <h3 className="text-[13px] sm:text-[15px] md:text-[16px] lg:text-[19px] xl:text-[22px] 2xl:text-[28px] font-semibold leading-tight" style={{ color: dark ? "#cac7c7" : "#0F0F0FCC" }}>
           {item.title}
         </h3>
-        <p className="text-[9px] sm:text-[10px] md:text-[11px] lg:text-xs xl:text-sm 2xl:text-base font-medium" style={{ color: dark ? "#cac7c7" : "#6b7280" }}>
+        <p className="text-[9px] sm:text-[10px] md:text-[11px] lg:text-xs xl:text-sm 2xl:text-base font-medium" style={{ color: dark ? "#cac7c7" : "#0F0F0F80" }}>
           {item.period}
         </p>
-        <p className="text-[9px] sm:text-[10px] md:text-[11px] lg:text-[13px] xl:text-[15px] 2xl:text-[18px] leading-relaxed mt-1" style={{ color: dark ? "#ffffff" : "#4b5563" }}>
+        <p className="text-[9px] sm:text-[10px] md:text-[11px] lg:text-[13px] xl:text-[15px] 2xl:text-[18px] leading-relaxed mt-1" style={{ color: dark ? "#ffffff" : "#0F0F0F80" }}>
           {item.body}
         </p>
       </div>
@@ -206,9 +206,9 @@ function ItemRight({ item, dark, textColor, index }) {
           }}
         >
           <span className="mt-[3px] shrink-0 rounded-full w-[5px] h-[5px] sm:w-[6px] sm:h-[6px] md:w-[6px] md:h-[6px] lg:w-[7px] lg:h-[7px] xl:w-[8px] xl:h-[8px] 2xl:w-[10px] 2xl:h-[10px]" style={{
-            backgroundColor: textColor,
+            backgroundColor:"#0F0F0F80",
           }} />
-          <span className="text-[9px] sm:text-[10px] md:text-[11px] lg:text-[13px] xl:text-[15px] 2xl:text-[18px] leading-snug" style={{ color: dark ? "#e5e7eb" : "#374151" }}>
+          <span className="text-[9px] sm:text-[10px] md:text-[11px] lg:text-[13px] xl:text-[15px] 2xl:text-[18px] leading-snug" style={{ color: dark ? "#e5e7eb" : "#0F0F0F80" }}>
             {b}
           </span>
         </motion.div>
@@ -269,7 +269,7 @@ export default function OriginsSection() {
         initial="hidden"
         animate={isInView ? "visible" : "hidden"}
       >
-        <p className={`${typography.sectionLabel} tracking-widest uppercase mb-2`} style={{ color: dark ? "#ffffff" : "#080808" }}>
+        <p className={`${typography.sectionLabel} tracking-widest uppercase mb-2`} style={{ color: dark ? "#ffffff" : "#0F0F0F99" }}>
           A Journey Through Time
         </p>
 
@@ -285,7 +285,7 @@ export default function OriginsSection() {
 
         <motion.p 
           className={`text-[10px] sm:text-[13px] md:text-[15px] lg:text-[18px] xl:text-[20px] 2xl:text-[24px] font-medium ${spacing.PhilosophyBodyMb}`} 
-          style={{ color: dark ? "#ffffff" : "#4b5563" }}
+          style={{ color: dark ? "#ffffff" : "#0F0F0FCC" }}
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ duration: 0.6, delay: 0.3 }}
@@ -301,7 +301,7 @@ export default function OriginsSection() {
           <motion.div 
             className="absolute top-3.5 bottom-3.5 left-[14px] sm:left-[15px] md:left-[17px] lg:left-[19px] xl:left-[23px] 2xl:left-[27px] w-px z-0 origin-top" 
             style={{
-              backgroundColor: dark ? "#ffffff" : "#9ca3af",
+              backgroundColor: dark ? "#ffffff" : "#00000099",
             }}
             variants={spineVariants}
             initial="hidden"

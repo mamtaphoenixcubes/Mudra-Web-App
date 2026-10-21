@@ -174,13 +174,13 @@ export default function AcrossTraditions() {
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
         >
-          <p className={`${typography.benefitsSectionLabel} mb-2`} style={{ color: dark ? "#ffffff" : "#9ca3af" }}>
+          <p className={`${typography.benefitsSectionLabel} mb-2`} style={{ color: dark ? "#ffffff" : "#0F0F0F99" }}>
             Across Traditions
           </p>
           <h2 className={`${typography.fingerHeading} mb-3 md:mb-4`} style={{ color: textColor }}>
             One Wisdom, Many Expressions
           </h2>
-          <p className={`${typography.fingerSubheading} max-w-[600px] lg:max-w-[700px] mx-auto`} style={{ color: dark ? "#ffffff" : "#6b7280" }}>
+          <p className={`${typography.fingerSubheading} max-w-[600px] lg:max-w-[1200px] mx-auto`} style={{ color: dark ? "#ffffff" : "#0F0F0FCC" }}>
             Mudras transcend culture, religion and time–uniting us through the power of intentional gesture.
           </p>
         </motion.div>
@@ -221,7 +221,7 @@ export default function AcrossTraditions() {
                 </motion.div>
                 <motion.h3 
                   className={`${typography.benefitTitle} mb-1.5`} 
-                  style={{ color: textColor }}
+                  style={{ color: dark ? "#f7f7f7" : "#0F0F0F" }}
                   whileHover={{
                     scale: 1.05,
                     transition: { duration: 0.2 }
@@ -229,7 +229,7 @@ export default function AcrossTraditions() {
                 >
                   {item.title}
                 </motion.h3>
-                <p className={`${typography.benefitBody}`} style={{ color: dark ? "#f7f7f7" : "#6b7280" }}>
+                <p className={`${typography.benefitBody}`} style={{ color: dark ? "#f7f7f7" : "#0F0F0F80" }}>
                   {item.body}
                 </p>
               </div>

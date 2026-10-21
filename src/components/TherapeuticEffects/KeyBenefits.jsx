@@ -110,7 +110,7 @@ function Card({ item, dark, textColor, index }) {
 
       <motion.h3 
         className={`${typography.benefitsCardTitle} ${spacing.cardTitleMb}`} 
-        style={{ color: textColor }}
+        style={{ color: dark ? "#ffffff" : "#0F0F0F" }}
         whileHover={{
           scale: 1.05,
           transition: { duration: 0.2 },
@@ -118,7 +118,7 @@ function Card({ item, dark, textColor, index }) {
       >
         {item.title}
       </motion.h3>
-      <p className={`${typography.benefitsCardBody}`} style={{ color: dark ? "#000000" : "#4b5563" }}>
+      <p className={`${typography.benefitsCardBody}`} style={{ color: dark ? "#000000" : "#0F0F0F80" }}>
         {item.description}
       </p>
     </motion.div>
@@ -178,13 +178,13 @@ export default function KeyBenefits() {
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
         >
-          <p className={`${typography.benefitsSectionLabel}`} style={{ color: dark ? "#ffffff" : "#9ca3af" }}>
+          <p className={`${typography.benefitsSectionLabel}`} style={{ color: dark ? "#ffffff" : "#0F0F0F99" }}>
             KEY BENEFITS
           </p>
           <h2 className={`${typography.benefitsSectionHeading} ${spacing.labelMt}`} style={{ color: textColor }}>
             How Mudras Can Support You
           </h2>
-          <p className={`${typography.sectionMbBody} mt-2`} style={{ color: dark ? "#ffffff" : "#6b7280" }}>
+          <p className={`${typography.sectionMbBody} mt-2`} style={{ color: dark ? "#ffffff" : "#0F0F0FCC" }}>
             Experience the potential benefits of consistent mudra practice.
           </p>
         </motion.div>
