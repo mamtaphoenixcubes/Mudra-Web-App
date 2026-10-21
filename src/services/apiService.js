@@ -270,6 +270,201 @@ export const asanaService = {
     return response.data;
   },
 };
+export const meditationService = {
+  // Get all meditations
+  getAllMeditations: async (params = {}) => {
+    const response = await api.get("/meditations", { params });
+    return response.data;
+  },
+
+  // Get meditation details by ID
+  getMeditationById: async (id, profileDocumentId) => {
+    const params = profileDocumentId ? { profileDocumentId } : {};
+    const response = await api.get(`/meditations/${id}`, { params });
+    return response.data;
+  },
+
+  // Like meditation
+  likeMeditation: async (id, profileDocumentId) => {
+    const response = await api.post(`/meditations/${id}/like`, {
+      profileDocumentId,
+    });
+    return response.data;
+  },
+
+  // Save meditation
+  saveMeditation: async (id, profileDocumentId) => {
+    const response = await api.post(`/meditations/${id}/save`, {
+      profileDocumentId,
+    });
+    return response.data;
+  },
+
+  // Track meditation view
+  viewMeditation: async (id, profileDocumentId) => {
+    const response = await api.post(`/meditations/${id}/view`, {
+      profileDocumentId,
+    });
+    return response.data;
+  },
+
+  // Track meditation download
+  downloadMeditation: async (id, profileDocumentId) => {
+    const response = await api.post(`/meditations/${id}/download`, {
+      profileDocumentId,
+    });
+    return response.data;
+  },
+
+  // Track meditation share
+  shareMeditation: async (id, profileDocumentId) => {
+    const response = await api.post(`/meditations/${id}/share`, {
+      profileDocumentId,
+    });
+    return response.data;
+  },
+
+  // Save meditation progress
+  saveMeditationProgress: async (
+    id,
+    profileDocumentId,
+    remainingDuration,
+    sessionDuration
+  ) => {
+    try {
+      const response = await api.post(`${MOBILE_API_BASE_URL}/meditations/${id}/progress`, {
+        profileDocumentId,
+        remainingDuration,
+        sessionDuration,
+      });
+      return response.data;
+    } catch (err) {
+      const response = await api.post(`/meditations/${id}/progress`, {
+        profileDocumentId,
+        remainingDuration,
+        sessionDuration,
+      });
+      return response.data;
+    }
+  },
+
+  // Complete meditation session
+  completeMeditation: async (
+    id,
+    profileDocumentId,
+    sessionDuration,
+    completedDuration = null
+  ) => {
+    const payload = {
+      profileDocumentId,
+      ...(completedDuration !== null && completedDuration !== undefined
+        ? { completedDuration }
+        : { sessionDuration }),
+    };
+
+    try {
+      const response = await api.post(`${MOBILE_API_BASE_URL}/meditations/${id}/complete`, payload);
+      return response.data;
+    } catch (err) {
+      const response = await api.post(`/meditations/${id}/complete`, payload);
+      return response.data;
+    }
+  },
+
+  saveMeditationMediaProgress: async (payload) => {
+    try {
+      const response = await api.post(`${MOBILE_API_BASE_URL}/user-meditation-activities/media-progress`, payload);
+      return response.data;
+    } catch (err) {
+      const targetId = payload.meditationDocumentId || payload.mediaDocumentId || payload.pranayamDocumentId || payload.documentId;
+      if (targetId) {
+        return await meditationService.saveMeditationProgress(
+          targetId,
+          payload.profileDocumentId,
+          payload.remainingDuration,
+          payload.sessionDuration
+        );
+      }
+      throw err;
+    }
+  },
+
+  completeMeditationMedia: async (payload) => {
+    try {
+      const response = await api.post(`${MOBILE_API_BASE_URL}/user-meditation-activities/media-complete`, payload);
+      return response.data;
+    } catch (err) {
+      const targetId = payload.meditationDocumentId || payload.mediaDocumentId || payload.pranayamDocumentId || payload.documentId;
+      if (targetId) {
+        return await meditationService.completeMeditation(
+          targetId,
+          payload.profileDocumentId,
+          payload.sessionDuration,
+          payload.completedDuration
+        );
+      }
+      throw err;
+    }
+  },
+};
+export const pranayamService = {
+  getAllPranayams: async (params = {}) => {
+    const response = await api.get(`${MOBILE_API_BASE_URL}/pranayams`, { params });
+    return response.data;
+  },
+
+  getPranayamById: async (id, profileDocumentId) => {
+    const params = profileDocumentId ? { profileDocumentId } : {};
+    const response = await api.get(`${MOBILE_API_BASE_URL}/pranayams/${id}`, { params });
+    return response.data;
+  },
+
+  likePranayam: async (id, profileDocumentId) => {
+    const response = await api.post(`${MOBILE_API_BASE_URL}/pranayams/${id}/like`, { profileDocumentId });
+    return response.data;
+  },
+
+  savePranayam: async (id, profileDocumentId) => {
+    const response = await api.post(`${MOBILE_API_BASE_URL}/pranayams/${id}/save`, { profileDocumentId });
+    return response.data;
+  },
+
+  viewPranayam: async (id, profileDocumentId) => {
+    const response = await api.post(`${MOBILE_API_BASE_URL}/pranayams/${id}/view`, { profileDocumentId });
+    return response.data;
+  },
+
+  downloadPranayam: async (id, profileDocumentId) => {
+    const response = await api.post(`${MOBILE_API_BASE_URL}/pranayams/${id}/download`, { profileDocumentId });
+    return response.data;
+  },
+
+  sharePranayam: async (id, profileDocumentId) => {
+    const response = await api.post(`${MOBILE_API_BASE_URL}/pranayams/${id}/share`, { profileDocumentId });
+    return response.data;
+  },
+
+  savePranayamProgress: async (id, profileDocumentId, remainingDuration, sessionDuration) => {
+    const response = await api.post(`${MOBILE_API_BASE_URL}/pranayams/${id}/progress`, {
+      profileDocumentId,
+      remainingDuration,
+      sessionDuration,
+    });
+    return response.data;
+  },
+
+  completePranayam: async (id, profileDocumentId, sessionDuration, completedDuration = null) => {
+    const payload = {
+      profileDocumentId,
+      ...(completedDuration !== null && completedDuration !== undefined
+        ? { completedDuration }
+        : { sessionDuration }),
+    };
+
+    const response = await api.post(`${MOBILE_API_BASE_URL}/pranayams/${id}/complete`, payload);
+    return response.data;
+  },
+};
 
 export const yogaNidraService = {
   getAllYogaNidras: async (params = {}) => {

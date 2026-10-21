@@ -6,6 +6,8 @@ import { X } from "lucide-react";
 import { spacing, typography } from "../../../theme";
 import { useTheme } from "../../../context/ThemeContext";
 import { IMAGES } from "../../../assets/assets";
+import { useAuthStore } from "../../../store/useAuthStore";
+import { meditationService } from "../../../services/apiService";
 
 function QuoteIcon({ color }) {
   return (
@@ -95,8 +97,11 @@ const TIP_TEXT =
   "Practice daily for best results. You can increase the duration as you feel comfortable";
 
 // ─── Meditation Timer Popup ─────────────────────────────────
-function MeditationTimerModal({ dark, duration, onClose }) {
+function MeditationTimerModal({ dark, duration, onClose, meditation = null }) {
   const { textColor } = useTheme();
+  const { user } = useAuthStore();
+  const profileDocId = user?.profileDocumentId || user?.profileDocId || (typeof user?.id === "string" && user.id.length > 5 ? user.id : null) || "nh0p1vtynpr7mge2orest5mt";
+  const meditationId = meditation?.documentId || meditation?.id || meditation?.data?.documentId || meditation?.data?.id || null;
   const totalSeconds = duration * 60;
   const [secondsLeft, setSecondsLeft] = useState(totalSeconds);
   const [isRunning, setIsRunning] = useState(false);
@@ -161,20 +166,38 @@ function MeditationTimerModal({ dark, duration, onClose }) {
     };
   }, [isRunning, secondsLeft]);
 
-  // Handle timer completion (no backend)
   useEffect(() => {
     if (secondsLeft === 0 && isRunning) {
-      setIsRunning(false);
-      if (playTune) playSingingBowlSound();
+      const finalizeMeditation = async () => {
+        setIsRunning(false);
+        if (meditationId && profileDocId) {
+          try {
+            await meditationService.completeMeditation(meditationId, profileDocId, totalSeconds, totalSeconds);
+          } catch (err) {
+            console.warn("Failed to complete meditation timer session:", err);
+          }
+        }
+        if (playTune) playSingingBowlSound();
+      };
+
+      finalizeMeditation();
     }
-  }, [isRunning, secondsLeft, playTune]);
+  }, [isRunning, secondsLeft, playTune, meditationId, profileDocId, totalSeconds]);
 
   const handleStart = () => {
     if (secondsLeft === 0) setSecondsLeft(totalSeconds);
     setIsRunning(true);
   };
 
-  const handlePauseToggle = () => {
+  const handlePauseToggle = async () => {
+    if (isRunning && meditationId && profileDocId) {
+      try {
+        await meditationService.saveMeditationProgress(meditationId, profileDocId, Math.max(0, secondsLeft), totalSeconds);
+      } catch (err) {
+        console.warn("Failed to save meditation timer progress on pause:", err);
+      }
+    }
+
     setIsRunning((prev) => !prev);
   };
 
@@ -319,7 +342,7 @@ function MeditationTimerModal({ dark, duration, onClose }) {
 }
 
 // ─── Affirmation Card ──────────────────────────────────────
-function AffirmationCard({ dark }) {
+function AffirmationCard({ dark, text }) {
   return (
     <div
       className={`rounded-[20px] px-5 sm:px-6 py-6 sm:py-7 flex flex-col items-center text-center ${spacing.cardMinH}`}
@@ -338,7 +361,7 @@ function AffirmationCard({ dark }) {
         className={`${typography.cardBody} mt-4 mb-4 max-w-[220px]`}
         style={{ color: dark ? "#d1d5db" : "#3A362E" }}
       >
-        {AFFIRMATION_TEXT}
+        {text || AFFIRMATION_TEXT}
       </p>
 
       <LotusImageIcon dark={dark} />
@@ -347,7 +370,7 @@ function AffirmationCard({ dark }) {
 }
 
 // ─── Duration Card ─────────────────────────────────────────
-function DurationCard({ dark, textColor, duration, setDuration, onOpenTimer }) {
+function DurationCard({ dark, textColor, duration, setDuration, onOpenTimer, options = DURATION_OPTIONS }) {
   return (
     <button
       onClick={onOpenTimer}
@@ -371,7 +394,7 @@ function DurationCard({ dark, textColor, duration, setDuration, onOpenTimer }) {
       </p>
 
       <div className="flex items-center gap-2 flex-wrap justify-center">
-        {DURATION_OPTIONS.map((opt) => {
+        {options.map((opt) => {
           const active = opt === duration;
           return (
             <span
@@ -402,7 +425,7 @@ function DurationCard({ dark, textColor, duration, setDuration, onOpenTimer }) {
 }
 
 // ─── Tip Banner ──────────────────────────────────────────────
-function TipBanner({ dark }) {
+function TipBanner({ dark, text }) {
   const { textColor } = useTheme();
 
   return (
@@ -427,7 +450,7 @@ function TipBanner({ dark }) {
           className={`${typography.cardBody} leading-relaxed`}
           style={{ color: dark ? "#9ca3af" : "#6B6459" }}
         >
-          {TIP_TEXT}
+          {text || TIP_TEXT}
         </p>
       </div>
     </div>
@@ -436,7 +459,6 @@ function TipBanner({ dark }) {
 
 // ─── Combined Component ──────────────────────────────────────
 export default function MeditationCardSection({
-  // Accept a meditation object (not required for rendering)
   meditation = null,
   duration,
   setDuration,
@@ -445,6 +467,28 @@ export default function MeditationCardSection({
   const [localDuration, setLocalDuration] = useState(10);
   const activeDuration = duration !== undefined ? duration : localDuration;
   const activeSetDuration = setDuration || setLocalDuration;
+
+  const data = meditation?.data || meditation || {};
+  const affirmationText = data?.affirmationCard?.cardText || AFFIRMATION_TEXT;
+  const tipText = data?.tipCard?.cardText || TIP_TEXT;
+
+  const durationOptions = (() => {
+    const numbers = [
+      data?.durationPickerCard?.beginnerDuration,
+      data?.durationPickerCard?.intermediateDuration,
+      data?.durationPickerCard?.expertDuration,
+      data?.durationPickerCard?.advancedDuration,
+      data?.durationPickerCard?.defaultDuration,
+    ]
+      .filter((value) => Number.isFinite(Number(value)))
+      .map((value) => Number(value));
+
+    if (numbers.length) {
+      return [...new Set(numbers)].slice(0, 4);
+    }
+
+    return DURATION_OPTIONS;
+  })();
 
   const [timerOpen, setTimerOpen] = useState(false);
 
@@ -455,17 +499,18 @@ export default function MeditationCardSection({
     >
       <div className={`${spacing.container} space-y-4 sm:space-y-5`}>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
-          <AffirmationCard dark={dark} />
+          <AffirmationCard dark={dark} text={affirmationText} />
           <DurationCard
             dark={dark}
             textColor={textColor}
             duration={activeDuration}
             setDuration={activeSetDuration}
+            options={durationOptions}
             onOpenTimer={() => setTimerOpen(true)}
           />
         </div>
 
-        <TipBanner dark={dark} />
+        <TipBanner dark={dark} text={tipText} />
       </div>
 
       {timerOpen && (
@@ -473,6 +518,7 @@ export default function MeditationCardSection({
           dark={dark}
           duration={activeDuration}
           onClose={() => setTimerOpen(false)}
+          meditation={meditation}
         />
       )}
     </div>

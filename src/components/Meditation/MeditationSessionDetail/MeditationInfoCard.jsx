@@ -21,7 +21,7 @@ export default function MeditationInfoCard({
     margin: "-50px",
   });
 
-  const data = meditation?.data || meditation;
+  const data = meditation?.data || meditation || {};
 
   // ─── Simple data mappings ──────────────────────────────────────────────────
 
@@ -31,10 +31,17 @@ export default function MeditationInfoCard({
 
   const descriptionText =
     propDescription ||
+    data?.introCard?.introCardText ||
     data?.description ||
     "This practice is designed to help you build strength, improve balance, and cultivate a deeper connection between body and mind.";
 
-  const rawImage = propImage || data?.thumbnail?.url || null;
+  const rawImage =
+    propImage ||
+    data?.introCard?.introCardImage?.url ||
+    data?.bannerImage?.url ||
+    data?.thumbnail?.url ||
+    data?.image?.[0]?.url ||
+    null;
 
   const introImageUrl = rawImage
     ? rawImage.startsWith("http")

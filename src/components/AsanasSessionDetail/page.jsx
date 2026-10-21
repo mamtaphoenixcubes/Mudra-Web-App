@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { asanaService } from "../../services/apiService";
+import { useAuthStore } from "../../store/useAuthStore";
 import AsanasInfoCard from "./AsanasInfoCard";
 import AsanasSessionBenefits from "./AsanasSessionBenefits";
 import AsanasSessionHero from "./AsanasSessionHero";
@@ -12,9 +13,17 @@ import RelatedAsanas from "./RelatedAsanas";
 
 export default function AsanasSessionDetail() {
   const searchParams = useSearchParams();
+  const { user } = useAuthStore();
   const id = searchParams.get("id");
   const [asana, setAsana] = useState(null);
+  const [isLiked, setIsLiked] = useState(false);
   const [isLoading, setIsLoading] = useState(Boolean(id));
+
+  const profileDocId =
+    user?.profileDocumentId ||
+    user?.profileDocId ||
+    (typeof user?.id === "string" && user.id.length > 5 ? user.id : null) ||
+    "nh0p1vtynpr7mge2orest5mt";
 
   useEffect(() => {
     if (!id) {
@@ -51,6 +60,30 @@ export default function AsanasSessionDetail() {
     };
   }, [id]);
 
+  const handleLike = async () => {
+    const docId = asana?.data?.documentId || asana?.id;
+    if (!docId) return;
+
+    const nextState = !isLiked;
+    setIsLiked(nextState);
+
+    try {
+      const response = await asanaService.likeAsana(docId, profileDocId);
+      const responseData = response?.data || response;
+      const serverIsLiked =
+        responseData?.isLiked ??
+        responseData?.IsLiked ??
+        responseData?.isliked;
+
+      if (typeof serverIsLiked === "boolean") {
+        setIsLiked(serverIsLiked);
+      }
+    } catch (error) {
+      console.error("Failed to toggle asana like:", error);
+      setIsLiked(!nextState);
+    }
+  };
+
   if (isLoading) {
     return (
       <main className="w-full bg-white min-h-[50vh] flex items-center justify-center">
@@ -75,7 +108,11 @@ export default function AsanasSessionDetail() {
 
   return (
     <main className="w-full bg-white">
-      <AsanasSessionHero asana={asana} />
+      <AsanasSessionHero
+        asana={asana}
+        onLikeClick={handleLike}
+        isLiked={isLiked}
+      />
       <hr className="w-full border-t border-gray-200" />
       <AsanasInfoCard asana={asana} />
       <hr className="w-full border-t border-gray-200" />

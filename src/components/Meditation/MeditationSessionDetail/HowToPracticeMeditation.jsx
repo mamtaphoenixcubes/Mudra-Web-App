@@ -52,22 +52,47 @@ export default function HowToPracticeMeditation({ meditation = null }) {
   const IMAGE_BASE_URL =
     process.env.NEXT_PUBLIC_IMAGE_BASE_URL || "http://192.168.1.14:1331";
 
-  const data = meditation?.data || meditation;
+  const data = meditation?.data || meditation || {};
 
-  const rawSteps = data?.practiceSteps || [];
+  const rawSteps =
+    data?.HowToDoIt?.instructionsPoints ||
+    data?.practiceSteps ||
+    [];
 
   const apiSteps = Array.isArray(rawSteps)
-    ? rawSteps.map((step, index) => ({
-        number: index + 1,
-        bg: FALLBACK_BGS[index % FALLBACK_BGS.length],
-        title: step?.name || `Step ${index + 1}`,
-        desc: step?.description || "",
-      }))
+    ? rawSteps.map((step, index) => {
+        const stepText = Array.isArray(step?.children)
+          ? step.children.map((node) => node?.text || "").join(" ").trim()
+          : step?.text || step?.description || step?.describeTheStep || "";
+
+        const cleanedText = stepText.replace(/^\s*\d+\.\s*/, "").trim();
+
+        return {
+          number: index + 1,
+          bg: FALLBACK_BGS[index % FALLBACK_BGS.length],
+          title:
+            step?.nameOfTheSteps ||
+            step?.name ||
+            step?.title ||
+            `Step ${index + 1}`,
+          desc:
+            step?.describeTheStep ||
+            step?.description ||
+            cleanedText ||
+            stepText ||
+            "",
+        };
+      })
     : [];
 
   const steps = apiSteps.length > 0 ? apiSteps : staticSteps;
 
-  const rawImage = data?.image?.url || null;
+  const rawImage =
+    data?.image?.[0]?.url ||
+    data?.image?.url ||
+    data?.bannerImage?.url ||
+    data?.thumbnail?.url ||
+    null;
 
   const practiceImageUrl = rawImage
     ? rawImage.startsWith("http")

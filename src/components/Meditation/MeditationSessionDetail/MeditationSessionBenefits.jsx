@@ -98,7 +98,42 @@ export default function MeditationSessionBenefits({
     margin: "-50px",
   });
 
-  const benefits = staticBenefits;
+  const data = meditation?.data || meditation || {};
+
+  const mappedBenefits = Array.isArray(data?.therapeuticNotes)
+    ? data.therapeuticNotes.reduce((acc, note, index, arr) => {
+        if (index % 2 !== 0) return acc;
+
+        const title = note;
+        const description = arr[index + 1] || "";
+
+        if (!title) return acc;
+
+        acc.push({
+          title,
+          description,
+          bg: [
+            "bg-[#FEF9C3]",
+            "bg-[#F3E8FF]",
+            "bg-[#BFDDF2]",
+            "bg-[#FCE7F3]",
+            "bg-[#DCFCE7]",
+          ][acc.length % 5],
+          image: [
+            IMAGES.HolisticWellbeing,
+            IMAGES.Mind,
+            IMAGES.focus,
+            IMAGES.Mind,
+            IMAGES.HolisticWellbeing,
+          ][acc.length % 5],
+          isRemote: false,
+        });
+
+        return acc;
+      }, [])
+    : [];
+
+  const benefits = mappedBenefits.length > 0 ? mappedBenefits : staticBenefits;
 
   return (
     <section

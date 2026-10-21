@@ -10,14 +10,6 @@ import {
 import { spacing, typography } from "../../../theme";
 import { useTheme } from "../../../context/ThemeContext";
 
-// ─── Static placeholder data ────────────────────────────────────────────────
-const UP_NEXT_ITEMS = [
-  { id: 1, title: "Deep Sleep Yoga Nidra", duration: "30 min", mode: "Audio" },
-  { id: 2, title: "Morning Pranayama Flow", duration: "15 min", mode: "Audio" },
-  { id: 3, title: "Root Chakra Grounding", duration: "20 min", mode: "Audio" },
-  { id: 4, title: "Evening Body Scan", duration: "25 min", mode: "Audio" },
-];
-
 // ─── Up Next Row (presentational only) ─────────────────────────────────────
 function UpNextRow({ item, isLast, dark, textColor }) {
   return (
@@ -64,8 +56,21 @@ function UpNextRow({ item, isLast, dark, textColor }) {
 }
 
 // ─── Up Next Section (presentational only) ─────────────────────────────────
-export function UpNextSection({ items = UP_NEXT_ITEMS }) {
+export function UpNextSection({ items = [] }) {
   const { dark, textColor } = useTheme();
+
+  if (!items.length) {
+    return (
+      <div className={spacing.sectionPaddingX}>
+        <div className="rounded-[20px] border border-dashed border-gray-300 bg-white px-6 py-10 text-center">
+          <p className="text-base font-semibold text-gray-700">No media found</p>
+          <p className="mt-2 text-sm text-gray-500">
+            There are no upcoming media items for this session.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={spacing.sectionPaddingX}>
@@ -178,8 +183,23 @@ export function MiniPlayerBar({
 }
 
 // ─── Combined default export (presentational only) ─────────────────────────
-export default function UpNextWithMiniMeditationPlaylist() {
+export default function UpNextWithMiniMeditationPlaylist({
+  playlistTracks = [],
+  currentTrackIndex = 0,
+  title = "",
+  current = "00:00",
+  total = "00:00",
+}) {
   const { dark } = useTheme();
+  const items = Array.isArray(playlistTracks) && playlistTracks.length > 0
+    ? playlistTracks.map((track, index) => ({
+        id: track?.documentId || track?.id || index,
+        title: track?.title || "Untitled session",
+        duration: track?.durationInSeconds ? `${Math.floor(track.durationInSeconds / 60)} min` : "0 min",
+        mode: "Audio",
+        active: index === currentTrackIndex,
+      }))
+    : [];
 
   return (
     <div
@@ -187,14 +207,16 @@ export default function UpNextWithMiniMeditationPlaylist() {
       style={{ backgroundColor: dark ? "#111827" : "#ffffff" }}
     >
       <div className="pt-6 md:pt-8 pb-6">
-        <UpNextSection items={UP_NEXT_ITEMS} />
+        <UpNextSection items={items} />
       </div>
 
-      <MiniPlayerBar
-        title="Deep Sleep Yoga Nidra"
-        current="00:00"
-        total="30:00"
-      />
+      {items.length > 0 && (
+        <MiniPlayerBar
+          title={title || items[currentTrackIndex]?.title || "Session"}
+          current={current}
+          total={total}
+        />
+      )}
     </div>
   );
 }

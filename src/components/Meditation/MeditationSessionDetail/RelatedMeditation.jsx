@@ -97,7 +97,35 @@ export default function RelatedMeditation({
     margin: "-50px",
   });
 
-  const related = staticRelated;
+  const data = meditation?.data || meditation || {};
+
+  const apiRelated = Array.isArray(data?.relatedMeditations)
+    ? data.relatedMeditations.slice(0, 4).map((item, index) => {
+        const imageUrl =
+          item?.thumbnail?.url ||
+          item?.bannerImage?.url ||
+          item?.image?.[0]?.url ||
+          null;
+
+        return {
+          title: item?.name || item?.title || `Meditation ${index + 1}`,
+          description:
+            item?.description ||
+            item?.shortDescription ||
+            "Explore this related meditation practice.",
+          bg: [
+            "bg-[#FEF9C3]",
+            "bg-[#F3E8FF]",
+            "bg-[#BFDDF2]",
+            "bg-[#FCE7F3]",
+          ][index % 4],
+          image: imageUrl || IMAGES.Mind,
+          isRemote: Boolean(imageUrl),
+        };
+      })
+    : [];
+
+  const related = apiRelated.length > 0 ? apiRelated : staticRelated;
 
   return (
     <section

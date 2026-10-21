@@ -21,14 +21,18 @@ export default function PracticeInfoGridMeditation({
     margin: "-50px",
   });
 
+  const data = meditation?.data || meditation || {};
+
   // ─── Static meditation defaults (no backend) ───────────────────────────────
 
   const bestTime =
     propBestTime ||
+    data?.bestTimeCard?.cardText ||
     "Early morning (Brahma Muhurta) or during meditation sessions.";
 
   const precautions =
     propPrecautions ||
+    data?.cautionNotes ||
     [
       "Practice on an empty stomach.",
       "Keep your back straight while practicing.",
@@ -37,11 +41,14 @@ export default function PracticeInfoGridMeditation({
 
   const duration =
     propDuration ||
+    data?.durationCard?.cardText ||
+    data?.duration ||
     "15-30 minutes daily for best results.";
 
   const who =
     propWho ||
-    "This practice is suitable for anyone. It is especially beneficial for those seeking calm, focus, and mental clarity.";
+    data?.introCard?.introCardText ||
+    `Suitable for ${data?.level || "all"} practitioners seeking calm and focus.`;
 
   // ─── Layout items ──────────────────────────────────────────────────────────
 

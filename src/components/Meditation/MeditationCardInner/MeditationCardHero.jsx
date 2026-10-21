@@ -65,11 +65,36 @@ function MetaItem({ icon, label, value, dark, textColor }) {
 
 // ─── Meditation Card Hero (presentational only) ─────────────────────────────
 export default function MeditationCardHero({
-  // Accept a meditation object (not required for rendering)
   meditation = null,
 }) {
   const { dark, textColor } = useTheme();
-  const item = MEDITATIONS[0]; // static — first meditation shown
+  const data = meditation?.data || meditation || {};
+
+  const item = {
+    name: data?.name || "Meditation",
+    description:
+      data?.description ||
+      data?.introCard?.introCardText ||
+      "A guided meditation practice for calm, focus, and balance.",
+    tags:
+      data?.intentions?.map((item) => item.name) ||
+      (Array.isArray(data?.tags) ? data.tags : [data?.element, data?.level]),
+    element: data?.element || "Air",
+    level: data?.level || "Beginner",
+    type: data?.type || "Meditation",
+    image:
+      data?.image?.[0]?.url ||
+      data?.bannerImage?.url ||
+      data?.thumbnail?.url ||
+      IMAGES.JnanaMudra,
+  };
+
+  const imageSrc =
+    typeof item.image === "string" && item.image.startsWith("http")
+      ? item.image
+      : typeof item.image === "string"
+        ? `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL || "http://192.168.1.14:1331"}${item.image}`
+        : item.image;
 
   return (
     <div
@@ -77,7 +102,6 @@ export default function MeditationCardHero({
       style={{ backgroundColor: dark ? "#111827" : "#ffffff" }}
     >
       <div className="mx-auto rounded-[24px] overflow-hidden">
-        {/* Header */}
         <div className="text-center pt-5 pb-4 md:pt-6 md:pb-5 lg:pt-8 lg:pb-15">
           <h2
             className={`${typography.sectionHeading}`}
@@ -87,17 +111,15 @@ export default function MeditationCardHero({
           </h2>
         </div>
 
-        {/* Body */}
         <div className="px-4 pb-5 md:px-6 md:pb-6 lg:px-8 lg:pb-8">
           <div className="grid grid-cols-1 md:grid-cols-[250px_1fr] lg:grid-cols-[350px_1fr] gap-4 md:gap-6 lg:gap-8 items-start">
-            {/* ── Image ── */}
             <div>
               <div
                 className="relative rounded-[18px] overflow-hidden aspect-[4/3] md:aspect-[3/3] lg:aspect-[4/4]"
                 style={{ backgroundColor: dark ? "#374151" : "#EDE7FE" }}
               >
                 <Image
-                  src={item.image}
+                  src={imageSrc}
                   alt={item.name}
                   fill
                   className="object-cover"
@@ -105,7 +127,6 @@ export default function MeditationCardHero({
               </div>
             </div>
 
-            {/* ── Details ── */}
             <div className="space-y-3 md:space-y-4 lg:space-y-5">
               <h3
                 className={`${typography.playerHeading}`}
@@ -114,7 +135,6 @@ export default function MeditationCardHero({
                 {item.name}
               </h3>
 
-              {/* Tag pills */}
               <div className="flex flex-wrap gap-1.5 md:gap-2">
                 {item.tags.map((tag, idx) => (
                   <span
@@ -131,7 +151,6 @@ export default function MeditationCardHero({
                 ))}
               </div>
 
-              {/* Description */}
               <p
                 className="text-[13px] md:text-[14px] lg:text-[19px] leading-relaxed"
                 style={{ color: dark ? "#9ca3af" : "#8A8577" }}
@@ -139,7 +158,6 @@ export default function MeditationCardHero({
                 {item.description}
               </p>
 
-              {/* Meta row */}
               <div className="flex items-center gap-3 md:gap-4 lg:gap-6 pt-1 md:pt-2">
                 <MetaItem
                   icon={<Leaf size={16} />}

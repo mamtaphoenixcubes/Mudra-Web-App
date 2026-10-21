@@ -23,19 +23,30 @@ export default function MeditationCardBar({
   session = SESSION_INFO,
   onOpenSettings,
   mudra = null,
+  meditation = null,
 }) {
   const { dark, textColor } = useTheme();
   const router = useRouter();
+  const data = meditation?.data || meditation || {};
+
+  const title = data?.name || session.title || SESSION_INFO.title;
+  const subtitle =
+    `${session?.duration ?? 10} min · ${data?.level || "Beginner"} · ${data?.element || "Air"} Element` ||
+    session.subtitle ||
+    SESSION_INFO.subtitle;
+
   const isMusicOn = session.musicLabel && session.musicLabel !== "None";
 
   const handleStartPractice = () => {
-    // Optionally pass mudra id / duration via query params
     const params = new URLSearchParams();
     if (mudra?.documentId || mudra?.id) {
       params.set("mudraId", mudra.documentId || mudra.id);
     }
     if (session?.duration) {
       params.set("duration", String(session.duration));
+    }
+    if (data?.documentId || data?.id) {
+      params.set("meditationId", String(data.documentId || data.id));
     }
     const query = params.toString();
     router.push(`/MeditationPlaylist${query ? `?${query}` : ""}`);
@@ -54,13 +65,12 @@ export default function MeditationCardBar({
           boxShadow: `0 -4px 20px rgba(0,0,0,0.15)`,
         }}
       >
-        {/* Session info */}
         <div className="text-center mb-4">
           <h3 className="text-white text-[15px] sm:text-[16px] font-semibold">
-            {session.title}
+            {title}
           </h3>
           <p className="text-white/75 text-[12px] sm:text-[13px] mt-0.5">
-            {session.subtitle}
+            {subtitle}
           </p>
         </div>
 

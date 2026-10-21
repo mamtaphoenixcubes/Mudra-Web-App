@@ -123,11 +123,43 @@ function StepRow({ step, isLast, dark, textColor }) {
 
 // ─── Practice Steps ─────────────────────────────────────────────────────────
 export default function MeditationPracticeSteps({
-  // Accept a meditation object (not required for rendering)
   meditation = null,
-  steps = STEPS,
+  steps = null,
 }) {
   const { dark, textColor } = useTheme();
+  const data = meditation?.data || meditation || {};
+
+  const mappedSteps = Array.isArray(steps)
+    ? steps
+    : Array.isArray(data?.practiceSteps)
+      ? data.practiceSteps.map((step, index) => ({
+          id: step?.id || index + 1,
+          title: step?.nameOfTheSteps || step?.name || `Step ${index + 1}`,
+          lines: [
+            step?.describeTheStep ||
+            step?.description ||
+            step?.text ||
+            "Follow the guided practice with attention and ease.",
+          ],
+          imageSrc: [IMAGES.BodyBalance, IMAGES.AirIcon, IMAGES.Energy, IMAGES.Mind][index % 4],
+          bg: ["#FBE3B8", "#DCEFC7", "#C7E7EF", "#E4D3F5"][index % 4],
+        }))
+      : Array.isArray(data?.HowToDoIt?.instructionsPoints)
+        ? data.HowToDoIt.instructionsPoints.map((step, index) => {
+            const texts = Array.isArray(step?.children)
+              ? step.children.map((node) => node?.text || "").join(" ").trim()
+              : step?.text || step?.description || "";
+            return {
+              id: index + 1,
+              title: `Step ${index + 1}`,
+              lines: [texts || "Follow the guided practice with attention and ease."],
+              imageSrc: [IMAGES.BodyBalance, IMAGES.AirIcon, IMAGES.Energy, IMAGES.Mind][index % 4],
+              bg: ["#FBE3B8", "#DCEFC7", "#C7E7EF", "#E4D3F5"][index % 4],
+            };
+          })
+        : STEPS;
+
+  const finalSteps = mappedSteps.length ? mappedSteps : STEPS;
 
   return (
     <div
@@ -150,11 +182,11 @@ export default function MeditationPracticeSteps({
         </h2>
 
         <div className="flex flex-col">
-          {steps.map((step, i) => (
+          {finalSteps.map((step, i) => (
             <StepRow
-              key={step.id}
+              key={step.id || i}
               step={step}
-              isLast={i === steps.length - 1}
+              isLast={i === finalSteps.length - 1}
               dark={dark}
               textColor={textColor}
             />

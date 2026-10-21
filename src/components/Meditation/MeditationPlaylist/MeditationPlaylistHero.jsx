@@ -32,7 +32,7 @@ import { spacing, typography } from "../../../theme";
 import { useTheme } from "../../../context/ThemeContext";
 import { IMAGES } from "../../../assets/assets";
 import { useAuthStore } from "../../../store/useAuthStore";
-import { yogaNidraService, mudraService, playlistService } from "../../../services/apiService";
+import { meditationService, playlistService } from "../../../services/apiService";
 import AddToPlaylistModal from "../../AddToPlaylistModal";
 import { useRouter } from "next/navigation";
 
@@ -48,20 +48,6 @@ const getImgBaseUrl = () => {
 
 const IMAGE_BASE_URL = process.env.NEXT_PUBLIC_IMAGE_BASE_URL || getImgBaseUrl();
 
-// ─── Config ─────────────────────────────────────────────────────────────────
-const SESSION = {
-  title: "Deep Sleep Yoga Nidra",
-  tagline: "Rest deeply. Restore naturally.",
-  duration: "30 min",
-  mode: "Audio",
-  level: "Beginner",
-  cover: IMAGES.YogaNidraHero,
-  audioUrl: "/audio/deep-sleep-nidra.mp3",
-  totalSeconds: 30 * 60,
-  about:
-    "This Yoga Nidra is designed to help you relax your body and mind, release tension and cultivate deep restorative sleep.",
-};
-
 const SPEED_OPTIONS = [0.75, 1.0, 1.25, 1.5, 2.0];
 const SLEEP_TIMER_OPTIONS = [
   { label: "Off", value: null },
@@ -70,13 +56,6 @@ const SLEEP_TIMER_OPTIONS = [
   { label: "30 min", value: 30 },
   { label: "45 min", value: 45 },
   { label: "60 min", value: 60 },
-];
-
-const PLAYLIST = [
-  { id: 1, title: "Deep Sleep Yoga Nidra", duration: "30 min", active: true },
-  { id: 2, title: "Morning Pranayama Flow", duration: "15 min" },
-  { id: 3, title: "Root Chakra Grounding", duration: "20 min" },
-  { id: 4, title: "Evening Body Scan", duration: "25 min" },
 ];
 
 function formatTime(sec) {
@@ -665,7 +644,7 @@ const buildSessionCompleteUrl = (
 // ─── Session Player ─────────────────────────────────────────────────────────
 export default function MeditationPlaylistHero({
   sessionData = null,
-  type = "yoganidra",
+  type = "yogameditation",
   mode = "guided",
   durationParam = null,
   playlistTracks: propPlaylistTracks = null,
@@ -691,7 +670,7 @@ export default function MeditationPlaylistHero({
 
   // Unwrap nested data if present (e.g. from Strapi/Express response wrapper)
   const actualData = sessionData?.data || sessionData;
-  const isMudra = type === "mudra";
+  const isMudra = type === "yogameditation";
   const isVideoMode = isMudra && (actualData?.mediaType === "VIDEO_SINGLE" || actualData?.mediaType === "VIDEO_PLAYLIST");
   const isPlaylist = isMudra
     ? (actualData?.mediaType === "AUDIO_PLAYLIST" || actualData?.mediaType === "VIDEO_PLAYLIST")
@@ -716,6 +695,20 @@ export default function MeditationPlaylistHero({
             : (actualData?.AudioPlaylist?.[0]?.audios || [])
         )
   );
+
+  if (!actualData || !playlistTracks?.length) {
+    return (
+      <div className="flex min-h-[40vh] items-center justify-center px-6 py-10 text-center">
+        <div>
+          <p className="text-lg font-semibold text-gray-700">No media found</p>
+          <p className="mt-2 text-sm text-gray-500">
+            There is no audio or video content available for this session.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   const activeTrack = playlistTracks[currentTrackIndex];
 
   // Dynamic API mappings
@@ -812,37 +805,27 @@ export default function MeditationPlaylistHero({
   const [timerModalOpen, setTimerModalOpen] = useState(false);
   const [playBellOnEnd, setPlayBellOnEnd] = useState(true);
 
+  const timerDurationFromParam = Number(durationParam) > 0 ? Number(durationParam) : 0;
+
   // Initialize countdown timer from params or localStorage
   useEffect(() => {
-    if (!isMudra) return;
+    const docId = actualData?.documentId || actualData?.id || heroName || "session";
+    const totalTimeFromProps = Number(durationParam) > 0 ? Number(durationParam) : 0;
 
-    const mudraDocId = actualData?.documentId || actualData?.id;
-
-    if (!mudraDocId) return;
-
-    const totalTimeFromProps = Number(durationParam);
+    if (!docId || totalTimeFromProps <= 0) return;
 
     let restored = null;
 
     try {
-      const key = `mudra_timer_${mudraDocId}`;
+      const key = `mudra_timer_${docId}`;
       const cached = localStorage.getItem(key);
 
       if (cached) {
         const parsed = JSON.parse(cached);
 
-        console.log("Timer from props:", totalTimeFromProps);
-        console.log("Timer from localStorage:", parsed);
-        console.log("Stored totalSeconds:", parsed?.totalSeconds);
-
-        // Restore ONLY when prop duration matches stored totalSeconds
-        if (
-          parsed?.active &&
-          Number(parsed?.totalSeconds) === totalTimeFromProps
-        ) {
+        if (parsed?.active && Number(parsed?.totalSeconds) === totalTimeFromProps) {
           restored = parsed;
         } else {
-          // Different timer duration, remove old timer
           localStorage.removeItem(key);
         }
       }
@@ -851,8 +834,6 @@ export default function MeditationPlaylistHero({
     }
 
     if (restored) {
-      console.log("Restoring existing timer");
-
       setTimerTotalSeconds(restored.totalSeconds);
       setTimerSecondsLeft(restored.secondsLeft);
       setTimerActive(true);
@@ -860,9 +841,7 @@ export default function MeditationPlaylistHero({
       setPlayBellOnEnd(restored.playBell);
       setPlaying(!restored.paused);
       setTimerModalOpen(true);
-    } else if (mode === "timer" && totalTimeFromProps > 0) {
-      console.log("Starting new timer:", totalTimeFromProps);
-
+    } else if (mode === "timer" || totalTimeFromProps > 0) {
       setTimerTotalSeconds(totalTimeFromProps);
       setTimerSecondsLeft(totalTimeFromProps);
       setTimerActive(true);
@@ -870,7 +849,7 @@ export default function MeditationPlaylistHero({
       setPlaying(true);
       setTimerModalOpen(true);
     }
-  }, [durationParam, isMudra, mode, actualData]);
+  }, [durationParam, mode, actualData, heroName]);
 
   // Save countdown timer state to localStorage
   useEffect(() => {
@@ -948,19 +927,30 @@ export default function MeditationPlaylistHero({
       playSingingBowlSound();
     }
 
-    const mudraDocId = actualData?.documentId || actualData?.id;
-    if (mudraDocId) {
+    const currentId = actualData?.documentId || actualData?.id;
+    const activeTrackId = activeTrack?.documentId || activeTrack?.id || currentId;
+    const mediaTypeVal = actualData?.mediaType || actualData?.MediaType || "AUDIO_SINGLE";
+
+    if (currentId) {
       try {
-        const response = await mudraService.completeMudra(mudraDocId, profileDocId, timerTotalSeconds);
+        const response = await meditationService.completeMeditationMedia({
+          profileDocumentId: profileDocId,
+          mediaType: mediaTypeVal,
+          mediaDocumentId: activeTrackId,
+          meditationDocumentId: currentId,
+          completedDuration: Math.round(timerTotalSeconds || totalSecs || 0),
+        });
+
         if (response) {
           router.push(
-            buildSessionCompleteUrl(response, heroName, "yoga mudra")
+            buildSessionCompleteUrl(response, heroName, "meditation")
           );
         }
       } catch (err) {
-        console.warn("Failed to complete mudra session:", err);
+        console.warn("Failed to complete meditation media on timer end:", err);
       }
     }
+
     showToast("Meditation timer completed!");
   };
 
@@ -973,12 +963,21 @@ export default function MeditationPlaylistHero({
     setPlaying(false);
 
     const elapsed = timerTotalSeconds - timerSecondsLeft;
-    const mudraDocId = actualData?.documentId || actualData?.id;
-    if (mudraDocId && elapsed > 0) {
+    const currentId = actualData?.documentId || actualData?.id;
+    const activeTrackId = activeTrack?.documentId || activeTrack?.id || currentId;
+    const mediaTypeVal = actualData?.mediaType || actualData?.MediaType || "AUDIO_SINGLE";
+
+    if (currentId && elapsed > 0) {
       try {
-        await mudraService.completeMudra(mudraDocId, profileDocId, elapsed);
+        await meditationService.completeMeditationMedia({
+          profileDocumentId: profileDocId,
+          mediaType: mediaTypeVal,
+          mediaDocumentId: activeTrackId,
+          meditationDocumentId: currentId,
+          completedDuration: Math.round(elapsed),
+        });
       } catch (err) {
-        console.warn("Failed to complete mudra session on stop:", err);
+        console.warn("Failed to complete meditation media on stop:", err);
       }
     }
     setTimerModalOpen(false);
@@ -1041,26 +1040,14 @@ export default function MeditationPlaylistHero({
         currentTime,
       });
 
-      if (isMudra) {
-        await mudraService.saveMudraMediaProgress({
-          profileDocumentId: profileDocId,
-          mediaType: mediaTypeVal,
-          mediaDocumentId: activeTrackId,
-          mudraDocumentId: currentId,
-          remainingDuration,
-          sessionDuration,
-        });
-      } else {
-        await yogaNidraService.saveMediaProgress({
-          profileDocumentId: profileDocId,
-          mediaType: mediaTypeVal,
-          mediaDocumentId: activeTrackId,
-          nidraDocumentId: currentId,
-          mudraDocumentId: currentId,
-          remainingDuration,
-          sessionDuration,
-        });
-      }
+      await meditationService.saveMeditationMediaProgress({
+        profileDocumentId: profileDocId,
+        mediaType: mediaTypeVal,
+        mediaDocumentId: activeTrackId,
+        meditationDocumentId: currentId,
+        remainingDuration,
+        sessionDuration,
+      });
 
       lastProgressSentRef.current = currentTime;
     } catch (err) {
@@ -1163,11 +1150,9 @@ export default function MeditationPlaylistHero({
     }
   }
 
-  const handlePlayPause = () => {
+  const handlePlayPause = async () => {
     if (playing) {
-      // User explicitly clicked Pause
       const activeEl = isVideoMode ? videoRef.current : audioRef.current;
-
       if (activeEl) {
         sendProgressUpdate(activeEl.currentTime);
       }
@@ -1232,17 +1217,15 @@ export default function MeditationPlaylistHero({
         const mediaTypeVal = actualData?.mediaType || actualData?.MediaType || "AUDIO_SINGLE";
         const currentId = actualData?.documentId || actualData?.id;
 
-        // Uncomment if you want to mark media complete inside timer loop:
-        // const response = await mudraService.completeMudraMedia({
-        //   profileDocumentId: profileDocId,
-        //   mediaType: mediaTypeVal,
-        //   mediaDocumentId: activeTrackId,
-        //   mudraDocumentId: currentId,
-        //   completedDuration: Math.round(duration || totalSecs || 0)
-        // });
-        // if (response) {
-        //   router.push(buildSessionCompleteUrl(response, heroName));
-        // }
+        if (currentId) {
+          await meditationService.completeMeditationMedia({
+            profileDocumentId: profileDocId,
+            mediaType: mediaTypeVal,
+            mediaDocumentId: activeTrackId,
+            meditationDocumentId: currentId,
+            completedDuration: Math.round(duration || totalSecs || 0),
+          });
+        }
       } catch (e) {
         console.warn("Failed to complete media inside timer loop:", e);
       }
@@ -1256,17 +1239,13 @@ export default function MeditationPlaylistHero({
       const activeTrackId = activeTrack?.documentId || activeTrack?.id || currentId;
       const mediaTypeVal = actualData?.mediaType || actualData?.MediaType || "AUDIO_SINGLE";
 
-      // Uncomment if you want to mark media complete normally:
-      // const response = await mudraService.completeMudraMedia({
-      //   profileDocumentId: profileDocId,
-      //   mediaType: mediaTypeVal,
-      //   mediaDocumentId: activeTrackId,
-      //   mudraDocumentId: currentId,
-      //   completedDuration: Math.round(duration || totalSecs || 0)
-      // });
-      // if (response) {
-      //   router.push(buildSessionCompleteUrl(response, heroName));
-      // }
+      await meditationService.completeMeditationMedia({
+        profileDocumentId: profileDocId,
+        mediaType: mediaTypeVal,
+        mediaDocumentId: activeTrackId,
+        meditationDocumentId: currentId,
+        completedDuration: Math.round(duration || totalSecs || 0),
+      });
     } catch (err) {
       console.warn("Failed to mark session as completed:", err);
     }
@@ -1278,12 +1257,7 @@ export default function MeditationPlaylistHero({
     try {
       setLiked(nextState);
       const currentId = actualData?.documentId || actualData?.id || "ui2phqjaaqub5r1k38gkppko";
-      let res;
-      if (isMudra) {
-        res = await mudraService.likeMudra(currentId, profileDocId);
-      } else {
-        res = await yogaNidraService.likeYogaNidra(currentId, profileDocId);
-      }
+      const res = await meditationService.likeMeditation(currentId, profileDocId);
       const resData = res?.data || res;
       const serverIsLiked = resData?.isLiked ?? resData?.IsLiked ?? resData?.isliked;
       if (typeof serverIsLiked === "boolean") {
@@ -1313,11 +1287,7 @@ export default function MeditationPlaylistHero({
     try {
       // Report download to backend
       try {
-        if (isMudra) {
-          await mudraService.incrementMudraDownload(currentId, profileDocId);
-        } else {
-          await yogaNidraService.downloadYogaNidra(currentId, profileDocId);
-        }
+        await meditationService.downloadMeditation(currentId, profileDocId);
       } catch (dErr) {
         console.warn("Failed to track download:", dErr);
       }
@@ -1347,11 +1317,7 @@ export default function MeditationPlaylistHero({
 
     // Track share
     try {
-      if (isMudra) {
-        await mudraService.incrementMudraShare(currentId, profileDocId);
-      } else {
-        await yogaNidraService.shareYogaNidra(currentId, profileDocId);
-      }
+      await meditationService.shareMeditation(currentId, profileDocId);
     } catch (sErr) {
       console.warn("Failed to track share:", sErr);
     }
@@ -1852,19 +1818,22 @@ export default function MeditationPlaylistHero({
         </div>
       )}
 
-      {/* Floating clock timer button if it is a Mudra */}
-      {isMudra && (
+      {/* Floating timer button using the URL duration value when provided */}
+      {(timerDurationFromParam > 0 || timerActive || timerTotalSeconds > 0) && (
         <button
           onClick={() => setTimerModalOpen(true)}
           className="fixed bottom-24 right-6 z-50 flex items-center gap-2 px-4 py-3 rounded-full bg-[#9A85FE] text-white shadow-xl hover:scale-105 active:scale-95 transition-transform border border-white/20"
         >
           <Clock size={20} />
-          {timerActive && (
-            <span className="text-sm font-semibold tracking-wide">
-              {Math.floor(timerSecondsLeft / 60).toString().padStart(2, "0")}:
-              {(timerSecondsLeft % 60).toString().padStart(2, "0")}
-            </span>
-          )}
+          <span className="text-sm font-semibold tracking-wide">
+            {Math.floor((timerSecondsLeft || timerTotalSeconds || timerDurationFromParam) / 60)
+              .toString()
+              .padStart(2, "0")}
+            :
+            {((timerSecondsLeft || timerTotalSeconds || timerDurationFromParam) % 60)
+              .toString()
+              .padStart(2, "0")}
+          </span>
         </button>
       )}
 
