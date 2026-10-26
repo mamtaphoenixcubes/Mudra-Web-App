@@ -5,37 +5,6 @@ import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { IMAGES } from "../../../assets/assets";
 
-const staticRelated = [
-  {
-    title: "Mindful Breathing",
-    description: "Anchors attention on the breath to calm the mind.",
-    bg: "bg-[#FEF9C3]",
-    image: IMAGES.Mind,
-    isRemote: false,
-  },
-  {
-    title: "Body Scan Relaxation",
-    description: "Releases tension from head to toe with awareness.",
-    bg: "bg-[#F3E8FF]",
-    image: IMAGES.ManaMudras,
-    isRemote: false,
-  },
-  {
-    title: "Loving-Kindness",
-    description: "Cultivates compassion for yourself and others.",
-    bg: "bg-[#BFDDF2]",
-    image: IMAGES.HolisticWellbeing,
-    isRemote: false,
-  },
-  {
-    title: "Yoga Nidra",
-    description: "A deep guided rest that keeps the mind aware.",
-    bg: "bg-[#FCE7F3]",
-    image: IMAGES.KayaMudras,
-    isRemote: false,
-  },
-];
-
 function Card({ item }) {
   const isHex = item.bg?.startsWith("#");
 
@@ -87,9 +56,9 @@ function Card({ item }) {
 }
 
 export default function RelatedPranaym({
-  // Accept a meditation object (not required for rendering)
   meditation = null,
 }) {
+  const IMAGE_BASE_URL = process.env.NEXT_PUBLIC_IMAGE_BASE_URL || "http://192.168.1.14:1331";
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, {
     once: true,
@@ -97,7 +66,30 @@ export default function RelatedPranaym({
     margin: "-50px",
   });
 
-  const related = staticRelated;
+  const related = Array.isArray(meditation?.relatedPranayams) && meditation.relatedPranayams.length > 0
+    ? meditation.relatedPranayams.map((item, index) => {
+        const rawImage = item?.introCard?.introCardImage?.url || item?.thumbnail?.url || null;
+        const image = rawImage
+          ? rawImage.startsWith("http")
+            ? rawImage
+            : `${IMAGE_BASE_URL.replace(/\/+$/, "")}${rawImage.startsWith("/") ? rawImage : `/${rawImage}`}`
+          : IMAGES.Energy;
+
+        return {
+          title: item?.name || item?.title || `Related pranayama ${index + 1}`,
+          description: item?.description || item?.introCard?.introCardText || "No description available.",
+          bg: ["bg-[#FEF9C3]", "bg-[#F3E8FF]", "bg-[#BFDDF2]", "bg-[#FCE7F3]"][index % 4],
+          image,
+          isRemote: Boolean(rawImage && rawImage.startsWith("http")),
+        };
+      })
+    : [{
+        title: "No data available",
+        description: "No related pranayams available.",
+        bg: "bg-[#F3F4F6]",
+        image: IMAGES.Energy,
+        isRemote: false,
+      }];
 
   return (
     <section

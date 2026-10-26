@@ -10,7 +10,6 @@ import {
 import { spacing, typography } from "../../../theme";
 import { useTheme } from "../../../context/ThemeContext";
 
-// ─── Static placeholder data (Pranayama) ────────────────────────────────────
 const UP_NEXT_ITEMS = [
   { id: 1, title: "Anulom Vilom Pranayama", duration: "10 min", mode: "Audio" },
   { id: 2, title: "Kapal Bhati Pranayama", duration: "6 min", mode: "Audio" },
@@ -18,11 +17,22 @@ const UP_NEXT_ITEMS = [
   { id: 4, title: "Bhramari Pranayama", duration: "5 min", mode: "Audio" },
 ];
 
-// ─── Up Next Row (presentational only) ─────────────────────────────────────
-function UpNextRow({ item, isLast, dark, textColor }) {
+function formatDurationText(seconds) {
+  if (!seconds && seconds !== 0) return "Duration unavailable";
+  const totalSeconds = Number(seconds);
+  if (!Number.isFinite(totalSeconds) || totalSeconds <= 0) return "Duration unavailable";
+  const minutes = Math.floor(totalSeconds / 60);
+  const remainingSeconds = Math.round(totalSeconds % 60);
+  if (minutes <= 0) return `${remainingSeconds} sec`;
+  return remainingSeconds > 0 ? `${minutes} min ${remainingSeconds} sec` : `${minutes} min`;
+}
+
+function UpNextRow({ item, isLast, dark, textColor, onSelect }) {
   return (
-    <div
-      className="relative flex items-center gap-3 md:gap-4 px-4 md:px-5 py-4"
+    <button
+      type="button"
+      onClick={onSelect}
+      className="relative flex w-full items-center gap-3 md:gap-4 px-4 md:px-5 py-4 text-left"
       style={{
         borderBottom: isLast ? "none" : `1px solid ${dark ? "#374151" : "#EDEBE4"}`,
       }}
@@ -52,19 +62,16 @@ function UpNextRow({ item, isLast, dark, textColor }) {
       </div>
 
       <div className="relative flex-shrink-0">
-        <button
-          aria-label={`More options for ${item.title}`}
-          className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-black/5 transition-colors"
-        >
+        <span className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-black/5 transition-colors">
           <MoreHorizontal size={18} style={{ color: dark ? "#9ca3af" : "#8A8577" }} />
-        </button>
+        </span>
       </div>
-    </div>
+    </button>
   );
 }
 
 // ─── Up Next Section (presentational only) ─────────────────────────────────
-export function UpNextSection({ items = UP_NEXT_ITEMS }) {
+export function UpNextSection({ items = UP_NEXT_ITEMS, onSelectTrack = null }) {
   const { dark, textColor } = useTheme();
 
   return (
@@ -93,11 +100,12 @@ export function UpNextSection({ items = UP_NEXT_ITEMS }) {
       >
         {items.map((item, i) => (
           <UpNextRow
-            key={item.id}
+            key={item.id || `${item.title}-${i}`}
             item={item}
             isLast={i === items.length - 1}
             dark={dark}
             textColor={textColor}
+            onSelect={() => onSelectTrack?.(item, i)}
           />
         ))}
       </div>
@@ -178,22 +186,47 @@ export function MiniPlayerBar({
 }
 
 // ─── Combined default export (presentational only) ─────────────────────────
-export default function UpNextWithMiniPranayamPlay() {
+export default function UpNextWithMiniPranayamPlay({
+  playlistTracks = [],
+  currentTrackIndex = 0,
+  setCurrentTrackIndex = null,
+  playing = false,
+  setPlaying = null,
+  current = 0,
+  totalSecs = 0,
+  selectedMedia = null,
+  duration = null,
+}) {
   const { dark } = useTheme();
 
+  const items = playlistTracks.length > 0
+    ? playlistTracks.map((track, index) => ({
+        id: track.id || `${track.title || "track"}-${index}`,
+        title: track.title || track.name || `Session ${index + 1}`,
+        duration: formatDurationText(track.durationInSeconds || track.duration || duration || 600),
+        mode: selectedMedia?.mediaType?.includes("VIDEO") || track.videoFile ? "Video" : "Audio",
+      }))
+    : UP_NEXT_ITEMS;
+
+  const activeTitle = items[currentTrackIndex]?.title || selectedMedia?.title || "Anulom Vilom Pranayama";
+  const timerTotal = totalSecs > 0 ? formatDurationText(totalSecs) : (duration ? formatDurationText(duration) : "10:00");
+
   return (
-    <div
-      className="w-full pb-2 flex flex-col justify-between"
-      style={{ backgroundColor: dark ? "#111827" : "#ffffff" }}
-    >
+    <div className="w-full pb-2 flex flex-col justify-between" style={{ backgroundColor: dark ? "#111827" : "#ffffff" }}>
       <div className="pt-6 md:pt-8 pb-6">
-        <UpNextSection items={UP_NEXT_ITEMS} />
+        <UpNextSection
+          items={items}
+          onSelectTrack={(item, idx) => {
+            setCurrentTrackIndex?.(idx);
+            setPlaying?.(false);
+          }}
+        />
       </div>
 
       <MiniPlayerBar
-        title="Anulom Vilom Pranayama"
-        current="00:00"
-        total="10:00"
+        title={activeTitle}
+        current={formatDurationText(current || 0)}
+        total={timerTotal}
       />
     </div>
   );

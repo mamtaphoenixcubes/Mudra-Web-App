@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { IMAGES } from "../../assets/assets";
+import useAuthStore from "../../store/useAuthStore";
 
 const pastelPalette = [
   "bg-[#FEF9C3]",
@@ -12,7 +13,44 @@ const pastelPalette = [
   "bg-[#FEF9C3]",
 ];
 
-// ✅ Static pranayama data — no API needed
+const normalizePranayama = (item, index) => {
+  const imageValue =
+    item?.introCard?.introCardImage?.url ||
+    item?.thumbnail?.url ||
+    item?.bannerImage?.url ||
+    item?.image?.[0]?.url ||
+    item?.imgSrc ||
+    IMAGES.YogaNidraImage;
+
+  const imageUrl = typeof imageValue === "string" ? imageValue : imageValue?.src || imageValue?.url || null;
+
+  const resolvedImage = imageUrl
+    ? imageUrl.startsWith("http")
+      ? imageUrl
+      : `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL || "http://192.168.1.14:1337"}${imageUrl}`
+    : IMAGES.YogaNidraImage?.src || IMAGES.YogaNidraImage;
+
+  return {
+    id: item?.documentId || item?.id,
+    title: item?.name || item?.title || "Pranayama",
+    duration: item?.duration || "5 min",
+    level: item?.level || "Beginner",
+    description:
+      item?.description ||
+      item?.introCard?.introCardText ||
+      "A guided breathing practice for focus, calm, and balance.",
+    tag:
+      item?.intentions?.[0]?.name ||
+      item?.categories?.[0]?.Name ||
+      item?.tag ||
+      "Breath",
+    imgSrc: resolvedImage,
+    imgAlt: item?.name || item?.title || "Pranayama",
+    bg: pastelPalette[index % pastelPalette.length],
+  };
+};
+
+// ✅ Static pranayama data — fallback if API is empty
 const PRANAYAMAS = [
   {
     id: 1,
@@ -90,10 +128,16 @@ const PRANAYAMAS = [
 
 function PranayamCard({ pranayama }) {
   const router = useRouter();
+  const { isLoggedIn } = useAuthStore();
 
   // ✅ Navigate to PranayamSessionDetail with the pranayama id
   const handleCardClick = () => {
-    router.push(`/PranayamSessionDetail?id=${pranayama.id}`);
+    if (!isLoggedIn) {
+      router.push("/Login");
+      return;
+    }
+
+    router.push(`/PranaymSessionDetail?id=${pranayama.id}`);
   };
 
   return (
@@ -141,8 +185,9 @@ function PranayamCard({ pranayama }) {
   );
 }
 
-export default function PopularPranayam() {
+export default function PopularPranayam({ pranayams = [] }) {
   const router = useRouter();
+  const displayedPranayams = (Array.isArray(pranayams) && pranayams.length > 0 ? pranayams : PRANAYAMAS).map(normalizePranayama);
 
   // ✅ Navigate to the full pranayama list
   const handleViewMore = () => {
@@ -165,7 +210,7 @@ export default function PopularPranayam() {
 
         {/* 3-Column Card Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-          {PRANAYAMAS.map((pranayama) => (
+          {displayedPranayams.map((pranayama) => (
             <PranayamCard key={pranayama.id} pranayama={pranayama} />
           ))}
         </div>

@@ -92,16 +92,16 @@ export default function PranaymSessionHero({
   asana = null,
   mudra = null,
   meditation = null,
-  category: propCategory = "Meditations",
-  title: propTitle = "Meditation Session",
-  tags: propTags = ["Strength", "Balance", "Flexibility"],
-  description: propDescription =
-    "This asana practice helps build strength, improve balance, and increase flexibility. Regular practice supports overall physical and mental wellbeing.",
+  category: propCategory = "No data available",
+  title: propTitle = "No data available",
+  tags: propTags = [],
+  description: propDescription = "No data available.",
   onPracticeClick,
   onBenefitsClick,
   onLikeClick,
   onShareClick,
   isLiked = false,
+  likeLoading = false,
 }) {
   const IMAGE_BASE_URL =
     process.env.NEXT_PUBLIC_IMAGE_BASE_URL ||
@@ -119,30 +119,35 @@ export default function PranaymSessionHero({
     actualData?.categories?.[0]?.Name ||
     actualData?.Category?.Name ||
     actualData?.category ||
-    propCategory;
+    propCategory ||
+    "No data available";
 
   const title =
     actualData?.name ||
     actualData?.title ||
     actualData?.Name ||
-    propTitle;
+    propTitle ||
+    "No data available";
 
   const intentionsList =
-    actualData?.intentions?.map((t) => t.name) || [];
+    actualData?.intentions?.map((t) => t.name).filter(Boolean) || [];
 
   const tags =
     intentionsList.length > 0
       ? intentionsList
       : Array.isArray(actualData?.tags) && actualData.tags.length > 0
         ? actualData.tags
-        : propTags;
+        : Array.isArray(propTags) && propTags.length > 0
+          ? propTags
+          : [];
 
   const description =
     actualData?.web?.HeroSection?.Description ||
     actualData?.WebDetailsPage?.HeroSectionWeb?.HeroDescription ||
     actualData?.description ||
     actualData?.aboutSession ||
-    propDescription;
+    propDescription ||
+    "No data available.";
 
   // Resolve hero image from multiple possible locations
   const rawHeroImage =
@@ -412,22 +417,30 @@ export default function PranaymSessionHero({
               </button>
 
               {/* Like */}
-              <button
-                onClick={onLikeClick}
-                className={`flex items-center gap-2 border font-medium text-sm rounded-lg px-4 py-2.5 transition-colors shadow-2xs ${
-                  isLiked
-                    ? "border-red-200 bg-red-50 text-red-600"
-                    : "border-gray-200 bg-white hover:bg-gray-50 text-gray-700"
-                }`}
-              >
-                <Heart
-                  size={16}
-                  fill={isLiked ? "currentColor" : "none"}
-                  className={isLiked ? "text-red-500" : "text-gray-500"}
-                />
+             <button
+    type="button"
+    onClick={onLikeClick}
+    disabled={likeLoading || isLiked}
+    className={`flex items-center gap-2 border font-medium text-sm rounded-lg px-4 py-2.5 transition-colors shadow-2xs disabled:cursor-not-allowed ${
+        isLiked
+            ? "border-red-200 bg-red-50 text-red-600"
+            : "border-gray-200 bg-white hover:bg-gray-50 text-gray-700"
+    }`}
+>
+    <Heart
+        size={16}
+        fill={isLiked ? "currentColor" : "none"}
+        className={isLiked ? "text-red-500" : "text-gray-500"}
+    />
 
-                <span>{isLiked ? "Liked" : "Like"}</span>
-              </button>
+    <span>
+        {likeLoading
+            ? "Liking..."
+            : isLiked
+                ? "Liked"
+                : "Like"}
+    </span>
+</button>
 
               {/* Share */}
               <button
@@ -453,19 +466,10 @@ export default function PranaymSessionHero({
                   alt={title}
                   className="w-full h-full object-cover"
                 />
-              ) : IMAGES.MudraDetailTemplate ? (
-                <Image
-                  src={IMAGES.MudraDetailTemplate}
-                  alt={title}
-                  width={600}
-                  height={450}
-                  className="w-full h-full object-cover"
-                  priority
-                />
               ) : (
                 <div className="w-full h-full bg-gradient-to-br from-amber-50 to-purple-50 flex items-center justify-center">
                   <span className="text-gray-400 text-sm font-medium">
-                    {title}
+                    No image available
                   </span>
                 </div>
               )}

@@ -23,16 +23,14 @@ export default function PranaymInfoCard({
 
   const data = meditation?.data || meditation;
 
-  // ─── Simple data mappings ──────────────────────────────────────────────────
+  const name = data?.name || "No data available";
 
-  const name = data?.name || "Meditation";
-
-  const headingText = propHeading || `What is ${name}?`;
+  const headingText = propHeading || (data?.name ? `What is ${name}?` : "No data available");
 
   const descriptionText =
     propDescription ||
     data?.description ||
-    "This practice is designed to help you build strength, improve balance, and cultivate a deeper connection between body and mind.";
+    "No data available.";
 
   const rawImage = propImage || data?.thumbnail?.url || null;
 
@@ -62,13 +60,9 @@ export default function PranaymInfoCard({
               className="w-full h-full object-cover rounded-full"
             />
           ) : (
-            <Image
-              src={IMAGES.KayaMudras}
-              alt={headingText}
-              width={60}
-              height={60}
-              className="w-10 h-10 object-contain"
-            />
+            <div className="w-full h-full flex items-center justify-center text-[10px] font-semibold text-gray-500 bg-gray-100">
+              No image
+            </div>
           )}
         </div>
 

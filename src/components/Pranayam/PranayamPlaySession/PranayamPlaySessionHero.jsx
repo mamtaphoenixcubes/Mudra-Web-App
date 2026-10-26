@@ -28,7 +28,7 @@ import { spacing, typography } from "../../../theme";
 import { useTheme } from "../../../context/ThemeContext";
 import { IMAGES } from "../../../assets/assets";
 import { useAuthStore } from "../../../store/useAuthStore";
-import { yogaNidraService, mudraService } from "../../../services/apiService";
+import { pranayamService } from "../../../services/apiService";
 import AddToPlaylistModal from "../../AddToPlaylistModal";
 import { useRouter } from "next/navigation";
 
@@ -434,6 +434,7 @@ export default function PranayamPlaySessionHero({
   type = "pranayama",
   mode = "guided",
   durationParam = null,
+  selectedMedia = null,
   playlistTracks: propPlaylistTracks = null,
   currentTrackIndex: controlledTrackIndex,
   setCurrentTrackIndex: setControlledTrackIndex,
@@ -456,11 +457,23 @@ export default function PranayamPlaySessionHero({
   const setTotalSecs = setControlledTotalSecs || setLocalTotalSecs;
 
   const actualData = sessionData?.data || sessionData;
-  const isMudra = type === "mudra";
-  const isVideoMode = isMudra && (actualData?.mediaType === "VIDEO_SINGLE" || actualData?.mediaType === "VIDEO_PLAYLIST");
+  const isMudra = type === "pranayama";
+  const resolvedMediaType =
+    actualData?.mediaType ||
+    actualData?.MediaType ||
+    selectedMedia?.mediaType ||
+    null;
+  const isVideoMode =
+    resolvedMediaType === "VIDEO_SINGLE" ||
+    resolvedMediaType === "VIDEO_PLAYLIST" ||
+    (isMudra && (actualData?.mediaType === "VIDEO_SINGLE" || actualData?.mediaType === "VIDEO_PLAYLIST"));
   const isPlaylist = isMudra
     ? (actualData?.mediaType === "AUDIO_PLAYLIST" || actualData?.mediaType === "VIDEO_PLAYLIST")
-    : (actualData?.AudioPlaylist && actualData.AudioPlaylist.length > 0);
+    : (
+        resolvedMediaType === "AUDIO_PLAYLIST" ||
+        resolvedMediaType === "VIDEO_PLAYLIST" ||
+        (actualData?.AudioPlaylist && actualData.AudioPlaylist.length > 0)
+      );
 
   const playlistTracks = propPlaylistTracks || (
     isMudra
@@ -476,33 +489,78 @@ export default function PranayamPlaySessionHero({
                   : []
         )
       : (
-          (actualData?.AudioSingleSessions && actualData.AudioSingleSessions.length > 0)
-            ? actualData.AudioSingleSessions
-            : (actualData?.AudioPlaylist?.[0]?.audios || [])
+          resolvedMediaType === "VIDEO_SINGLE"
+            ? (actualData?.videoSingleSessions || [])
+            : resolvedMediaType === "VIDEO_PLAYLIST"
+              ? (actualData?.video_playlists?.[0]?.videos || actualData?.video_playlists || [])
+              : (actualData?.AudioSingleSessions && actualData.AudioSingleSessions.length > 0)
+                ? actualData.AudioSingleSessions
+                : (actualData?.AudioPlaylist?.[0]?.audios || [])
         )
   );
-  const activeTrack = playlistTracks[currentTrackIndex];
+  const activeTrack =
+    selectedMedia?.mediaType?.endsWith("PLAYLIST")
+      ? (playlistTracks[currentTrackIndex] || playlistTracks[0] || null)
+      : (selectedMedia || playlistTracks[currentTrackIndex] || null);
 
-  const heroName = activeTrack?.title || actualData?.title || actualData?.name || actualData?.Name || "";
+  const heroName =
+    activeTrack?.title ||
+    selectedMedia?.name ||
+    actualData?.title ||
+    actualData?.name ||
+    actualData?.Name ||
+    "";
+
   const categoryName = isMudra
     ? (actualData?.categories?.[0]?.Name || "Pranayama")
     : (actualData?.category || actualData?.Category?.Name || "Pranayama");
+
   const shortDescription = isMudra
     ? (actualData?.description || actualData?.web?.HeroSection?.Description || "Guided practice for pranayama breathing.")
     : (actualData?.description || actualData?.aboutSession || actualData?.WebDetailsPage?.HeroSectionWeb?.HeroDescription || "");
+
+  const durationSecondsFromTrack = Number(activeTrack?.durationInSeconds || activeTrack?.duration || 0);
   const durationStr = totalSecs
     ? (totalSecs < 60 ? `${Math.round(totalSecs)} sec` : `${Math.floor(totalSecs / 60)} min`)
-    : (actualData?.duration ? `${actualData.duration} min` : "");
+    : durationSecondsFromTrack > 0
+      ? `${Math.floor(durationSecondsFromTrack / 60)} min`
+      : (actualData?.duration ? `${actualData.duration} min` : "");
+
   const levelStr = actualData?.level || actualData?.Level || "Beginner";
 
-  const rawAudio = activeTrack?.audioFile?.url || activeTrack?.videoFile?.url || actualData?.audioFile?.url || actualData?.mediaLink || actualData?.media_link;
-  const resolvedAudioUrl = rawAudio
-    ? (rawAudio.startsWith("http") ? rawAudio : `${IMAGE_BASE_URL}${rawAudio}`)
+  const rawMediaUrl = isVideoMode
+    ? (
+        activeTrack?.videoFile?.url ||
+        activeTrack?.videoUrl ||
+        activeTrack?.audioFile?.url ||
+        activeTrack?.audioUrl ||
+        actualData?.videoFile?.url ||
+        actualData?.mediaLink ||
+        actualData?.media_link ||
+        null
+      )
+    : (
+        activeTrack?.audioFile?.url ||
+        activeTrack?.audioUrl ||
+        activeTrack?.videoFile?.url ||
+        activeTrack?.videoUrl ||
+        actualData?.audioFile?.url ||
+        actualData?.mediaLink ||
+        actualData?.media_link ||
+        null
+      );
+
+  const resolvedAudioUrl = rawMediaUrl
+    ? (rawMediaUrl.startsWith("http") ? rawMediaUrl : `${IMAGE_BASE_URL}${rawMediaUrl}`)
     : null;
 
-  const defaultTotalSecs = activeTrack?.durationInSeconds
-    ? activeTrack.durationInSeconds
-    : ((actualData?.duration || actualData?.Duration) ? (actualData.duration || actualData.Duration) * 60 : 0);
+  const defaultTotalSecs = Number(
+    durationParam && Number(durationParam) > 0
+      ? durationParam
+      : durationSecondsFromTrack > 0
+        ? durationSecondsFromTrack
+        : ((actualData?.duration || actualData?.Duration) ? (actualData.duration || actualData.Duration) * 60 : 0)
+  );
 
   useEffect(() => {
     if (setTotalSecs) {
@@ -576,13 +634,16 @@ export default function PranayamPlaySessionHero({
   const [timerModalOpen, setTimerModalOpen] = useState(false);
   const [playBellOnEnd, setPlayBellOnEnd] = useState(true);
 
+  const timerDurationFromParam = Number(durationParam) > 0 ? Number(durationParam) : 0;
+
   useEffect(() => {
     if (!isMudra) return;
 
     const mudraDocId = actualData?.documentId || actualData?.id;
-    if (!mudraDocId) return;
+    const totalTimeFromProps = Number(durationParam) > 0 ? Number(durationParam) : 0;
 
-    const totalTimeFromProps = Number(durationParam);
+    if (!mudraDocId && totalTimeFromProps <= 0) return;
+
     let restored = null;
 
     try {
@@ -609,7 +670,7 @@ export default function PranayamPlaySessionHero({
       setPlayBellOnEnd(restored.playBell);
       setPlaying(!restored.paused);
       setTimerModalOpen(true);
-    } else if (mode === "timer" && totalTimeFromProps > 0) {
+    } else if (mode === "timer" || totalTimeFromProps > 0) {
       setTimerTotalSeconds(totalTimeFromProps);
       setTimerSecondsLeft(totalTimeFromProps);
       setTimerActive(true);
@@ -683,44 +744,73 @@ export default function PranayamPlaySessionHero({
       console.warn("Failed to synthesize bell sound:", e);
     }
   };
+const completePranayamMedia = async (completedDuration) => {
+  const pranayamDocumentId =
+    actualData?.documentId || actualData?.id;
 
-  const handleTimerComplete = async () => {
-    setTimerActive(false);
-    setPlaying(false);
+  const mediaDocumentId =
+    activeTrack?.documentId || activeTrack?.id;
 
-    if (playBellOnEnd) {
-      playSingingBowlSound();
+  if (!pranayamDocumentId || !mediaDocumentId) return;
+
+  try {
+    const mediaType =
+      selectedMedia?.mediaType ||
+      actualData?.mediaType ||
+      actualData?.MediaType ||
+      "AUDIO_SINGLE";
+
+    const response = await pranayamService.completePranayamMedia({
+      profileDocumentId: profileDocId,
+      mediaType,
+      mediaDocumentId,
+      pranayamDocumentId,
+      completedDuration: Math.floor(completedDuration),
+    });
+
+    return response;
+  } catch (err) {
+    console.error("Failed to complete Pranayam media:", err);
+  }
+};
+
+const handleTimerComplete = async () => {
+  setTimerActive(false);
+  setPlaying(false);
+
+  if (playBellOnEnd) {
+    playSingingBowlSound();
+  }
+
+  try {
+    const response = await completePranayamMedia(timerTotalSeconds);
+
+    if (response) {
+      router.push(
+        buildSessionCompleteUrl(response, heroName, "pranayama")
+      );
     }
+  } catch (err) {
+    console.error("Failed to complete Pranayama session:", err);
+  }
 
-    const mudraDocId = actualData?.documentId || actualData?.id;
-    if (mudraDocId) {
-      try {
-        const response = await mudraService.completeMudra(mudraDocId, profileDocId, timerTotalSeconds);
-        if (response) {
-          router.push(buildSessionCompleteUrl(response, heroName, "pranayama"));
-        }
-      } catch (err) {
-        console.warn("Failed to complete pranayama session:", err);
-      }
-    }
-    showToast("Pranayama timer completed!");
-  };
+  showToast("Pranayama timer completed!");
+};
 
-  const handleTimerStop = async () => {
-    setTimerActive(false);
-    setPlaying(false);
+ 
+const handleTimerStop = async () => {
+  const elapsed = timerTotalSeconds - timerSecondsLeft;
 
-    const elapsed = timerTotalSeconds - timerSecondsLeft;
-    const mudraDocId = actualData?.documentId || actualData?.id;
-    if (mudraDocId && elapsed > 0) {
-      try {
-        await mudraService.completeMudra(mudraDocId, profileDocId, elapsed);
-      } catch (err) {
-        console.warn("Failed to complete pranayama session on stop:", err);
-      }
-    }
-    setTimerModalOpen(false);
-  };
+  setTimerActive(false);
+  setPlaying(false);
+
+  if (elapsed > 0) {
+    await sendProgressUpdate(elapsed);
+  }
+
+  setTimerModalOpen(false);
+};
+
 
   useEffect(() => {
     let interval = null;
@@ -741,47 +831,53 @@ export default function PranayamPlaySessionHero({
     }
   }, [timerActive, timerSecondsLeft]);
 
-  const sendProgressUpdate = async (currentTime) => {
-    const currentId = actualData?.documentId || actualData?.id || "ui2phqjaaqub5r1k38gkppko";
+ 
+const sendProgressUpdate = async (currentTime) => {
+  const pranayamDocumentId =
+    actualData?.documentId || actualData?.id;
 
-    try {
-      const activeTrackId = activeTrack?.documentId || activeTrack?.id || currentId;
-      const mediaTypeVal = actualData?.mediaType || actualData?.MediaType || "AUDIO_SINGLE";
+  const mediaDocumentId =
+    activeTrack?.documentId || activeTrack?.id;
 
-      const sessionDuration = timerActive
-        ? Math.floor(timerTotalSeconds)
-        : Math.floor(totalSecs);
+  if (!pranayamDocumentId || !mediaDocumentId) return;
 
-      const remainingDuration = timerActive
-        ? Math.floor(timerSecondsLeft)
-        : Math.max(0, Math.floor(totalSecs - currentTime));
+  try {
+    const mediaType =
+      selectedMedia?.mediaType ||
+      actualData?.mediaType ||
+      actualData?.MediaType ||
+      "AUDIO_SINGLE";
 
-      if (isMudra) {
-        await mudraService.saveMudraMediaProgress({
-          profileDocumentId: profileDocId,
-          mediaType: mediaTypeVal,
-          mediaDocumentId: activeTrackId,
-          mudraDocumentId: currentId,
-          remainingDuration,
-          sessionDuration,
-        });
-      } else {
-        await yogaNidraService.saveMediaProgress({
-          profileDocumentId: profileDocId,
-          mediaType: mediaTypeVal,
-          mediaDocumentId: activeTrackId,
-          nidraDocumentId: currentId,
-          mudraDocumentId: currentId,
-          remainingDuration,
-          sessionDuration,
-        });
-      }
+    const sessionDuration = Math.floor(
+      timerActive ? timerTotalSeconds : totalSecs
+    );
 
-      lastProgressSentRef.current = currentTime;
-    } catch (err) {
-      console.warn("Failed to update pranayama media progress:", err);
-    }
-  };
+    const remainingDuration = Math.max(
+      0,
+      Math.floor(
+        timerActive
+          ? timerSecondsLeft
+          : sessionDuration - currentTime
+      )
+    );
+
+    await pranayamService.savePranayamMediaProgress({
+      profileDocumentId: profileDocId,
+      mediaType,
+      mediaDocumentId,
+      pranayamDocumentId,
+      remainingDuration,
+      sessionDuration,
+    });
+
+    lastProgressSentRef.current = currentTime;
+  } catch (err) {
+    console.error("Failed to save Pranayam media progress:", err);
+  }
+};
+
+
+
 
   useEffect(() => {
     if (!audioRef.current || !resolvedAudioUrl || isVideoMode) return;
@@ -925,6 +1021,10 @@ export default function PranayamPlaySessionHero({
     }
 
     setPlaying(false);
+
+await completePranayamMedia(
+  activeEl?.duration || totalSecs
+);
   }
 
   const handleLike = async () => {
@@ -1393,18 +1493,21 @@ export default function PranayamPlaySessionHero({
         </div>
       )}
 
-      {isMudra && (
+      {(isMudra && (timerDurationFromParam > 0 || timerActive || timerTotalSeconds > 0)) && (
         <button
           onClick={() => setTimerModalOpen(true)}
           className="fixed bottom-24 right-6 z-50 flex items-center gap-2 px-4 py-3 rounded-full bg-[#9A85FE] text-white shadow-xl hover:scale-105 active:scale-95 transition-transform border border-white/20"
         >
           <Clock size={20} />
-          {timerActive && (
-            <span className="text-sm font-semibold tracking-wide">
-              {Math.floor(timerSecondsLeft / 60).toString().padStart(2, "0")}:
-              {(timerSecondsLeft % 60).toString().padStart(2, "0")}
-            </span>
-          )}
+          <span className="text-sm font-semibold tracking-wide">
+            {Math.floor((timerSecondsLeft || timerTotalSeconds || timerDurationFromParam) / 60)
+              .toString()
+              .padStart(2, "0")}
+            :
+            {((timerSecondsLeft || timerTotalSeconds || timerDurationFromParam) % 60)
+              .toString()
+              .padStart(2, "0")}
+          </span>
         </button>
       )}
 

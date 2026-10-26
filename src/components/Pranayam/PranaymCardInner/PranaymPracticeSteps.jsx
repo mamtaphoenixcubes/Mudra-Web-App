@@ -5,75 +5,46 @@ import { spacing, typography } from "../../../theme";
 import { useTheme } from "../../../context/ThemeContext";
 import { IMAGES } from "../../../assets/assets";
 
-// ─── Config ─────────────────────────────────────────────────────────────────
-const STEPS = [
-  {
-    id: 1,
-    title: "1. Sit in a Steady Posture",
-    lines: [
-      "Sit comfortably with your spine tall and relaxed.",
-      "Close your eyes and soften your facial muscles.",
-      "Rest your hands on your knees or in your lap.",
-    ],
-    imageSrc: IMAGES.BodyBalance,
-    bg: "#FBE3B8",
-  },
-  {
-    id: 2,
-    title: "2. Establish Natural Breath",
-    lines: [
-      "Breathe in and out through your nose.",
-      "Let the breath be smooth, slow, and steady.",
-      "Do not force — observe the natural rhythm.",
-    ],
-    imageSrc: IMAGES.AirIcon,
-    bg: "#DCEFC7",
-  },
-  {
-    id: 3,
-    title: "3. Apply the Pranayama Technique",
-    lines: [
-      "Begin the specific breathing pattern with awareness.",
-      "Keep the breath even, controlled, and comfortable.",
-      "Maintain a gentle rhythm without strain.",
-    ],
-    imageSrc: IMAGES.Energy,
-    bg: "#C7E7EF",
-  },
-  {
-    id: 4,
-    title: "4. Observe & Return",
-    lines: [
-      "Notice the flow of prana — the life force within.",
-      "If the mind wanders, gently bring it back to the breath.",
-      "End slowly and rest in the stillness.",
-    ],
-    imageSrc: IMAGES.Mind,
-    bg: "#E4D3F5",
-  },
-];
+const IMAGE_BASE_URL = process.env.NEXT_PUBLIC_IMAGE_BASE_URL || "http://192.168.1.14:1331";
 
-// ─── Step Row ───────────────────────────────────────────────────────────────
+function resolveMediaUrl(media) {
+  if (!media) return null;
+
+  let value = null;
+
+  if (typeof media === "string") {
+    value = media;
+  } else if (media.url) {
+    value = media.url;
+  } else {
+    const formats = media.formats || {};
+    value = formats.large?.url || formats.medium?.url || formats.small?.url || formats.thumbnail?.url || null;
+  }
+
+  if (!value) return null;
+  if (value.startsWith("http")) return value;
+
+  const normalizedBase = IMAGE_BASE_URL.replace(/\/+$/, "");
+  const normalizedValue = value.startsWith("/") ? value : `/${value}`;
+  return `${normalizedBase}${normalizedValue}`;
+}
+
 function StepRow({ step, isLast, dark, textColor }) {
   const { imageSrc, title, bg } = step;
 
   return (
     <div>
       <div className={`flex gap-4 sm:gap-5 md:gap-6 ${spacing.stepsItemPx}`}>
-        {/* Image + connector column */}
         <div className="flex flex-col items-center flex-shrink-0">
           <span
             className={spacing.stepsIconBox + " rounded-full flex items-center justify-center flex-shrink-0"}
             style={{ backgroundColor: bg }}
           >
-            <Image
-              src={imageSrc}
-              alt={title}
-              width={32}
-              height={32}
-              className={spacing.stepsIconInner + " object-contain"}
-              priority={false}
-            />
+            {imageSrc ? (
+              <Image src={imageSrc} alt={title} width={32} height={32} className="w-8 h-8 object-contain" unoptimized priority={false} />
+            ) : (
+              <Image src={IMAGES.Energy} alt={title} width={32} height={32} className={spacing.stepsIconInner + " object-contain"} priority={false} />
+            )}
           </span>
           {!isLast && (
             <span
@@ -88,76 +59,58 @@ function StepRow({ step, isLast, dark, textColor }) {
           )}
         </div>
 
-        {/* Text content */}
         <div className="min-w-0 pt-1.5 sm:pt-2 pb-4 sm:pb-5 flex-1">
-          <h3
-            className={typography.stepsTitle + " mb-1 sm:mb-1.5"}
-            style={{ color: textColor }}
-          >
+          <h3 className={typography.stepsTitle + " mb-1 sm:mb-1.5"} style={{ color: textColor }}>
             {title}
           </h3>
-          {step.lines.map((line, i) => (
-            <p
-              key={i}
-              className={typography.stepsBody}
-              style={{ color: dark ? "#9ca3af" : "#8A8577" }}
-            >
+          {step.lines.filter(Boolean).map((line, i) => (
+            <p key={i} className={typography.stepsBody} style={{ color: dark ? "#9ca3af" : "#8A8577" }}>
               {line}
             </p>
           ))}
         </div>
       </div>
 
-      {/* Horizontal divider */}
       {!isLast && (
         <div
           className={`ml-[64px] sm:ml-[76px] md:ml-[98px] mb-4 sm:mb-5`}
-          style={{
-            borderBottom: `1px solid ${dark ? "#374151" : "#EDEBE4"}`,
-          }}
+          style={{ borderBottom: `1px solid ${dark ? "#374151" : "#EDEBE4"}` }}
         />
       )}
     </div>
   );
 }
 
-// ─── Pranayam Practice Steps ────────────────────────────────────────────────
-export default function PranaymPracticeSteps({
-  // Accept a meditation object (not required for rendering)
-  meditation = null,
-  steps = STEPS,
-}) {
+export default function PranaymPracticeSteps({ meditation = null }) {
   const { dark, textColor } = useTheme();
+  const palette = ["#FBE3B8", "#DCEFC7", "#C7E7EF", "#E4D3F5", "#FDD7E4"];
+
+  const steps = Array.isArray(meditation?.practiceSteps) && meditation.practiceSteps.length > 0
+    ? meditation.practiceSteps.map((step, index) => ({
+        id: step.id || index + 1,
+        title: `${index + 1}. ${step.nameOfTheSteps || `Step ${index + 1}`}`,
+        lines: [step.describeTheStep || step.description || "No data available."].filter(Boolean),
+        imageSrc: resolveMediaUrl(step.stepIcon) || IMAGES.Energy,
+        bg: palette[index % palette.length],
+      }))
+    : [{
+        id: 1,
+        title: "1. No data available",
+        lines: ["No practice steps available."],
+        imageSrc: IMAGES.Energy,
+        bg: "#F3F4F6",
+      }];
 
   return (
-    <div
-      className={`w-full ${spacing.sectionPaddingX} ${spacing.sectionPaddingY}`}
-      style={{ backgroundColor: dark ? "#111827" : "#ffffff" }}
-    >
-      <div
-        className={`mx-auto rounded-[20px] sm:rounded-[24px] ${spacing.sectionPaddingX} ${spacing.sectionPaddingY}`}
-        style={{
-          backgroundColor: dark ? "#1f2937" : "#ffffff",
-          borderColor: dark ? "#374151" : "#E9E3D6",
-          borderWidth: "1px",
-        }}
-      >
-        <h2
-          className={typography.playerHeading + " mb-4 sm:mb-5 md:mb-6"}
-          style={{ color: textColor }}
-        >
+    <div className={`w-full ${spacing.sectionPaddingX} ${spacing.sectionPaddingY}`} style={{ backgroundColor: dark ? "#111827" : "#ffffff" }}>
+      <div className={`mx-auto rounded-[20px] sm:rounded-[24px] ${spacing.sectionPaddingX} ${spacing.sectionPaddingY}`} style={{ backgroundColor: dark ? "#1f2937" : "#ffffff", borderColor: dark ? "#374151" : "#E9E3D6", borderWidth: "1px" }}>
+        <h2 className={typography.playerHeading + " mb-4 sm:mb-5 md:mb-6"} style={{ color: textColor }}>
           Pranayama — Practice Steps
         </h2>
 
         <div className="flex flex-col">
           {steps.map((step, i) => (
-            <StepRow
-              key={step.id}
-              step={step}
-              isLast={i === steps.length - 1}
-              dark={dark}
-              textColor={textColor}
-            />
+            <StepRow key={step.id} step={step} isLast={i === steps.length - 1} dark={dark} textColor={textColor} />
           ))}
         </div>
       </div>

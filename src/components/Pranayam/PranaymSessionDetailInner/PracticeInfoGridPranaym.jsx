@@ -21,27 +21,28 @@ export default function PracticeInfoGridPranaym({
     margin: "-50px",
   });
 
-  // ─── Static meditation defaults (no backend) ───────────────────────────────
-
   const bestTime =
     propBestTime ||
-    "Early morning (Brahma Muhurta) or during meditation sessions.";
+    meditation?.bestTimeCard?.cardText ||
+    meditation?.bestTime ||
+    null;
 
   const precautions =
     propPrecautions ||
-    [
-      "Practice on an empty stomach.",
-      "Keep your back straight while practicing.",
-      "If you have any medical condition, consult your doctor.",
-    ];
+    meditation?.cautionNotes ||
+    meditation?.precautions ||
+    null;
 
-  const duration =
+  const durationText =
     propDuration ||
-    "15-30 minutes daily for best results.";
+    meditation?.durationCard?.cardText ||
+    meditation?.duration ||
+    null;
 
   const who =
     propWho ||
-    "This practice is suitable for anyone. It is especially beneficial for those seeking calm, focus, and mental clarity.";
+    meditation?.level ||
+    null;
 
   // ─── Layout items ──────────────────────────────────────────────────────────
 
@@ -49,12 +50,12 @@ export default function PracticeInfoGridPranaym({
     {
       icon: IMAGES.User,
       title: "Best Time to Practice",
-      desc: bestTime,
+      desc: bestTime || "No data available.",
     },
     {
       icon: IMAGES.ShieldTick,
       title: "Precautions",
-      desc: precautions,
+      desc: precautions && (Array.isArray(precautions) ? precautions : [precautions]) || ["No data available."],
     },
   ];
 
@@ -62,12 +63,12 @@ export default function PracticeInfoGridPranaym({
     {
       icon: IMAGES.HourGlass,
       title: "Ideal Duration",
-      desc: duration,
+      desc: durationText || "No data available.",
     },
     {
       icon: IMAGES.ReduceStress,
       title: "Who Can Practice",
-      desc: who,
+      desc: who || "No data available.",
     },
   ];
 

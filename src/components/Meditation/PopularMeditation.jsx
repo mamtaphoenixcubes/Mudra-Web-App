@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { IMAGES } from "../../assets/assets";
+import useAuthStore from "../../store/useAuthStore";
 
 const pastelPalette = [
   "bg-[#FEF9C3]",
@@ -49,8 +50,14 @@ const normalizeMeditation = (meditation, index) => {
 
 function MeditationCard({ meditation }) {
   const router = useRouter();
+  const { isLoggedIn } = useAuthStore();
 
   const handleCardClick = () => {
+    if (!isLoggedIn) {
+      router.push("/Login");
+      return;
+    }
+
     router.push(`/MeditationDetail?id=${meditation.id}`);
   };
 

@@ -5,44 +5,6 @@ import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { IMAGES } from "../../../assets/assets";
 
-const staticBenefits = [
-  {
-    title: "Deep Relaxation",
-    description: "Releases tension and calms the nervous system.",
-    bg: "bg-[#FEF9C3]",
-    image: IMAGES.HolisticWellbeing,
-    isRemote: false,
-  },
-  {
-    title: "Reduces Stress",
-    description: "Lowers cortisol and eases anxiety and worry.",
-    bg: "bg-[#F3E8FF]",
-    image: IMAGES.Mind,
-    isRemote: false,
-  },
-  {
-    title: "Improves Focus",
-    description: "Trains attention and strengthens concentration.",
-    bg: "bg-[#BFDDF2]",
-    image: IMAGES.focus,
-    isRemote: false,
-  },
-  {
-    title: "Emotional Balance",
-    description: "Cultivates calm, patience, and inner steadiness.",
-    bg: "bg-[#FCE7F3]",
-    image: IMAGES.Mind,
-    isRemote: false,
-  },
-  {
-    title: "Mindful Awareness",
-    description: "Anchors you in the present moment with clarity.",
-    bg: "bg-[#DCFCE7]",
-    image: IMAGES.HolisticWellbeing,
-    isRemote: false,
-  },
-];
-
 function Card({ item, index }) {
   const isHex = item.bg?.startsWith("#");
   const imageAlt = item.title || "Meditation benefit";
@@ -88,7 +50,6 @@ function Card({ item, index }) {
 }
 
 export default function PranaymSessionBenefits({
-  // Accept a meditation object (not required for rendering)
   meditation = null,
 }) {
   const sectionRef = useRef(null);
@@ -98,7 +59,31 @@ export default function PranaymSessionBenefits({
     margin: "-50px",
   });
 
-  const benefits = staticBenefits;
+  const benefitItems = Array.isArray(meditation?.therapeuticNotes) && meditation.therapeuticNotes.length > 0
+    ? meditation.therapeuticNotes.map((note, index) => ({
+        title: `Benefit ${index + 1}`,
+        description: note,
+        bg: ["bg-[#FEF9C3]", "bg-[#F3E8FF]", "bg-[#BFDDF2]", "bg-[#FCE7F3]", "bg-[#DCFCE7]"][index % 5],
+        image: [IMAGES.HolisticWellbeing, IMAGES.Mind, IMAGES.focus, IMAGES.Mind, IMAGES.HolisticWellbeing][index % 5],
+        isRemote: false,
+      }))
+    : Array.isArray(meditation?.benefits) && meditation.benefits.length > 0
+      ? meditation.benefits.map((note, index) => ({
+          title: note?.title || `Benefit ${index + 1}`,
+          description: note?.description || note,
+          bg: ["bg-[#FEF9C3]", "bg-[#F3E8FF]", "bg-[#BFDDF2]", "bg-[#FCE7F3]", "bg-[#DCFCE7]"][index % 5],
+          image: [IMAGES.HolisticWellbeing, IMAGES.Mind, IMAGES.focus, IMAGES.Mind, IMAGES.HolisticWellbeing][index % 5],
+          isRemote: false,
+        }))
+      : [{
+          title: "No data available",
+          description: "No benefits available.",
+          bg: "bg-[#F3F4F6]",
+          image: IMAGES.Energy,
+          isRemote: false,
+        }];
+
+  const benefits = benefitItems;
 
   return (
     <section
