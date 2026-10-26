@@ -133,7 +133,7 @@ export default function SearchResultsHero() {
                     {/* Body - Word by word */}
                     <motion.p
                         className={`${typography.heroBody} leading-relaxed mb-6 sm:mb-8 max-w-sm sm:max-w-md`}
-                        style={{ color: dark ? "#f5f5f5" : "#4b5563" }}
+                        style={{ color: dark ? "#f5f5f5" : "#0F0F0F" }}
                     >
                         {bodyWords.map((word, i) => (
                             <motion.span
@@ -175,7 +175,7 @@ export default function SearchResultsHero() {
                                     fill="none"
                                     stroke="currentColor"
                                     viewBox="0 0 24 24"
-                                    style={{ color: dark ? "#ffffff" : "#9ca3af" }}
+                                    style={{ color: dark ? "#ffffff" : "#00000066" }}
                                     animate={{
                                         scale: [1, 1.1, 1],
                                     }}
@@ -232,14 +232,14 @@ export default function SearchResultsHero() {
                     {/* ✅ Result text */}
                     <motion.p
                         className="text-sm mt-3"
-                        style={{ color: dark ? "#ffffff" : "#6b7280" }}
+                        style={{ color: dark ? "#ffffff" : "#0F0F0F99" }}
                         initial={{ opacity: 0, y: 10 }}
                         animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
                         transition={{ duration: 0.5, delay: 0.5 }}
                     >
                         Showing results for <motion.span
                             className="font-medium"
-                            style={{ color: textColor }}
+                            style={{ color: dark ? "#ffffff" : "#0f0f0ffd" }}
                             whileHover={{
                                 scale: 1.05,
                                 transition: { duration: 0.2 }

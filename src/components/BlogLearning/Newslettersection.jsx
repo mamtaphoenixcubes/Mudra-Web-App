@@ -246,7 +246,7 @@ export default function NewsletterSection() {
             sm: "100%",
             md: "1200px",
             lg: "1360px",
-            xl: "1600px",
+            xl: "1900px",
           },
           mx: "auto",
           px: {

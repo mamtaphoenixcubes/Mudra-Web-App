@@ -233,7 +233,7 @@ export default function SuggestedMudras({
           </motion.h1>
           <motion.p
             className={`${typography.sectionMbBody} mb-8`}
-            style={{ color: dark ? "#ffffff" : "#6b7280" }}
+            style={{ color: dark ? "#ffffff" : "#0F0F0FCC" }}
             initial={{ opacity: 0, y: 10 }}
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
             transition={{ duration: 0.5, delay: 0.2 }}

@@ -4,10 +4,10 @@ export const typography = {
     "text-[14px] sm:text-[36px] md:text-[30px] lg:text-[52px] xl:text-[60px] 2xl:text-[78px] " +
     "font-medium leading-[120%] 2xl:leading-[110%]",
   aboutHeading:
-    "text-[28px] sm:text-[22px] md:text-[20px] lg:text-[34px] xl:text-[40px] 2xl:text-[56px] " +
+    "text-[28px] sm:text-[22px] md:text-[20px] lg:text-[34px] xl:text-[40px] 2xl:text-[55px] " +
     "font-medium leading-[120%] 2xl:leading-[110%]",
   MainHeading:
-    "text-[10px] sm:text-[12px] md:text-[22px] lg:text-[30px] xl:text-[35px] 2xl:text-[60px] " +
+    "text-[10px] sm:text-[12px] md:text-[22px] lg:text-[30px] xl:text-[35px] 2xl:text-[70px] " +
     "font-medium leading-[120%] 2xl:leading-[110%]",
   heroBody:
     "text-[16px] sm:text-[16px] md:text-[15px] lg:text-[20px] xl:text-[22px] 2xl:text-[25px] " +
@@ -118,10 +118,10 @@ export const typography = {
   // ── Newsletter Section Typography ────────────────────────────
   newsletter: {
     heading: "text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold leading-tight text-primary",
-    subtitle: "text-sm sm:text-base md:text-xl text-gray-900 font-semibold leading-relaxed",
+    subtitle: "text-sm sm:text-base md:text-xxl text-gray-900 font-semibold leading-relaxed",
     inputText: "text-sm text-gray-600 placeholder-gray-400",
     buttonText: "text-sm font-medium",
-    privacyNote: "text-xs sm:text-sm text-gray-400",
+    privacyNote: "text-xs sm:text-xl text-gray-400",
   },
 
   // ── Why Subscribe Section Typography ─────────────────────────

@@ -195,7 +195,7 @@ export default function WhySubscribeSection() {
                     >
                         <motion.div 
                             className={typography.whySubscribe.dividerLine} 
-                            style={{ backgroundColor: dark ? "#374151" : "#e5e7eb" }}
+                            style={{ backgroundColor: dark ? "#374151" : "#0F0F0F99" }}
                             initial={{ scaleX: 0 }}
                             animate={isInView ? { scaleX: 1 } : { scaleX: 0 }}
                             transition={{ duration: 0.4, delay: 0.2 }}
@@ -203,7 +203,7 @@ export default function WhySubscribeSection() {
                         <LotusDivider dark={dark} />
                         <motion.div 
                             className={typography.whySubscribe.dividerLine} 
-                            style={{ backgroundColor: dark ? "#374151" : "#e5e7eb" }}
+                            style={{ backgroundColor: dark ? "#374151" : "#0F0F0F99" }}
                             initial={{ scaleX: 0 }}
                             animate={isInView ? { scaleX: 1 } : { scaleX: 0 }}
                             transition={{ duration: 0.4, delay: 0.2 }}
@@ -258,7 +258,7 @@ export default function WhySubscribeSection() {
                                 {item.title}
                             </motion.p>
                             {/* Desc */}
-                            <p className="text-xs sm:text-sm leading-relaxed" style={{ color: dark ? "#ffffff" : "#050505" }}>
+                            <p className="text-xs sm:text-sm leading-relaxed" style={{ color: dark ? "#ffffff" : "#0F0F0F80" }}>
                                 {item.desc}
                             </p>
                         </motion.div>

@@ -89,7 +89,7 @@ export default function AilmentsMudrashero() {
 
               <motion.p
                 className={`${typography.heroBody} ${maxW.heroMbBody}`}
-                style={{ color: dark ? "#f3f3f3" : "#4b5563" }}
+                style={{ color: dark ? "#f3f3f3" : "#0F0F0F" }}
               >
                 {bodyWords.map((word, i) => (
                   <motion.span

@@ -300,7 +300,7 @@ export default function DownloadAppBanner() {
                                 <div>
                                     <motion.h2
                                         className="text-base sm:text-lg md:text-xl lg:text-3xl font-medium leading-tight mb-1"
-                                        style={{ color: textColor }}
+                                        style={{ color: "#0F0F0F" }}
                                     >
                                         {headingChars.map((char, i) => (
                                             <motion.span
@@ -329,7 +329,7 @@ export default function DownloadAppBanner() {
                                         style={{
                                             color: dark
                                                 ? "#000000"
-                                                : "#4b5563",
+                                                : "#0F0F0F80",
                                         }}
                                         initial={{ opacity: 0, y: 10 }}
                                         animate={
@@ -372,7 +372,7 @@ export default function DownloadAppBanner() {
                                             style={{
                                                 color: dark
                                                     ? "#000000"
-                                                    : "#6b7280",
+                                                    : "#0F0F0F",
                                             }}
                                             custom={i}
                                             variants={badgeVariants}

@@ -3,16 +3,21 @@
 import Image from "next/image";
 import { useState, useRef } from "react";
 import { motion, useInView } from "framer-motion";
+
 import { typography, spacing, maxW } from "../../theme";
 import { IMAGES } from "../../assets/assets";
 import { useTheme } from "../../context/ThemeContext";
 
-// ── Mock data ──────────────────────────────────────────────────
+import Container from "../../common/Container";
+import Section from "../../common/Section";
+import SiteContainer from "../../common/SiteContainer";
+
+// Mock data
 const CATEGORIES = ["All", "Mudras", "Yoga Nidra", "Blog", "Library", "Pages"];
 
 const RESULTS = {
     Mudras: {
-        icon: IMAGES.HastaMudras || IMAGES.HastaMudras || null,
+        icon: IMAGES.HastaMudras || null,
         iconBg: "var(--journey-card)",
         total: 6,
         items: [
@@ -37,8 +42,9 @@ const RESULTS = {
         ],
         viewAllLabel: "View all Mudras results",
     },
+
     "Yoga Nidra": {
-        icon: IMAGES.HastaMudras || IMAGES.HastaMudras || null,
+        icon: IMAGES.HastaMudras || null,
         iconBg: "var(--about-card)",
         total: 5,
         items: [
@@ -63,8 +69,9 @@ const RESULTS = {
         ],
         viewAllLabel: "View all Yoga Nidra results",
     },
+
     Blog: {
-        icon: IMAGES.Blog || IMAGES.Blog || null,
+        icon: IMAGES.Blog || null,
         iconBg: "var(--balance-the-elements-card)",
         total: 4,
         items: [
@@ -83,8 +90,9 @@ const RESULTS = {
         ],
         viewAllLabel: "View all Blog results",
     },
+
     Library: {
-        icon: IMAGES.IconPractice || IMAGES.IconPractice || null,
+        icon: IMAGES.IconPractice || null,
         iconBg: "var(--holistic-bg)",
         total: 5,
         items: [
@@ -103,8 +111,9 @@ const RESULTS = {
         ],
         viewAllLabel: "View all Library results",
     },
+
     Pages: {
-        icon: IMAGES.OngoingStudies || IMAGES.OngoingStudies || null,
+        icon: IMAGES.OngoingStudies || null,
         iconBg: "var(--problem-3)",
         total: 3,
         items: [
@@ -125,31 +134,41 @@ const RESULTS = {
     },
 };
 
-const TOTAL = Object.values(RESULTS).reduce((sum, c) => sum + c.total, 0);
+const TOTAL = Object.values(RESULTS).reduce(
+    (sum, category) => sum + category.total,
+    0
+);
 
 function ArrowRight({ className = "w-3.5 h-3.5", color }) {
     return (
-        <motion.svg 
-            viewBox="0 0 16 16" 
-            fill="none" 
-            className={className} 
-            stroke={color || "currentColor"} 
+        <motion.svg
+            viewBox="0 0 16 16"
+            fill="none"
+            className={className}
+            stroke={color || "currentColor"}
             strokeWidth={2}
             whileHover={{ x: 3 }}
             transition={{ duration: 0.2 }}
+            aria-hidden="true"
         >
-            <path d="M3 8h10M9 4l4 4-4 4" strokeLinecap="round" strokeLinejoin="round" />
+            <path
+                d="M3 8h10M9 4l4 4-4 4"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+            />
         </motion.svg>
     );
 }
 
 export default function SearchResultsPage() {
     const { dark, textColor } = useTheme();
+
     const sectionRef = useRef(null);
-    const isInView = useInView(sectionRef, { 
-        once: true, 
+
+    const isInView = useInView(sectionRef, {
+        once: true,
         amount: 0.05,
-        margin: "-50px"
+        margin: "-50px",
     });
 
     const [activeTab, setActiveTab] = useState("All");
@@ -157,16 +176,21 @@ export default function SearchResultsPage() {
     const visibleCategories =
         activeTab === "All"
             ? Object.entries(RESULTS)
-            : Object.entries(RESULTS).filter(([key]) => key === activeTab);
+            : Object.entries(RESULTS).filter(
+                ([key]) => key === activeTab
+            );
 
     // Animation variants
     const fadeUp = {
         hidden: { opacity: 0, y: 30 },
-        visible: { 
-            opacity: 1, 
-            y: 0, 
-            transition: { duration: 0.6, ease: "easeOut" } 
-        }
+        visible: {
+            opacity: 1,
+            y: 0,
+            transition: {
+                duration: 0.6,
+                ease: "easeOut",
+            },
+        },
     };
 
     const containerVariants = {
@@ -220,242 +244,421 @@ export default function SearchResultsPage() {
     };
 
     return (
-        <motion.main 
-            ref={sectionRef}
-            className={`min-h-screen ${spacing.sectionPaddingX} ${spacing.searchPage.mainPadding}`} 
-            style={{
+        <Section
+            className={`search-results-page ${spacing.sectionPaddingX} ${spacing.searchPage.mainPadding}`}
+            sx={{
+                width: "100%",
+                maxWidth: "100%",
+                minHeight: "100vh",
                 backgroundColor: dark ? "#111827" : "#ffffff",
             }}
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
         >
-            <motion.div 
-                className={maxW.sectionBody}
-                variants={fadeUp}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
+            <SiteContainer
+                sx={{
+                    width: "100%",
+                    maxWidth: "1600px",
+                    py: 0,
+                }}
             >
-                {/* Top bar */}
-                <motion.div 
-                    className={`flex flex-col sm:flex-row items-center justify-between ${spacing.searchGaps.topBar} ${spacing.searchBorders.topBorder} ${spacing.searchPage.topBar}`} 
-                    style={{
-                        borderColor: dark ? "#374151" : "#e5e7eb",
+                <Container
+                    className="search-results-container"
+                    sx={{
+                        width: "100%",
+                        maxWidth: "100%",
+                        px: 0,
                     }}
-                    initial={{ opacity: 0, y: -10 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5 }}
                 >
-                    <motion.p 
-                        className={typography.searchPage.resultCount} 
-                        style={{ color: dark ? "#ffffff" : "#6b7280" }}
-                        whileHover={{ scale: 1.02 }}
-                        transition={{ duration: 0.2 }}
+                    <motion.main
+                        ref={sectionRef}
+                        className="w-full"
+                        style={{
+                            width: "100%",
+                            maxWidth: "100%",
+                            backgroundColor: dark
+                                ? "#111827"
+                                : "#ffffff",
+                        }}
+                        initial={{ opacity: 0 }}
+                        animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+                        transition={{ duration: 0.6 }}
                     >
-                        About {TOTAL} results found
-                    </motion.p>
-
-                    {/* Tab bar */}
-                    <div className={`flex items-center justify-start sm:justify-center ${spacing.searchGaps.tabBar} overflow-x-auto scrollbar-hide w-full sm:w-auto`}>
-                        {CATEGORIES.map((cat, index) => (
-                            <motion.button
-                                key={cat}
-                                onClick={() => setActiveTab(cat)}
-                                className={`
-                                    px-2.5 sm:px-3 py-1.5
-                                    ${typography.searchPage.tabButton}
-                                    ${spacing.searchBorders.tabBorder}
-                                    ${activeTab === cat
-                                        ? typography.searchPage.activeTab
-                                        : typography.searchPage.inactiveTab
-                                    }
-                                `}
+                        <motion.div
+                            className={`${maxW.sectionBody} w-full`}
+                            style={{
+                                width: "100%",
+                                maxWidth: "100%",
+                            }}
+                            variants={fadeUp}
+                            initial="hidden"
+                            whileInView="visible"
+                            viewport={{ once: true }}
+                        >
+                            {/* Top bar */}
+                            <motion.div
+                                className={`flex flex-col sm:flex-row items-center justify-between ${spacing.searchGaps.topBar} ${spacing.searchBorders.topBorder} ${spacing.searchPage.topBar}`}
                                 style={{
-                                    color: activeTab === cat ? textColor : (dark ? "#fcfdfd" : "#6b7280"),
-                                    borderColor: activeTab === cat ? textColor : "transparent",
+                                    width: "100%",
+                                    borderColor: dark
+                                        ? "#374151"
+                                        : "#e5e7eb",
                                 }}
-                                custom={index}
-                                variants={tabVariants}
+                                initial={{ opacity: 0, y: -10 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.5 }}
+                            >
+                                <motion.p
+                                    className={typography.searchPage.resultCount}
+                                    style={{
+                                        color: dark
+                                            ? "#ffffff"
+                                            : "#0F0F0F99",
+                                    }}
+                                    whileHover={{ scale: 1.02 }}
+                                    transition={{ duration: 0.2 }}
+                                >
+                                    About {TOTAL} results found
+                                </motion.p>
+
+                                {/* Tab bar */}
+                                <div
+                                    className={`flex items-center justify-start sm:justify-center ${spacing.searchGaps.tabBar} overflow-x-auto scrollbar-hide w-full sm:w-auto`}
+                                >
+                                    {CATEGORIES.map((cat, index) => (
+                                        <motion.button
+                                            key={cat}
+                                            type="button"
+                                            onClick={() => setActiveTab(cat)}
+                                            className={`
+                                                px-2.5 sm:px-3 py-1.5
+                                                ${typography.searchPage.tabButton}
+                                                ${spacing.searchBorders.tabBorder}
+                                                ${activeTab === cat
+                                                    ? typography.searchPage.activeTab
+                                                    : typography.searchPage.inactiveTab
+                                                }
+                                            `}
+                                            style={{
+                                                color:
+                                                    activeTab === cat
+                                                        ? textColor
+                                                        : dark
+                                                            ? "#fcfdfd"
+                                                            : "#0F0F0F",
+                                                borderColor:
+                                                    activeTab === cat
+                                                        ? textColor
+                                                        : "transparent",
+                                            }}
+                                            custom={index}
+                                            variants={tabVariants}
+                                            initial="hidden"
+                                            whileInView="visible"
+                                            viewport={{ once: true }}
+                                            whileHover={{
+                                                scale: 1.05,
+                                                transition: {
+                                                    duration: 0.2,
+                                                },
+                                            }}
+                                            whileTap={{ scale: 0.95 }}
+                                        >
+                                            {cat}
+                                        </motion.button>
+                                    ))}
+                                </div>
+                            </motion.div>
+
+                            {/* Category sections */}
+                            <motion.div
+                                className={`${maxW.content} w-full`}
+                                style={{
+                                    width: "100%",
+                                    maxWidth: "80%",
+                                }}
+                                variants={containerVariants}
                                 initial="hidden"
                                 whileInView="visible"
                                 viewport={{ once: true }}
-                                whileHover={{
-                                    scale: 1.05,
-                                    transition: { duration: 0.2 }
-                                }}
-                                whileTap={{ scale: 0.95 }}
                             >
-                                {cat}
-                            </motion.button>
-                        ))}
-                    </div>
-                </motion.div>
-
-                {/* Category sections */}
-                <motion.div 
-                    className={maxW.content}
-                    variants={containerVariants}
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true }}
-                >
-                    {visibleCategories.map(([catKey, cat], catIdx) => (
-                        <motion.section 
-                            key={catKey} 
-                            className={spacing.searchPage.categorySection}
-                            variants={categoryVariants}
-                        >
-                            {/* Two-column layout */}
-                            <div className={`flex ${spacing.searchGaps.categoryIcon} items-start`}>
-
-                                {/* LEFT: icon circle */}
-                                <motion.div 
-                                    className={spacing.searchWidths.categoryIconColumn}
-                                    whileHover={{
-                                        scale: 1.1,
-                                        rotate: 5,
-                                        transition: { duration: 0.2 }
-                                    }}
-                                >
-                                    <div
-                                        className={`${spacing.searchIcons.categoryIconContainer} rounded-full flex items-center justify-center`}
-                                        style={{ backgroundColor: dark ? cat.iconBg : cat.iconBg }}
-                                    >
-                                        {cat.icon ? (
-                                            <Image
-                                                src={cat.icon}
-                                                alt={catKey}
-                                                width={29}
-                                                height={29}
-                                                className={`${spacing.searchIcons.categoryIconImage} object-contain`}
-                                            />
-                                        ) : (
-                                            <span className={typography.searchPage.iconPlaceholder} style={{ color: dark ? "#ffffff" : "#6b7280" }}>
-                                                {catKey[0]}
-                                            </span>
-                                        )}
-                                    </div>
-                                </motion.div>
-
-                                {/* RIGHT: content */}
-                                <div className={spacing.searchWidths.resultContent}>
-
-                                    {/* Category heading */}
-                                    <motion.h2 
-                                        className={`${typography.searchPage.categoryHeading} ${spacing.searchPage.categoryHeading} text-left`} 
-                                        style={{ color: textColor }}
-                                        whileHover={{ scale: 1.02 }}
-                                        transition={{ duration: 0.2 }}
-                                    >
-                                        {catKey}{" "}
-                                        <span className={typography.searchPage.categoryCount} style={{ color: dark ? "#f0f0f0" : "#6b7280" }}>({cat.total})</span>
-                                    </motion.h2>
-
-                                    {/* Result rows */}
-                                    <div className="flex flex-col">
-                                        {cat.items.map((item, itemIdx) => (
-                                            <motion.div 
-                                                key={itemIdx}
-                                                custom={itemIdx}
-                                                variants={itemVariants}
-                                                initial="hidden"
-                                                whileInView="visible"
-                                                viewport={{ once: true }}
+                                {visibleCategories.map(
+                                    ([catKey, cat], catIdx) => (
+                                        <motion.section
+                                            key={catKey}
+                                            className={`${spacing.searchPage.categorySection} w-full`}
+                                            style={{
+                                                width: "100%",
+                                            }}
+                                            variants={categoryVariants}
+                                        >
+                                            {/* Two-column layout */}
+                                            <div
+                                                className={`flex ${spacing.searchGaps.categoryIcon} items-start w-full`}
                                             >
-                                                <motion.div 
-                                                    className={`flex flex-col sm:flex-row sm:items-start ${spacing.searchGaps.resultRowInner} ${spacing.searchPage.resultRow} text-left`}
+                                                {/* Category icon */}
+                                                <motion.div
+                                                    className={spacing.searchWidths.categoryIconColumn}
+                                                    style={{
+                                                        width: "48px",
+                                                        height: "75px",
+                                                        minWidth: "75px",
+                                                        flexShrink: 0,
+                                                    }}
                                                     whileHover={{
-                                                        x: 3,
-                                                        transition: { duration: 0.2 }
+                                                        scale: 1.1,
+                                                        rotate: 5,
+                                                        transition: {
+                                                            duration: 0.2,
+                                                        },
                                                     }}
                                                 >
-                                                    {/* Title */}
-                                                    <motion.p 
-                                                        className={`${typography.searchPage.resultTitle} ${spacing.searchWidths.titleColumn} shrink-0`} 
-                                                        style={{ color: textColor }}
-                                                        whileHover={{
-                                                            scale: 1.02,
-                                                            transition: { duration: 0.2 }
+                                                    <div
+                                                        className={`${spacing.searchIcons.categoryIconContainer} rounded-full flex items-center justify-center`}
+                                                        style={{
+                                                            width: "100%",
+                                                            height: "100%",
+                                                            backgroundColor: cat.iconBg,
                                                         }}
                                                     >
-                                                        {item.title}
-                                                    </motion.p>
-                                                    {/* Desc + link */}
-                                                    <div className={spacing.searchWidths.resultContent}>
-                                                        <p className={typography.searchPage.resultDescription} style={{ color: dark ? "#ffffff" : "#4b5563" }}>
-                                                            {item.desc}
-                                                        </p>
-                                                        <motion.a
-                                                            href={item.href}
-                                                            className={`inline-flex items-center ${spacing.searchGaps.viewAllLink} ${typography.searchPage.resultLink} justify-start`}
-                                                            style={{ color: textColor }}
-                                                            whileHover={{
-                                                                x: 3,
-                                                                transition: { duration: 0.2 }
-                                                            }}
-                                                        >
-                                                            {item.linkLabel}
-                                                            <ArrowRight className={spacing.searchIcons.arrowIcon} color={textColor} />
-                                                        </motion.a>
+                                                        {cat.icon ? (
+                                                            <Image
+                                                                src={cat.icon}
+                                                                alt={catKey}
+                                                                width={40}
+                                                                height={40}
+                                                                className={`${spacing.searchIcons.categoryIconImage} object-contain`}
+                                                                style={{
+                                                                    width: "30px",
+                                                                    height: "30px",
+                                                                }}
+                                                            />
+                                                        ) : (
+                                                            <span
+                                                                className={typography.searchPage.iconPlaceholder}
+                                                                style={{
+                                                                    color: dark ? "#ffffff" : "#6b7280",
+                                                                    fontSize: "28px",
+                                                                }}
+                                                            >
+                                                                {catKey[0]}
+                                                            </span>
+                                                        )}
                                                     </div>
                                                 </motion.div>
 
-                                                {/* Row divider */}
-                                                {itemIdx < cat.items.length - 1 && (
-                                                    <motion.div 
-                                                        className={spacing.searchBorders.resultDivider} 
+                                                {/* Category content */}
+                                                <div
+                                                    className={`${spacing.searchWidths.resultContent} min-w-0 flex-1`}
+                                                    style={{
+                                                        width: "100%",
+                                                        maxWidth: "100%",
+                                                    }}
+                                                >
+                                                    <motion.h2
+                                                        className={`${typography.searchPage.categoryHeading} ${spacing.searchPage.categoryHeading} text-left`}
                                                         style={{
-                                                            borderColor: dark ? "#868181" : "#f3f4f6",
+                                                            color: dark
+                                                                ? "#f0f0f0"
+                                                                : "#0F0F0F",
+                                                        }}
+                                                        whileHover={{
+                                                            scale: 1.02,
+                                                        }}
+                                                        transition={{
+                                                            duration: 0.2,
+                                                        }}
+                                                    >
+                                                        {catKey}{" "}
+                                                        <span
+                                                            className={typography.searchPage.categoryCount}
+                                                            style={{
+                                                                color: dark
+                                                                    ? "#f0f0f0"
+                                                                    : "#0F0F0F",
+                                                            }}
+                                                        >
+                                                            ({cat.total})
+                                                        </span>
+                                                    </motion.h2>
+
+                                                    {/* Result rows */}
+                                                    <div className="flex flex-col w-full">
+                                                        {cat.items.map(
+                                                            (item, itemIdx) => (
+                                                                <motion.div
+                                                                    key={`${catKey}-${item.title}`}
+                                                                    custom={itemIdx}
+                                                                    variants={itemVariants}
+                                                                    initial="hidden"
+                                                                    whileInView="visible"
+                                                                    viewport={{
+                                                                        once: true,
+                                                                    }}
+                                                                >
+                                                                    <motion.div
+                                                                        className={`flex flex-col sm:flex-row sm:items-start ${spacing.searchGaps.resultRowInner} ${spacing.searchPage.resultRow} text-left`}
+                                                                        whileHover={{
+                                                                            x: 3,
+                                                                            transition: {
+                                                                                duration: 0.2,
+                                                                            },
+                                                                        }}
+                                                                    >
+                                                                        {/* Result title */}
+                                                                        <motion.p
+                                                                            className={`${typography.searchPage.resultTitle} ${spacing.searchWidths.titleColumn} shrink-0`}
+                                                                            style={{
+                                                                                color: dark
+                                                                                    ? "#f0f0f0"
+                                                                                    : "#0F0F0F",
+                                                                            }}
+                                                                            whileHover={{
+                                                                                scale: 1.02,
+                                                                                transition: {
+                                                                                    duration: 0.2,
+                                                                                },
+                                                                            }}
+                                                                        >
+                                                                            {item.title}
+                                                                        </motion.p>
+
+                                                                        {/* Description and link */}
+                                                                        <div
+                                                                            className={`${spacing.searchWidths.resultContent} min-w-0 flex-1`}
+                                                                        >
+                                                                            <p
+                                                                                className={typography.searchPage.resultDescription}
+                                                                                style={{
+                                                                                    color: dark
+                                                                                        ? "#ffffff"
+                                                                                        : "#4b5563",
+                                                                                }}
+                                                                            >
+                                                                                {item.desc}
+                                                                            </p>
+
+                                                                            <motion.a
+                                                                                href={item.href}
+                                                                                className={`inline-flex items-center ${spacing.searchGaps.viewAllLink} ${typography.searchPage.resultLink} justify-start`}
+                                                                                style={{
+                                                                                    color: dark
+                                                                                        ? "#f0f0f0"
+                                                                                        : "#0F0F0F",
+                                                                                }}
+                                                                                whileHover={{
+                                                                                    x: 3,
+                                                                                    transition: {
+                                                                                        duration: 0.2,
+                                                                                    },
+                                                                                }}
+                                                                            >
+                                                                                {item.linkLabel}
+                                                                                <ArrowRight
+                                                                                    className={spacing.searchIcons.arrowIcon}
+                                                                                    color="#0F0F0F"
+                                                                                />
+                                                                            </motion.a>
+                                                                        </div>
+                                                                    </motion.div>
+
+                                                                    {/* Result divider */}
+                                                                    {itemIdx <
+                                                                        cat.items.length -
+                                                                        1 && (
+                                                                            <motion.div
+                                                                                className={spacing.searchBorders.resultDivider}
+                                                                                style={{
+                                                                                    borderColor:
+                                                                                        dark
+                                                                                            ? "#868181"
+                                                                                            : "#f3f4f6",
+                                                                                }}
+                                                                                initial={{
+                                                                                    scaleX: 0,
+                                                                                }}
+                                                                                whileInView={{
+                                                                                    scaleX: 1,
+                                                                                }}
+                                                                                viewport={{
+                                                                                    once: true,
+                                                                                }}
+                                                                                transition={{
+                                                                                    duration: 0.4,
+                                                                                    delay:
+                                                                                        itemIdx *
+                                                                                        0.05 +
+                                                                                        0.2,
+                                                                                }}
+                                                                            />
+                                                                        )}
+                                                                </motion.div>
+                                                            )
+                                                        )}
+                                                    </div>
+
+                                                    {/* View all link */}
+                                                    <motion.div
+                                                        className={`${spacing.searchPage.viewAllLink} text-left`}
+                                                        whileHover={{ x: 3 }}
+                                                        transition={{
+                                                            duration: 0.2,
+                                                        }}
+                                                    >
+                                                        <a
+                                                            href="#"
+                                                            className={`inline-flex items-center ${spacing.searchGaps.viewAllLink} ${typography.searchPage.viewAllLink} justify-start`}
+                                                            style={{
+                                                                borderColor:
+                                                                    dark
+                                                                        ? "#868181"
+                                                                        : "#f3f4f6",
+                                                            }}
+                                                        >
+                                                            {cat.viewAllLabel}
+                                                            <ArrowRight
+                                                                className={spacing.searchIcons.arrowIcon}
+                                                                style={{
+                                                                    borderColor:
+                                                                        dark
+                                                                            ? "#868181"
+                                                                            : "#f3f4f6",
+                                                                }}
+                                                            />
+                                                        </a>
+                                                    </motion.div>
+                                                </div>
+                                            </div>
+
+                                            {/* Category divider */}
+                                            {catIdx <
+                                                visibleCategories.length - 1 && (
+                                                    <motion.div
+                                                        className={spacing.searchBorders.sectionDivider}
+                                                        style={{
+                                                            borderColor: dark
+                                                                ? "#ffffff"
+                                                                : "#f3f4f6",
                                                         }}
                                                         initial={{ scaleX: 0 }}
-                                                        whileInView={{ scaleX: 1 }}
+                                                        whileInView={{
+                                                            scaleX: 1,
+                                                        }}
                                                         viewport={{ once: true }}
-                                                        transition={{ duration: 0.4, delay: itemIdx * 0.05 + 0.2 }}
+                                                        transition={{
+                                                            duration: 0.5,
+                                                            delay:
+                                                                catIdx * 0.1 + 0.2,
+                                                        }}
                                                     />
                                                 )}
-                                            </motion.div>
-                                        ))}
-                                    </div>
-
-                                    {/* View all link */}
-                                    <motion.div 
-                                        className={`${spacing.searchPage.viewAllLink} text-left`}
-                                        whileHover={{ x: 3 }}
-                                        transition={{ duration: 0.2 }}
-                                    >
-                                        <a
-                                            href="#"
-                                            className={`inline-flex items-center ${spacing.searchGaps.viewAllLink} ${typography.searchPage.viewAllLink} justify-start`}
-                                            style={{ color: textColor }}
-                                        >
-                                            {cat.viewAllLabel}
-                                            <ArrowRight className={spacing.searchIcons.arrowIcon} color={textColor} />
-                                        </a>
-                                    </motion.div>
-                                </div>
-                            </div>
-
-                            {/* Section divider */}
-                            {catIdx < visibleCategories.length - 1 && (
-                                <motion.div 
-                                    className={spacing.searchBorders.sectionDivider} 
-                                    style={{
-                                        borderColor: dark ? "#ffffff" : "#f3f4f6",
-                                    }}
-                                    initial={{ scaleX: 0 }}
-                                    whileInView={{ scaleX: 1 }}
-                                    viewport={{ once: true }}
-                                    transition={{ duration: 0.5, delay: catIdx * 0.1 + 0.2 }}
-                                />
-                            )}
-                        </motion.section>
-                    ))}
-                </motion.div>
-
-            </motion.div>
-        </motion.main>
+                                        </motion.section>
+                                    )
+                                )}
+                            </motion.div>
+                        </motion.div>
+                    </motion.main>
+                </Container>
+            </SiteContainer>
+        </Section>
     );
 }

@@ -128,15 +128,19 @@ export default function CompletePracticeSection() {
   return (
     <motion.section
       ref={sectionRef}
-      className={`${spacing.sectionPaddingX} py-8 sm:py-10 md:py-12 lg:py-16`}
+      className={`w-full ${spacing.sectionPaddingX} py-8 md:py-10 lg:py-14`}
       style={{
-        width: "100%",
-        boxSizing: "border-box",
         backgroundColor: dark ? "#111827" : "#ffffff",
       }}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.6 }}
+      initial={{
+        opacity: 0,
+      }}
+      animate={{
+        opacity: 1,
+      }}
+      transition={{
+        duration: 0.6,
+      }}
     >
       <SiteContainer
         sx={{
@@ -149,6 +153,13 @@ export default function CompletePracticeSection() {
             xl: "1600px",
           },
           mx: "auto",
+          px: {
+            xs: 2,
+            sm: 3,
+            md: 3,
+            lg: 3,
+            xl: 3,
+          },
           py: 0,
           boxSizing: "border-box",
         }}
@@ -156,12 +167,12 @@ export default function CompletePracticeSection() {
         <Container className="w-full">
           {/* Main feature card */}
           <motion.div
-            className="w-full box-border bg-primary/10 border border-primary/20 rounded-2xl p-6 sm:p-8 md:p-10"
+            className="w-full box-border bg-[#EBE7FF] border border-primary/20 rounded-2xl p-6 sm:p-8 md:p-10"
             style={{
               backgroundColor: dark
                 ? "rgba(55, 65, 81, 0.35)"
-                : "#f0f9ff",
-              borderColor: dark ? "#374151" : "#dbeafe",
+                : "#EBE7FF",
+              borderColor: dark ? "#374151" : "#9A85FE",
             }}
             variants={fadeUp}
             initial="hidden"

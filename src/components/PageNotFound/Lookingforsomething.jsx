@@ -63,10 +63,6 @@ function LotusDivider() {
             {!dark && (
                 <div
                     className="absolute inset-0 mix-blend-multiply"
-                    style={{
-                        backgroundColor: textColor,
-                        opacity: 0.3,
-                    }}
                 />
             )}
         </div>
@@ -94,9 +90,9 @@ export default function Lookingforsomething() {
                     </h2>
                     {/* Divider with lotus image */}
                     <div className="flex items-center gap-3">
-                        <div className={typography.whySubscribe.dividerLine} style={{ backgroundColor: dark ? "#ffffff" : "#e5e7eb" }} />
+                        <div className={typography.whySubscribe.dividerLine} style={{ backgroundColor: dark ? "#ffffff" : "#0F0F0F99" }} />
                         <LotusDivider />
-                        <div className={typography.whySubscribe.dividerLine} style={{ backgroundColor: dark ? "#ffffff" : "#e5e7eb" }} />
+                        <div className={typography.whySubscribe.dividerLine} style={{ backgroundColor: dark ? "#ffffff" : "#0F0F0F99" }} />
                     </div>
                 </div>
 
@@ -148,7 +144,7 @@ export default function Lookingforsomething() {
                             </svg>
                         </div>
                         <div>
-                            <p className="text-sm sm:text-base font-medium" style={{ color: dark ? "#000000" : "#374151" }}>
+                            <p className="text-sm sm:text-base font-medium" style={{ color: dark ? "#000000" : "#0F0F0FCC" }}>
                                 Still can&apos;t find what you&apos;re looking for?
                             </p>
                             <p className="text-xs sm:text-sm" style={{ color: dark ? "#2b2c2e" : "#6b7280" }}>

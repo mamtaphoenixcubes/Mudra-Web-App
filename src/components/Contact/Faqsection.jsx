@@ -289,7 +289,7 @@ export default function FAQSection() {
                     <motion.span
                       className={`${faq.questionClass} min-w-0 flex-1 text-left whitespace-normal break-words`}
                       style={{
-                        color: dark ? "#e5e7eb" : "#111827",
+                        color: dark ? "#e5e7eb" : "#0F0F0F",
                       }}
                       whileHover={{
                         scale: 1.005,

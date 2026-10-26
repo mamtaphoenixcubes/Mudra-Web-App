@@ -153,16 +153,6 @@ export default function WhyMudrasMatter() {
           whileInView="visible"
           viewport={{ once: true }}
         >
-          <motion.p
-            className={typography.sectionLabel}
-            style={{ color: dark ? "#ffffff" : "#9ca3af" }}
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.4 }}
-          >
-            WHY MUDRAS MATTER
-          </motion.p>
 
           <motion.h2
             className={`${typography.sectionMbHeading} ${spacing.labelMt}`}
@@ -250,7 +240,7 @@ export default function WhyMudrasMatter() {
                   <motion.h3
                     className={`${typography.cardBody} mb-1 font-semibold`}
                     style={{
-                      color: textColor,
+                      color: dark ? "#ffffff" : "#0F0F0F",
                       overflowWrap: "anywhere",
                     }}
                     whileHover={{
@@ -264,7 +254,7 @@ export default function WhyMudrasMatter() {
                   <p
                     className={typography.Downloadapp}
                     style={{
-                      color: dark ? "#ffffff" : "#4b5563",
+                      color: dark ? "#ffffff" : "#0F0F0F80",
                       overflowWrap: "anywhere",
                     }}
                   >
@@ -338,7 +328,7 @@ export default function WhyMudrasMatter() {
                   <motion.h3
                     className="text-sm sm:text-base font-semibold mb-0.5"
                     style={{
-                      color: textColor,
+                      color: dark ? "#9ca3af" : "#0F0F0F",
                       overflowWrap: "anywhere",
                     }}
                     whileHover={{
@@ -352,7 +342,7 @@ export default function WhyMudrasMatter() {
                   <p
                     className="text-xs sm:text-sm leading-relaxed"
                     style={{
-                      color: dark ? "#9ca3af" : "#4b5563",
+                      color: dark ? "#9ca3af" : "#0F0F0F80",
                     }}
                   >
                     {item.description}

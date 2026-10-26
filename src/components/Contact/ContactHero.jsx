@@ -281,7 +281,7 @@ export default function ContactHero() {
             <motion.p
               className={`${typography.sectionLabel} uppercase mb-2 sm:mb-3`}
               style={{
-                color: dark ? "#ffffff" : "#9ca3af",
+                color: dark ? "#ffffff" : "#0F0F0F",
               }}
             >
               {labelChars.map((char, i) => (
@@ -410,7 +410,7 @@ export default function ContactHero() {
                     <motion.p
                       className={`${typography.cardTitle} font-semibold leading-tight`}
                       style={{
-                        color: textColor,
+                        color: dark ? "#ffffff" : "#0F0F0F",
                       }}
                       whileHover={{
                         scale: 1.02,
@@ -425,7 +425,7 @@ export default function ContactHero() {
                     <p
                       className={`${typography.sectionMb} mt-0.5`}
                       style={{
-                        color: dark ? "#ffffff" : "#6b7280",
+                        color: dark ? "#ffffff" : "#0F0F0F80",
                       }}
                     >
                       {f.desc}
@@ -441,7 +441,7 @@ export default function ContactHero() {
             className="w-full min-w-0 box-border rounded-2xl p-5 sm:p-6 lg:p-8 shadow-sm border"
             style={{
               backgroundColor: dark ? "#1f2937" : "#ffffff",
-              borderColor: dark ? "#374151" : "#e5e7eb",
+              borderColor: dark ? "#374151" : "#0F0F0F66",
             }}
             variants={slideInRight}
             whileHover={{
@@ -453,7 +453,7 @@ export default function ContactHero() {
               },
             }}
           >
-            <motion.h2
+            <motion.h1
               className={`${typography.featureTitle} mb-1 font-bold`}
               style={{
                 color: textColor,
@@ -473,12 +473,12 @@ export default function ContactHero() {
               }}
             >
               Send Us a Message
-            </motion.h2>
+            </motion.h1>
 
             <motion.p
               className={`${typography.sessionCardMeta} mb-5 sm:mb-6`}
               style={{
-                color: dark ? "#9ca3af" : "#6b7280",
+                color: dark ? "#9ca3af" : "#000000",
               }}
               initial={{
                 opacity: 0,

@@ -11,7 +11,7 @@ export default function NotFoundHero() {
     <div className={`flex flex-col items-center justify-center text-center px-4 ${spacing.sectionPaddingY}`} style={{
       backgroundColor: dark ? "#111827" : "#ffffff",
     }}>
-      
+
       {/* 404 Number */}
       <h1 className="text-[120px] sm:text-[160px] lg:text-[200px] font-bold leading-none" style={{ color: textColor }}>
         404
@@ -26,16 +26,17 @@ export default function NotFoundHero() {
       <div className="w-25 sm:w-20 md:w-35 lg:w-40 xl:w-58 h-0.5 rounded-full mb-4 sm:mb-5 md:mb-6" style={{ backgroundColor: textColor }} />
 
       {/* Description */}
-      <p className={`${typography.sectionMb} max-w-xs sm:max-w-sm md:max-w-md leading-relaxed mb-6 sm:mb-7 md:mb-8`} style={{ color: dark ? "#ffffff" : "#313235" }}>
+      <p className={`${typography.sectionMb} max-w-xs sm:max-w-sm md:max-w-md leading-relaxed mb-6 sm:mb-7 md:mb-8`} style={{ color: dark ? "#ffffff" : "#0F0F0F" }}>
         Oops! The page you're looking for doesn't exist or may have been moved.
       </p>
 
       {/* Button */}
       <Link
         href="/"
-        className="text-white text-sm font-medium px-5 sm:px-6 py-2 sm:py-2.5 rounded-full transition-colors flex items-center gap-2"
+        className="text-white text-sm font-medium px-5 sm:px-6 py-2 sm:py-2.5 transition-colors flex items-center gap-2"
         style={{
           backgroundColor: textColor,
+          borderRadius: "8px",
         }}
         onMouseEnter={(e) => {
           e.currentTarget.style.opacity = "0.85";

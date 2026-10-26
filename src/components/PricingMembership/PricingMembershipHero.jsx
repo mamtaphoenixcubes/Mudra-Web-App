@@ -186,7 +186,7 @@ export default function Hero() {
               <motion.p
                 className={`${typography.heroBody} ${maxW.heroMbBody}`}
                 style={{
-                  color: dark ? "#ffffff" : "#4b5563",
+                  color: dark ? "#ffffff" : "#0F0F0F",
                 }}
               >
                 {bodyWords.map((word, i) => (
@@ -245,7 +245,7 @@ export default function Hero() {
                       <motion.p
                         className="font-semibold text-sm md:text-base"
                         style={{
-                          color: dark ? "#f9fafb" : "#111827",
+                          color: dark ? "#f9fafb" : "#0F0F0F",
                         }}
                         whileHover={{
                           scale: 1.02,
@@ -258,7 +258,7 @@ export default function Hero() {
                       <p
                         className="text-xs md:text-sm mt-0.5 md:mt-1"
                         style={{
-                          color: dark ? "#9ca3af" : "#6b7280",
+                          color: dark ? "#9ca3af" : "#0F0F0F80",
                         }}
                       >
                         Try all premium features. Cancel anytime.

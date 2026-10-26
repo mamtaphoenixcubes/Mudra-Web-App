@@ -6,6 +6,9 @@ import { useRouter } from "next/navigation";
 import { IMAGES } from "../../assets/assets";
 import SiteContainer from "../../common/SiteContainer";
 
+// ✅ CHANGED: import Section (the fixed forwardRef + MUI Box version)
+import Section from "../../common/Section";
+
 const features = [
   {
     icon: IMAGES.HeadPhone,
@@ -34,7 +37,12 @@ export default function UnlockYogaNidra() {
   const sectionRef = useRef(null);
 
   return (
-    <section ref={sectionRef} className="w-full bg-white">
+    // ✅ CHANGED: <section> → <Section> (adds pt/pb gap), bg moved to sx
+    <Section
+      ref={sectionRef}
+      className="w-full"
+      sx={{ backgroundColor: "#ffffff" }}
+    >
       <SiteContainer>
         <div className="bg-[#F3E8FF] rounded-3xl p-6 sm:p-8 lg:p-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative">
           {/* Col 1: Photo thumbnail */}
@@ -114,6 +122,6 @@ export default function UnlockYogaNidra() {
           </div>
         </div>
       </SiteContainer>
-    </section>
+    </Section>
   );
 }

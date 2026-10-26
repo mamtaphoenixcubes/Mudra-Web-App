@@ -1,3 +1,4 @@
+
 "use client";
 
 import Image from "next/image";
@@ -15,21 +16,30 @@ export default function FAQHero() {
 
   const isInView = useInView(sectionRef, {
     once: true,
-    amount: 0.2,
-    margin: "-50px",
+    amount: 0.1,
+    margin: "0px",
   });
 
   const fadeUp = {
-    hidden: { opacity: 0, y: 30 },
+    hidden: {
+      opacity: 0,
+      y: 30,
+    },
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.6, ease: "easeOut" },
+      transition: {
+        duration: 0.6,
+        ease: "easeOut",
+      },
     },
   };
 
   const fadeInLeft = {
-    hidden: { opacity: 0, x: -40 },
+    hidden: {
+      opacity: 0,
+      x: -40,
+    },
     visible: {
       opacity: 1,
       x: 0,
@@ -41,7 +51,10 @@ export default function FAQHero() {
   };
 
   const fadeInRight = {
-    hidden: { opacity: 0, x: 40 },
+    hidden: {
+      opacity: 0,
+      x: 40,
+    },
     visible: {
       opacity: 1,
       x: 0,
@@ -53,13 +66,17 @@ export default function FAQHero() {
   };
 
   const charVariants = {
-    hidden: { opacity: 0, y: 20, rotateX: -10 },
+    hidden: {
+      opacity: 0,
+      y: 20,
+      rotateX: -10,
+    },
     visible: (i) => ({
       opacity: 1,
       y: 0,
       rotateX: 0,
       transition: {
-        delay: i * 0.04,
+        delay: i * 0.025,
         duration: 0.5,
         ease: [0.22, 1, 0.36, 1],
       },
@@ -67,12 +84,15 @@ export default function FAQHero() {
   };
 
   const wordVariants = {
-    hidden: { opacity: 0, y: 10 },
+    hidden: {
+      opacity: 0,
+      y: 10,
+    },
     visible: (i) => ({
       opacity: 1,
       y: 0,
       transition: {
-        delay: i * 0.05 + 0.2,
+        delay: i * 0.03 + 0.2,
         duration: 0.4,
         ease: [0.22, 1, 0.36, 1],
       },
@@ -84,6 +104,7 @@ export default function FAQHero() {
 
   const bodyText =
     "Find answers to the most common questions about Mudras, Yoga Nidra, and how to begin your journey.";
+
   const bodyWords = bodyText.split(" ");
 
   return (
@@ -91,24 +112,25 @@ export default function FAQHero() {
       className={`${spacing.sectionPaddingX} ${spacing.sectionPaddingY}`}
       sx={{
         backgroundColor: dark ? "#111827" : "#ffffff",
-        py: { xs: 5, sm: 6, md: 8 },
+        py: {
+          xs: 5,
+          sm: 6,
+          md: 8,
+        },
+        minHeight: "auto",
+        overflow: "hidden",
       }}
     >
       <SiteContainer
         sx={{
           py: 0,
-          display: "grid",
-          gridTemplateColumns: {
-            xs: "1fr",
-            md: "minmax(0, 1fr) minmax(0, 1fr)",
-          },
-          gap: { xs: 4, md: 5, lg: 8 },
-          alignItems: "center",
+          display: "block",
+          width: "100%",
         }}
       >
         <motion.div
           ref={sectionRef}
-          className="contents"
+          className="grid w-full min-w-0 grid-cols-1 items-center gap-8 md:grid-cols-2 lg:gap-12"
           variants={fadeUp}
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
@@ -118,9 +140,11 @@ export default function FAQHero() {
             className="flex min-w-0 flex-col"
             variants={fadeInLeft}
           >
-            <motion.h1
-              className={`${typography.aboutHeading} text-primary leading-tight mb-2 sm:mb-3`}
-              style={{ color: textColor }}
+            <motion.h2
+              className={`${typography.aboutHeading} leading-tight mb-2 sm:mb-3`}
+              style={{
+                color: textColor,
+              }}
             >
               {headingChars.map((char, i) => (
                 <motion.span
@@ -129,26 +153,41 @@ export default function FAQHero() {
                   variants={charVariants}
                   initial="hidden"
                   animate={isInView ? "visible" : "hidden"}
-                  style={{ display: "inline-block" }}
+                  style={{
+                    display: "inline-block",
+                  }}
                 >
                   {char === " " ? "\u00A0" : char}
                 </motion.span>
               ))}
-            </motion.h1>
+            </motion.h2>
 
             {/* Underline */}
             <motion.div
-              className="w-8 sm:w-10 lg:w-14 h-[2px] sm:h-[3px] bg-primary rounded-full mt-1 sm:mt-2 mb-3 sm:mb-5"
-              style={{ backgroundColor: textColor }}
-              initial={{ width: 0 }}
-              animate={isInView ? { width: "3.5rem" } : { width: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
+              className="mt-1 mb-3 h-[2px] w-8 rounded-full bg-primary sm:mt-2 sm:mb-5 sm:h-[3px] sm:w-10 lg:w-14"
+              style={{
+                backgroundColor: textColor,
+              }}
+              initial={{
+                width: 0,
+              }}
+              animate={
+                isInView
+                  ? { width: "3.5rem" }
+                  : { width: 0 }
+              }
+              transition={{
+                duration: 0.6,
+                delay: 0.3,
+              }}
             />
 
             {/* Description */}
             <motion.p
-              className={`${typography.heroBody} leading-relaxed mb-6 sm:mb-8 max-w-sm sm:max-w-md`}
-              style={{ color: dark ? "#ffffff" : "#4b5563" }}
+              className={`${typography.heroBody} mb-6 max-w-sm leading-relaxed sm:mb-8 sm:max-w-md`}
+              style={{
+                color: dark ? "#ffffff" : "#0F0F0F",
+              }}
             >
               {bodyWords.map((word, i) => (
                 <motion.span
@@ -177,7 +216,9 @@ export default function FAQHero() {
               className="w-full max-w-[340px] sm:max-w-[420px] md:max-w-full"
               whileHover={{
                 scale: 1.03,
-                transition: { duration: 0.3 },
+                transition: {
+                  duration: 0.3,
+                },
               }}
             >
               {IMAGES.faq ? (

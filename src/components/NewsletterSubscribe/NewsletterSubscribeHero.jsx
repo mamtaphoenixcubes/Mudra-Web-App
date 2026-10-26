@@ -133,7 +133,7 @@ export default function SearchResultsHero() {
                     {/* Body - Word by word */}
                     <motion.p
                         className={`${typography.heroBody} leading-relaxed mb-6 sm:mb-8 max-w-sm sm:max-w-md`}
-                        style={{ color: dark ? "#f5f5f5" : "#4b5563" }}
+                        style={{ color: dark ? "#f5f5f5" : "#0F0F0F" }}
                     >
                         {bodyWords.map((word, i) => (
                             <motion.span

@@ -131,7 +131,7 @@ export default function OverviewElement({ overview = null, title = null }) {
           {/* Heading - Character by character */}
           <motion.h3 
             className={typography.gyanMudraCard.title} 
-            style={{ color: textColor }}
+            style={{ color: "#0F0F0F" }}
           >
             {headingChars.map((char, i) => (
               <motion.span
@@ -150,7 +150,7 @@ export default function OverviewElement({ overview = null, title = null }) {
           {/* Description - Word by word */}
           <motion.p 
             className={typography.gyanMudraCard.description} 
-            style={{ color: dark ? "#000000" : "#4b5563" }}
+            style={{ color: dark ? "#000000" : "#0F0F0F" }}
           >
             {descriptionWords.map((word, i) => (
               <motion.span

@@ -358,7 +358,7 @@ export default function LatestArticles() {
                           ? textColor
                           : dark
                           ? "#ffffff"
-                          : "#6b7280",
+                          : "#00000066",
                       borderColor:
                         activeTab === tab.value ? textColor : "transparent",
                     }}
@@ -415,7 +415,7 @@ export default function LatestArticles() {
                           ? textColor
                           : dark
                           ? "#ffffff"
-                          : "#6b7280",
+                          : "#00000066",
                       borderColor:
                         activeTab === tab.value ? textColor : "transparent",
                     }}
@@ -471,7 +471,7 @@ export default function LatestArticles() {
           </motion.h1>
           <motion.p
             className={`${typography.sectionMbBody}`}
-            style={{ color: dark ? "#ffffff" : "#6b7280" }}
+            style={{ color: dark ? "#ffffff" : "#0F0F0FCC" }}
             initial={{ opacity: 0 }}
             animate={isInView ? { opacity: 1 } : { opacity: 0 }}
             transition={{ delay: 0.3, duration: 0.6 }}
@@ -484,7 +484,7 @@ export default function LatestArticles() {
         {loading ? (
           <motion.div
             className={`${typography.sectionBody} text-center py-20`}
-            style={{ color: dark ? "#6b7280" : "#9ca3af" }}
+            style={{ color: dark ? "#6b7280" : "#0F0F0FCC" }}
             initial={{ opacity: 0 }}
             animate={isInView ? { opacity: 1 } : { opacity: 0 }}
             transition={{ duration: 0.5 }}

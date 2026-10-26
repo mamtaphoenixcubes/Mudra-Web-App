@@ -129,8 +129,8 @@ export default function NewsletterSection() {
 
         {/* Subtitle - Word by word */}
         <motion.p 
-          className={`${typography.newsletter.subtitle} max-w-md sm:max-w-lg`} 
-          style={{ color: dark ? "#ffffff" : "#4b5563" }}
+          className={`${typography.newsletter.subtitle} max-w-md sm:max-w-xl`} 
+          style={{ color: dark ? "#ffffff" : "#0F0F0F" }}
         >
           {subtitleWords.map((word, i) => (
             <motion.span
@@ -157,7 +157,7 @@ export default function NewsletterSection() {
           <motion.div 
             className={`flex items-stretch border rounded-lg overflow-hidden ${spacing.newsletter.inputHeight}`} 
             style={{
-              borderColor: dark ? "#ffffff" : "#ffffff",
+              borderColor: dark ? "#ffffff" : "#00000066",
             }}
             whileHover={{
               boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
@@ -222,7 +222,7 @@ export default function NewsletterSection() {
         {/* Privacy note */}
         <motion.p 
           className={typography.newsletter.privacyNote} 
-          style={{ color: dark ? "#fcfcfc" : "#2c2d30" }}
+          style={{ color: dark ? "#fcfcfc" : "#0F0F0F99" }}
           initial={{ opacity: 0, y: 10 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
           transition={{ duration: 0.5, delay: 0.5 }}

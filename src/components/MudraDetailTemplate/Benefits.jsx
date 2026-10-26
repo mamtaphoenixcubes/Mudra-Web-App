@@ -4,8 +4,11 @@ import Image from "next/image";
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { IMAGES } from "../../assets/assets";
-import { spacing, typography } from "../../theme";
+import { spacing } from "../../theme";
 import { useTheme } from "../../context/ThemeContext";
+import Section from "../../common/Section";
+import SiteContainer from "../../common/SiteContainer";
+import Container from "../../common/Container";
 
 const staticBenefits = [
   {
@@ -45,7 +48,6 @@ const staticBenefits = [
   },
 ];
 
-// Card entrance + hover animation variants
 const cardVariants = {
   hidden: { opacity: 0, y: 30, scale: 0.95 },
   visible: (i) => ({
@@ -60,15 +62,15 @@ const cardVariants = {
   }),
 };
 
-function Card({ item, index, isInView, dark }) {
+function BenefitCard({ item, index, isInView }) {
   const isHex = item.bg?.startsWith("#");
 
   return (
     <motion.div
       className={`
-        ${isHex ? "" : item.bg} rounded-2xl p-6
-        min-h-[220px] flex flex-col items-center text-center
-        w-full h-full shadow-2xs
+        ${isHex ? "" : item.bg}
+        flex h-full min-h-[220px] w-full min-w-0
+        flex-col items-center rounded-2xl p-6 text-center shadow-2xs
       `}
       style={{
         backgroundColor: isHex ? item.bg : undefined,
@@ -84,14 +86,18 @@ function Card({ item, index, isInView, dark }) {
       }}
     >
       <motion.div
-        className="w-14 h-14 rounded-full bg-white flex items-center justify-center shrink-0 mb-4 shadow-2xs overflow-hidden"
-        whileHover={{ scale: 1.1, rotate: 5, transition: { duration: 0.2 } }}
+        className="mb-4 flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white shadow-2xs"
+        whileHover={{
+          scale: 1.1,
+          rotate: 5,
+          transition: { duration: 0.2 },
+        }}
       >
         {item.isRemote ? (
           <img
             src={item.image}
             alt={item.title || "Benefit icon"}
-            className="w-7 h-7 object-contain"
+            className="h-7 w-7 object-contain"
           />
         ) : (
           <Image
@@ -99,15 +105,16 @@ function Card({ item, index, isInView, dark }) {
             alt={item.title || "Benefit icon"}
             width={28}
             height={28}
-            className="w-7 h-7 object-contain"
+            className="h-7 w-7 object-contain"
           />
         )}
       </motion.div>
 
-      <h3 className="font-bold text-base sm:text-lg text-gray-900 mb-1.5">
+      <h3 className="mb-1.5 text-base font-bold text-gray-900 sm:text-lg">
         {item.title}
       </h3>
-      <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
+
+      <p className="text-xs leading-relaxed text-gray-600 sm:text-sm">
         {item.description}
       </p>
     </motion.div>
@@ -117,98 +124,164 @@ function Card({ item, index, isInView, dark }) {
 export default function Benefits({ mudra }) {
   const { dark } = useTheme();
   const sectionRef = useRef(null);
+
   const isInView = useInView(sectionRef, {
     once: true,
     amount: 0.05,
     margin: "-50px",
   });
 
-  const IMAGE_BASE_URL = process.env.NEXT_PUBLIC_IMAGE_BASE_URL || "http://192.168.1.14:1337";
+  const IMAGE_BASE_URL =
+    process.env.NEXT_PUBLIC_IMAGE_BASE_URL ||
+    "http://192.168.1.14:1337";
 
-  const apiBenefits = mudra?.web?.Benefits?.map((b, index) => ({
-    title: b.Title,
-    description: b.Description,
-    bg: b.CardBg || ["bg-[#FEF9C3]", "bg-[#F3E8FF]", "bg-[#BFDDF2]", "bg-[#FCE7F3]", "bg-[#DCFCE7]"][index % 5],
-    image: b.Icon?.url ? `${IMAGE_BASE_URL}${b.Icon.url}` : IMAGES.Mind,
-    isRemote: !!b.Icon?.url,
-  })) || [];
+  const apiBenefits =
+    mudra?.web?.Benefits?.map((benefit, index) => ({
+      title: benefit.Title,
+      description: benefit.Description,
+      bg:
+        benefit.CardBg ||
+        [
+          "bg-[#FEF9C3]",
+          "bg-[#F3E8FF]",
+          "bg-[#BFDDF2]",
+          "bg-[#FCE7F3]",
+          "bg-[#DCFCE7]",
+        ][index % 5],
+      image: benefit.Icon?.url
+        ? `${IMAGE_BASE_URL}${benefit.Icon.url}`
+        : IMAGES.Mind,
+      isRemote: !!benefit.Icon?.url,
+    })) || [];
 
-  let benefits = apiBenefits;
-  if (benefits.length === 0) {
-    benefits = staticBenefits;
-  }
+  const benefits =
+    apiBenefits.length > 0 ? apiBenefits : staticBenefits;
 
   return (
-    <motion.section
-      ref={sectionRef}
-      className={`w-full ${spacing.sectionPaddingX} py-8 md:py-10 lg:py-14`}
-      style={{
+    <Section
+      className="w-full"
+      sx={{
+        width: "100%",
+        maxWidth: "100%",
+        overflow: "hidden",
         backgroundColor: dark ? "#111827" : "#ffffff",
       }}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.6 }}
     >
-      <div className="max-w-7xl mx-auto">
-
-        {/* Section Heading */}
-        <motion.h2
-          className="text-3xl sm:text-4xl lg:text-5xl font-bold text-center text-[#9A85FE] mb-2"
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-        >
-          Benefits
-        </motion.h2>
-
-        {/* Lotus Icon Graphic Divider */}
-        <motion.div
-          className="flex items-center justify-center gap-4 max-w-xs mx-auto mb-10"
-          initial={{ opacity: 0 }}
-          animate={isInView ? { opacity: 1 } : { opacity: 0 }}
-          transition={{ duration: 0.6, delay: 0.15 }}
+      <SiteContainer
+        sx={{
+          width: "100%",
+          maxWidth: "1600px",
+          mx: "auto",
+          py: 0,
+        }}
+      >
+        <Container
+          className="w-full"
+          sx={{
+            width: "100%",
+            maxWidth: "100%",
+            mx: "auto",
+            px: 0,
+          }}
         >
           <motion.div
-            className="flex-1 h-[1px]"
-            style={{ backgroundColor: dark ? "#374151" : "#e5e7eb", originX: 1 }}
-            initial={{ scaleX: 0 }}
-            animate={isInView ? { scaleX: 1 } : { scaleX: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          />
-          <motion.div
-            className="w-6 h-6 flex items-center justify-center"
-            initial={{ opacity: 0, scale: 0 }}
-            animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0 }}
-            transition={{ duration: 0.4, delay: 0.3 }}
+            ref={sectionRef}
+            className={`w-full ${spacing.sectionPaddingX} py-8 md:py-10 lg:py-14`}
+            style={{
+              width: "100%",
+              maxWidth: "100%",
+            }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6 }}
           >
-            <Image
-              src={IMAGES.Energy}
-              alt="Lotus decorative icon"
-              width={24}
-              height={24}
-              className="w-9 h-9 object-contain opacity-75"
-              style={{
-                filter: dark ? "brightness(0) invert(1)" : "brightness(0)",
-              }}
-              priority={false}
-            />
-          </motion.div>
-          <motion.div
-            className="flex-1 h-[1px]"
-            style={{ backgroundColor: dark ? "#374151" : "#e5e7eb", originX: 0 }}
-            initial={{ scaleX: 0 }}
-            animate={isInView ? { scaleX: 1 } : { scaleX: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          />
-        </motion.div>
+            {/* Section Heading */}
+            <motion.h2
+              className="mb-2 text-center text-3xl font-bold text-[#9A85FE] sm:text-4xl lg:text-5xl"
+              initial={{ opacity: 0, y: 20 }}
+              animate={
+                isInView
+                  ? { opacity: 1, y: 0 }
+                  : { opacity: 0, y: 20 }
+              }
+              transition={{ duration: 0.6, ease: "easeOut" }}
+            >
+              Benefits
+            </motion.h2>
 
-        {/* 5-Column Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 lg:grid-cols-5 gap-4 lg:gap-5">
-          {benefits.map((item, i) => (
-            <Card key={i} item={item} index={i} isInView={isInView} dark={dark} />
-          ))}
-        </div>
-      </div>
-    </motion.section>
+            {/* Lotus Icon Graphic Divider */}
+            <motion.div
+              className="mx-auto mb-10 flex max-w-xs items-center justify-center gap-4"
+              initial={{ opacity: 0 }}
+              animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+              transition={{ duration: 0.6, delay: 0.15 }}
+            >
+              <motion.div
+                className="h-px flex-1"
+                style={{
+                  backgroundColor: dark ? "#374151" : "#e5e7eb",
+                  originX: 1,
+                }}
+                initial={{ scaleX: 0 }}
+                animate={isInView ? { scaleX: 1 } : { scaleX: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+              />
+
+              <motion.div
+                className="flex h-6 w-6 items-center justify-center"
+                initial={{ opacity: 0, scale: 0 }}
+                animate={
+                  isInView
+                    ? { opacity: 1, scale: 1 }
+                    : { opacity: 0, scale: 0 }
+                }
+                transition={{ duration: 0.4, delay: 0.3 }}
+              >
+                <Image
+                  src={IMAGES.Energy}
+                  alt="Lotus decorative icon"
+                  width={24}
+                  height={24}
+                  className="h-12 w-12 object-contain opacity-75"
+                  style={{
+                    filter: dark
+                      ? "brightness(0) invert(1)"
+                      : "brightness(0)",
+                  }}
+                  priority={false}
+                />
+              </motion.div>
+
+              <motion.div
+                className="h-px flex-1"
+                style={{
+                  backgroundColor: dark ? "#374151" : "#e5e7eb",
+                  originX: 0,
+                }}
+                initial={{ scaleX: 0 }}
+                animate={isInView ? { scaleX: 1 } : { scaleX: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+              />
+            </motion.div>
+
+            {/* Responsive Benefits Grid */}
+            <div className="grid w-full grid-cols-1 justify-items-center gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 lg:gap-5">
+              {benefits.map((item, index) => (
+                <div
+                  key={`${item.title}-${index}`}
+                  className="h-full w-full min-w-0"
+                >
+                  <BenefitCard
+                    item={item}
+                    index={index}
+                    isInView={isInView}
+                  />
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        </Container>
+      </SiteContainer>
+    </Section>
   );
 }

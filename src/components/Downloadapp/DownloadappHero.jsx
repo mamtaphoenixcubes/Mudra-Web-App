@@ -247,7 +247,7 @@ export default function DownloadAppHero() {
             {/* Body text */}
             <motion.p
               className={`${typography.heroBody} leading-relaxed mb-6 sm:mb-8 w-full max-w-sm sm:max-w-md`}
-              style={{ color: dark ? "#ffffff" : "#4b5563" }}
+              style={{ color: dark ? "#ffffff" : "#0F0F0F" }}
             >
               {bodyWords.map((word, i) => (
                 <motion.span

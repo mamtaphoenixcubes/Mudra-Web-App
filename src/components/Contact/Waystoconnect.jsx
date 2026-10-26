@@ -267,7 +267,7 @@ export default function WaysToConnect() {
                   <p
                     className="text-[11px] sm:text-xs md:text-sm break-words"
                     style={{
-                      color: dark ? "#ffffff" : "#6b7280",
+                      color: dark ? "#ffffff" : "#0F0F0F80",
                     }}
                   >
                     {item.line2}

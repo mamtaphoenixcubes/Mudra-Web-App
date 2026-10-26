@@ -8,7 +8,12 @@ import { typography } from "../../theme/typography";
 import { IMAGES } from "../../assets/assets";
 import { useTheme } from "../../context/ThemeContext";
 
-// ── FAQ Data ──────────────────────────────────────────────────
+// ✅ CHANGED: import your reusable layout components
+import Section from "../../common/Section";
+import SiteContainer from "../../common/SiteContainer";
+import SectionHeader from "../../common/SectionHeader";
+
+// ── FAQ Data (unchanged) ─────────────────────────────────────
 const faqData = {
     "Getting Started": [
         {
@@ -116,7 +121,7 @@ const categories = [
     { label: "General", icon: IMAGES.ShGeneralield || IMAGES.General },
 ];
 
-// ── Accordion item ────────────────────────────────────────────
+// ── Accordion item (unchanged) ────────────────────────────────
 function AccordionItem({ question, answer, isOpen, onToggle, textColor, index }) {
     const itemVariants = {
         hidden: { opacity: 0, y: 15 },
@@ -132,8 +137,8 @@ function AccordionItem({ question, answer, isOpen, onToggle, textColor, index })
     };
 
     return (
-        <motion.div 
-            className="border rounded-xl overflow-hidden" 
+        <motion.div
+            className="border rounded-xl overflow-hidden"
             style={{
                 borderColor: textColor + "30",
                 backgroundColor: "#ffffff",
@@ -155,9 +160,9 @@ function AccordionItem({ question, answer, isOpen, onToggle, textColor, index })
                     transition: { duration: 0.2 }
                 }}
             >
-                <motion.span 
-                    className="text-[12px] sm:text-sm md:text-sm lg:text-[15px] font-medium flex-1 leading-snug" 
-                    style={{ color: textColor }}
+                <motion.span
+                    className="text-[12px] sm:text-sm md:text-sm lg:text-[15px] font-medium flex-1 leading-snug"
+                    style={{ color: "#0F0F0F" }}
                     whileHover={{
                         scale: 1.02,
                         transition: { duration: 0.2 }
@@ -165,11 +170,11 @@ function AccordionItem({ question, answer, isOpen, onToggle, textColor, index })
                 >
                     {question}
                 </motion.span>
-                <motion.span 
+                <motion.span
                     className={
                         "shrink-0 w-5 h-5 rounded-full flex items-center justify-center transition-transform duration-200 " +
                         (isOpen ? "rotate-180" : "")
-                    } 
+                    }
                     style={{
                         backgroundColor: isOpen ? textColor : "#f3f4f6",
                     }}
@@ -178,7 +183,7 @@ function AccordionItem({ question, answer, isOpen, onToggle, textColor, index })
                 >
                     <svg
                         viewBox="0 0 24 24"
-                        className={"w-3 h-3 " + (isOpen ? "text-white" : "text-gray-500")}
+                        className={"w-3 h-3 " + (isOpen ? "text-white" : "text-[#0F0F0F")}
                         fill="none"
                         stroke="currentColor"
                         strokeWidth="2.5"
@@ -211,8 +216,8 @@ function AccordionItem({ question, answer, isOpen, onToggle, textColor, index })
 export default function FaqSection() {
     const { dark, textColor } = useTheme();
     const sectionRef = useRef(null);
-    const isInView = useInView(sectionRef, { 
-        once: true, 
+    const isInView = useInView(sectionRef, {
+        once: true,
         amount: 0.05,
         margin: "-50px"
     });
@@ -229,35 +234,34 @@ export default function FaqSection() {
         setMobileCategoryOpen(false);
     };
 
-    // Animation variants
+    // Animation variants (unchanged)
     const fadeUp = {
         hidden: { opacity: 0, y: 30 },
-        visible: { 
-            opacity: 1, 
-            y: 0, 
-            transition: { duration: 0.6, ease: "easeOut" } 
+        visible: {
+            opacity: 1,
+            y: 0,
+            transition: { duration: 0.6, ease: "easeOut" }
         }
     };
 
     const slideInLeft = {
         hidden: { opacity: 0, x: -30 },
-        visible: { 
-            opacity: 1, 
-            x: 0, 
-            transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } 
+        visible: {
+            opacity: 1,
+            x: 0,
+            transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] }
         }
     };
 
     const slideInRight = {
         hidden: { opacity: 0, x: 30 },
-        visible: { 
-            opacity: 1, 
-            x: 0, 
-            transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } 
+        visible: {
+            opacity: 1,
+            x: 0,
+            transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] }
         }
     };
 
-    // Staggered category variants for sidebar
     const categoryVariants = {
         hidden: { opacity: 0, x: -10 },
         visible: (i) => ({
@@ -271,7 +275,6 @@ export default function FaqSection() {
         }),
     };
 
-    // Character animation for heading
     const charVariants = {
         hidden: { opacity: 0, y: 20, rotateX: -10 },
         visible: (i) => ({
@@ -290,255 +293,218 @@ export default function FaqSection() {
     const headingChars = headingText.split("");
 
     return (
-        <motion.section 
-            ref={sectionRef}
-            className={"w-full " + spacing.sectionPaddingX + " py-10 sm:py-12 md:py-14 lg:py-16"} 
-            style={{
-                backgroundColor: dark ? "#111827" : "#ffffff",
-            }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6 }}
-        >
-            <div className={spacing.container}>
-
-                {/* Section heading */}
-                <motion.div 
-                    className="text-center mb-8 sm:mb-10 md:mb-12"
-                    variants={fadeUp}
-                    initial="hidden"
-                    animate={isInView ? "visible" : "hidden"}
-                >
-                    <motion.p 
-                        className={
-                            "text-[11px] sm:text-xs md:text-sm lg:text-base " +
-                            "font-semibold uppercase tracking-widest mb-2"
-                        } 
-                        style={{ color: textColor }}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
-                        transition={{ duration: 0.4 }}
+        // ✅ CHANGED: outer <motion.section> replaced by <Section> + <SiteContainer>
+        // The ref stays on a wrapper so useInView still triggers correctly.
+        <div ref={sectionRef}>
+            <Section
+                className="w-full"
+                sx={{
+                    backgroundColor: dark ? "#111827" : "#ffffff",
+                }}
+            >
+                <SiteContainer>
+                    {/* ✅ CHANGED: manual heading block replaced by <SectionHeader> */}
+                    <motion.div
+                        variants={fadeUp}
+                        initial="hidden"
+                        animate={isInView ? "visible" : "hidden"}
                     >
-                        Support
-                    </motion.p>
-                    <motion.h2 
-                        className={
-                            "text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl " +
-                            "font-semibold leading-tight"
-                        } 
-                        style={{ color: dark ? "#f9fafb" : "#111827" }}
-                    >
-                        {headingChars.map((char, i) => (
-                            <motion.span
-                                key={i}
-                                custom={i}
-                                variants={charVariants}
-                                initial="hidden"
-                                animate={isInView ? "visible" : "hidden"}
-                                style={{ display: "inline-block" }}
-                            >
-                                {char === " " ? "\u00A0" : char}
-                            </motion.span>
-                        ))}
-                    </motion.h2>
-                    <motion.p 
-                        className="text-xs sm:text-sm md:text-base mt-2 max-w-xl mx-auto" 
-                        style={{ color: dark ? "#9ca3af" : "#6b7280" }}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
-                        transition={{ duration: 0.5, delay: 0.2 }}
-                    >
-                        Everything you need to know about mudras, Yoga Nidra, and the app.
-                    </motion.p>
-                </motion.div>
-
-                {/* Mobile: category dropdown trigger */}
-                <motion.div 
-                    className="md:hidden mb-4"
-                    variants={fadeUp}
-                    initial="hidden"
-                    animate={isInView ? "visible" : "hidden"}
-                    transition={{ delay: 0.1 }}
-                >
-                    <motion.button
-                        onClick={() => setMobileCategoryOpen(!mobileCategoryOpen)}
-                        className="w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium"
-                        style={{
-                            backgroundColor: textColor,
-                            color: "#ffffff",
-                        }}
-                        whileHover={{
-                            scale: 1.02,
-                            transition: { duration: 0.2 }
-                        }}
-                        whileTap={{ scale: 0.98 }}
-                    >
-                        <span className="flex items-center gap-2">
-                            {(() => {
-                                const cat = categories.find(c => c.label === activeCategory);
-                                return cat && cat.icon ? (
-                                    <Image 
-                                        src={cat.icon} 
-                                        alt={activeCategory} 
-                                        width={16} 
-                                        height={16} 
-                                        className="w-4 h-4 object-contain"
-                                        style={{
-                                            filter: "brightness(0) invert(1)",
-                                        }}
-                                    />
-                                ) : null;
-                            })()}
-                            {activeCategory}
-                        </span>
-                        <motion.svg
-                            viewBox="0 0 24 24"
-                            className={"w-4 h-4 transition-transform " + (mobileCategoryOpen ? "rotate-180" : "")}
-                            fill="none" stroke="currentColor" strokeWidth="2"
-                            animate={{ rotate: mobileCategoryOpen ? 180 : 0 }}
-                            transition={{ duration: 0.3 }}
-                        >
-                            <polyline points="6 9 12 15 18 9" />
-                        </motion.svg>
-                    </motion.button>
-
-                    {/* Mobile dropdown */}
-                    {mobileCategoryOpen && (
-                        <motion.div 
-                            className="mt-1 border rounded-xl overflow-hidden shadow-lg z-10" 
-                            style={{
-                                backgroundColor: dark ? "#1f2937" : "#ffffff",
-                                borderColor: dark ? "#374151" : "#e5e7eb",
+                        <SectionHeader
+                            title="Frequently Asked Questions"
+                            subtitle="Everything you need to know about mudras, Yoga Nidra, and the app."
+                            align="center"
+                            sx={{
+                                mb: { xs: 3, sm: 4, md: 5 },
+                                "& h2": {
+                                    color: dark ? "#f9fafb" : "#111827",
+                                },
+                                "& p": {
+                                    color: dark ? "#9ca3af" : "#6b7280",
+                                },
                             }}
-                            initial={{ opacity: 0, y: -10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.3 }}
-                        >
-                            {categories.map(({ label, icon }) => (
-                                <motion.button
-                                    key={label}
-                                    onClick={() => handleCategoryChange(label)}
-                                    className={
-                                        "w-full flex items-center gap-3 px-4 py-3 text-sm text-left transition-colors " +
-                                        (activeCategory === label
-                                            ? "font-medium"
-                                            : "")
-                                    }
-                                    style={{
-                                        backgroundColor: activeCategory === label ? textColor : "transparent",
-                                        color: activeCategory === label ? "#ffffff" : (dark ? "#e5e7eb" : "#374151"),
-                                    }}
-                                    whileHover={{
-                                        scale: 1.02,
-                                        transition: { duration: 0.2 }
-                                    }}
-                                >
-                                    {icon && (
-                                        <Image 
-                                            src={icon} 
-                                            alt={label} 
-                                            width={16} 
-                                            height={16} 
-                                            className="w-4 h-4 object-contain"
-                                            style={{
-                                                filter: activeCategory === label ? "brightness(0) invert(1)" : "none",
-                                            }}
-                                        />
-                                    )}
-                                    {label}
-                                </motion.button>
-                            ))}
-                        </motion.div>
-                    )}
-                </motion.div>
-
-                {/* Desktop layout: sidebar + accordion */}
-                <div className="flex flex-col md:flex-row gap-4 md:gap-6 lg:gap-8 items-start">
-
-                    {/* Sidebar — desktop only */}
-                    <motion.aside 
-                        className="hidden md:flex flex-col w-[200px] lg:w-[220px] xl:w-[240px] shrink-0 border rounded-2xl overflow-hidden shadow-sm" 
-                        style={{
-                            backgroundColor: dark ? "#1f2937" : "#ffffff",
-                            borderColor: dark ? "#ffffff" : "#e5e7eb",
-                        }}
-                        variants={slideInLeft}
-                        initial="hidden"
-                        animate={isInView ? "visible" : "hidden"}
-                    >
-                        {categories.map(({ label, icon }, i) => {
-                            const isActive = activeCategory === label;
-                            return (
-                                <motion.button
-                                    key={label}
-                                    onClick={() => handleCategoryChange(label)}
-                                    className={
-                                        "flex items-center gap-3 px-4 py-3 text-left transition-colors text-sm font-medium "
-                                    }
-                                    style={{
-                                        backgroundColor: isActive ? textColor : "transparent",
-                                        color: isActive ? "#ffffff" : (dark ? "#ffffff" : "#4b5563"),
-                                    }}
-                                    custom={i}
-                                    variants={categoryVariants}
-                                    initial="hidden"
-                                    animate={isInView ? "visible" : "hidden"}
-                                    whileHover={{
-                                        scale: 1.02,
-                                        x: 2,
-                                        transition: { duration: 0.2 }
-                                    }}
-                                >
-                                    {icon && (
-                                        <Image 
-                                            src={icon} 
-                                            alt={label} 
-                                            width={16} 
-                                            height={16} 
-                                            className="w-4 h-4 object-contain"
-                                            style={{
-                                                filter: isActive ? "brightness(0) invert(1)" : "none",
-                                            }}
-                                        />
-                                    )}
-                                    <span className="leading-tight">{label}</span>
-                                </motion.button>
-                            );
-                        })}
-                    </motion.aside>
-
-                    {/* Accordion panel */}
-                    <motion.div 
-                        className="flex-1 w-full rounded-2xl p-3 sm:p-4 md:p-5 lg:p-6" 
-                        style={{
-                            backgroundColor: dark ? "#374151" : "#E3DDFF",
-                        }}
-                        variants={slideInRight}
-                        initial="hidden"
-                        animate={isInView ? "visible" : "hidden"}
-                        whileHover={{
-                            boxShadow: "0 8px 30px rgba(0,0,0,0.06)",
-                            transition: { duration: 0.3 }
-                        }}
-                    >
-                        <div className="flex flex-col gap-2">
-                            {currentFaqs.map((item, i) => (
-                                <AccordionItem
-                                    key={i}
-                                    question={item.q}
-                                    answer={item.a}
-                                    isOpen={openIndex === i}
-                                    onToggle={() => setOpenIndex(openIndex === i ? null : i)}
-                                    textColor={textColor}
-                                    index={i}
-                                />
-                            ))}
-                        </div>
+                        />
                     </motion.div>
 
-                </div>
+                    {/* Mobile: category dropdown trigger (unchanged) */}
+                    <motion.div
+                        className="md:hidden mb-4"
+                        variants={fadeUp}
+                        initial="hidden"
+                        animate={isInView ? "visible" : "hidden"}
+                        transition={{ delay: 0.1 }}
+                    >
+                        <motion.button
+                            onClick={() => setMobileCategoryOpen(!mobileCategoryOpen)}
+                            className="w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium"
+                            style={{
+                                backgroundColor: textColor,
+                                color: "#ffffff",
+                            }}
+                            whileHover={{
+                                scale: 1.02,
+                                transition: { duration: 0.2 }
+                            }}
+                            whileTap={{ scale: 0.98 }}
+                        >
+                            <span className="flex items-center gap-2">
+                                {(() => {
+                                    const cat = categories.find(c => c.label === activeCategory);
+                                    return cat && cat.icon ? (
+                                        <Image
+                                            src={cat.icon}
+                                            alt={activeCategory}
+                                            width={16}
+                                            height={16}
+                                            className="w-4 h-4 object-contain"
+                                            style={{
+                                                filter: "brightness(0) invert(1)",
+                                            }}
+                                        />
+                                    ) : null;
+                                })()}
+                                {activeCategory}
+                            </span>
+                            <motion.svg
+                                viewBox="0 0 24 24"
+                                className={"w-4 h-4 transition-transform " + (mobileCategoryOpen ? "rotate-180" : "")}
+                                fill="none" stroke="currentColor" strokeWidth="2"
+                                animate={{ rotate: mobileCategoryOpen ? 180 : 0 }}
+                                transition={{ duration: 0.3 }}
+                            >
+                                <polyline points="6 9 12 15 18 9" />
+                            </motion.svg>
+                        </motion.button>
 
-            </div>
-        </motion.section>
+                        {mobileCategoryOpen && (
+                            <motion.div
+                                className="mt-1 border rounded-xl overflow-hidden shadow-lg z-10"
+                                style={{
+                                    backgroundColor: dark ? "#1f2937" : "#ffffff",
+                                    borderColor: dark ? "#374151" : "#e5e7eb",
+                                }}
+                                initial={{ opacity: 0, y: -10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.3 }}
+                            >
+                                {categories.map(({ label, icon }) => (
+                                    <motion.button
+                                        key={label}
+                                        onClick={() => handleCategoryChange(label)}
+                                        className={
+                                            "w-full flex items-center gap-3 px-4 py-3 text-sm text-left transition-colors " +
+                                            (activeCategory === label ? "font-medium" : "")
+                                        }
+                                        style={{
+                                            backgroundColor: activeCategory === label ? textColor : "transparent",
+                                            color: activeCategory === label ? "#ffffff" : (dark ? "#e5e7eb" : "#374151"),
+                                        }}
+                                        whileHover={{
+                                            scale: 1.02,
+                                            transition: { duration: 0.2 }
+                                        }}
+                                    >
+                                        {icon && (
+                                            <Image
+                                                src={icon}
+                                                alt={label}
+                                                width={16}
+                                                height={16}
+                                                className="w-4 h-4 object-contain"
+                                                style={{
+                                                    filter: activeCategory === label ? "brightness(0) invert(1)" : "none",
+                                                }}
+                                            />
+                                        )}
+                                        {label}
+                                    </motion.button>
+                                ))}
+                            </motion.div>
+                        )}
+                    </motion.div>
+
+                    {/* Desktop layout: sidebar + accordion (unchanged) */}
+                    <div className="flex flex-col md:flex-row gap-4 md:gap-6 lg:gap-8 items-start">
+                        <motion.aside
+                            className="hidden md:flex flex-col w-[200px] lg:w-[220px] xl:w-[240px] shrink-0 border rounded-2xl overflow-hidden shadow-sm"
+                            style={{
+                                backgroundColor: dark ? "#1f2937" : "#ffffff",
+                                borderColor: dark ? "#ffffff" : "#e5e7eb",
+                            }}
+                            variants={slideInLeft}
+                            initial="hidden"
+                            animate={isInView ? "visible" : "hidden"}
+                        >
+                            {categories.map(({ label, icon }, i) => {
+                                const isActive = activeCategory === label;
+                                return (
+                                    <motion.button
+                                        key={label}
+                                        onClick={() => handleCategoryChange(label)}
+                                        className={
+                                            "flex items-center gap-3 px-4 py-3 text-left transition-colors text-sm font-medium "
+                                        }
+                                        style={{
+                                            backgroundColor: isActive ? textColor : "transparent",
+                                            color: isActive ? "#ffffff" : (dark ? "#ffffff" : "#0F0F0F"),
+                                        }}
+                                        custom={i}
+                                        variants={categoryVariants}
+                                        initial="hidden"
+                                        animate={isInView ? "visible" : "hidden"}
+                                        whileHover={{
+                                            scale: 1.02,
+                                            x: 2,
+                                            transition: { duration: 0.2 }
+                                        }}
+                                    >
+                                        {icon && (
+                                            <Image
+                                                src={icon}
+                                                alt={label}
+                                                width={16}
+                                                height={16}
+                                                className="w-4 h-4 object-contain"
+                                                style={{
+                                                    filter: isActive ? "brightness(0) invert(1)" : "none",
+                                                }}
+                                            />
+                                        )}
+                                        <span className="leading-tight">{label}</span>
+                                    </motion.button>
+                                );
+                            })}
+                        </motion.aside>
+
+                        <motion.div
+                            className="flex-1 w-full rounded-2xl p-3 sm:p-4 md:p-5 lg:p-6"
+                            style={{
+                                backgroundColor: dark ? "#374151" : "#E3DDFF",
+                            }}
+                            variants={slideInRight}
+                            initial="hidden"
+                            animate={isInView ? "visible" : "hidden"}
+                            whileHover={{
+                                boxShadow: "0 8px 30px rgba(0,0,0,0.06)",
+                                transition: { duration: 0.3 }
+                            }}
+                        >
+                            <div className="flex flex-col gap-2">
+                                {currentFaqs.map((item, i) => (
+                                    <AccordionItem
+                                        key={i}
+                                        question={item.q}
+                                        answer={item.a}
+                                        isOpen={openIndex === i}
+                                        onToggle={() => setOpenIndex(openIndex === i ? null : i)}
+                                        textColor={textColor}
+                                        index={i}
+                                    />
+                                ))}
+                            </div>
+                        </motion.div>
+                    </div>
+                </SiteContainer>
+            </Section>
+        </div>
     );
 }

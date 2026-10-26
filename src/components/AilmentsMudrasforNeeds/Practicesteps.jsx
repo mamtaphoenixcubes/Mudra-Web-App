@@ -177,7 +177,7 @@ export default function StepsAndTips({ tips: customTips = [], title = "" }) {
                     {/* Label */}
                     <motion.p
                       className="text-[7px] sm:text-[10px] md:text-[8px] lg:text-[10px] xl:text-xs 2xl:text-base whitespace-pre-line leading-snug"
-                      style={{ color: dark ? "#ffffff" : "#4b5563" }}
+                      style={{ color: dark ? "#ffffff" : "#0F0F0F" }}
                       whileHover={{
                         scale: 1.02,
                         transition: { duration: 0.2 },
@@ -197,7 +197,7 @@ export default function StepsAndTips({ tips: customTips = [], title = "" }) {
                     >
                       <motion.span
                         className="text-[10px] sm:text-sm md:text-base lg:text-lg xl:text-xl"
-                        style={{ color: dark ? "#ffffff" : "#d1d5db" }}
+                        style={{ color: dark ? "#ffffff" : "#00000099" }}
                         animate={{ x: [0, 5, 0] }}
                         transition={{
                           duration: 1.5,
@@ -252,7 +252,7 @@ export default function StepsAndTips({ tips: customTips = [], title = "" }) {
                   <motion.li
                     key={i}
                     className="flex items-start gap-2 text-[10px] sm:text-[9px] md:text-[7px] lg:text-[10px] xl:text-xs leading-snug"
-                    style={{ color: dark ? "#000000" : "#374151" }}
+                    style={{ color: dark ? "#000000" : "#0F0F0F" }}
                     custom={i}
                     variants={tipVariants}
                     initial="hidden"

@@ -122,8 +122,8 @@ function CategoryTab({ cat, bg, isActive, onClick, dark, textColor, index }) {
               ? "#ffffff"
               : "#111827"
             : dark
-            ? "#b8b4b4"
-            : "#6b7280",
+              ? "#b8b4b4"
+              : "#6b7280",
         }}
         whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
       >
@@ -136,7 +136,7 @@ function CategoryTab({ cat, bg, isActive, onClick, dark, textColor, index }) {
 export default function Learnscreen({
   needs = [],
   activeNeedId = null,
-  setActiveNeedId = () => {},
+  setActiveNeedId = () => { },
   selectedDetail = null,
   loading = false,
 }) {
@@ -172,19 +172,19 @@ export default function Learnscreen({
   const finalBenefits =
     rawBenefits.length > 0
       ? rawBenefits.map((b) => ({
-          title: b.title || b.Name || "",
-          description: b.description || b.Description || "",
-        }))
+        title: b.title || b.Name || "",
+        description: b.description || b.Description || "",
+      }))
       : [
-          {
-            title: "Calms the Mind",
-            description: "Quiets racing thoughts and worry.",
-          },
-          {
-            title: "Reduces Stress",
-            description: "Lowers cortisol levels and promotes inner peace.",
-          },
-        ];
+        {
+          title: "Calms the Mind",
+          description: "Quiets racing thoughts and worry.",
+        },
+        {
+          title: "Reduces Stress",
+          description: "Lowers cortisol levels and promotes inner peace.",
+        },
+      ];
 
   const fadeUp = {
     hidden: { opacity: 0, y: 30 },
@@ -262,15 +262,15 @@ export default function Learnscreen({
     >
       {/* ── Category tab bar ── */}
       <motion.div
-        className="border rounded-2xl mx-2 sm:mx-6 md:mx-12 lg:mx-[50px] xl:mx-[190px] overflow-hidden"
+        className="border rounded-2xl overflow-hidden mt-6 sm:mt-8 md:mt-10 mx-2 sm:mx-6 md:mx-12 lg:mx-[50px] xl:mx-[190px] w-[calc(100%-1rem)] sm:w-[calc(100%-3rem)] md:w-[calc(100%-6rem)] lg:w-auto xl:w-auto h-[64px] sm:h-[72px] md:h-[150px]"
         style={{ borderColor: dark ? "#ffffff" : "#e5e7eb" }}
         variants={fadeUp}
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true }}
       >
-        <div className="overflow-x-auto scrollbar-hide">
-          <div className="flex flex-row md:w-full px-1">
+        <div className="overflow-x-auto scrollbar-hide h-full">
+          <div className="flex flex-row md:w-full px-1 h-full items-center">
             {needs.map((cat, i) => (
               <CategoryTab
                 key={cat.documentId}
@@ -347,8 +347,8 @@ export default function Learnscreen({
                         activeToc === link.id
                           ? textColor
                           : dark
-                          ? "#030303"
-                          : "#6b7280",
+                            ? "#030303"
+                            : "#0F0F0FCC",
                     }}
                     whileHover={{
                       x: 5,
@@ -406,7 +406,7 @@ export default function Learnscreen({
 
                 <motion.p
                   className="text-[13px] sm:text-sm md:text-[14px] lg:text-base leading-relaxed mb-6 sm:mb-8 whitespace-pre-line"
-                  style={{ color: dark ? "#ffffff" : "#4b5563" }}
+                  style={{ color: dark ? "#ffffff" : "#0F0F0F" }}
                   initial={{ opacity: 0, y: 10 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
@@ -490,14 +490,14 @@ export default function Learnscreen({
                         {b.title && (
                           <span
                             className="text-xs sm:text-sm font-semibold"
-                            style={{ color: dark ? "#ffffff" : "#111827" }}
+                            style={{ color: dark ? "#ffffff" : "#0F0F0F" }}
                           >
                             {b.title}
                           </span>
                         )}
                         <span
                           className="text-[11px] sm:text-xs md:text-[12px] lg:text-sm leading-snug"
-                          style={{ color: dark ? "#b8b4b4" : "#4b5563" }}
+                          style={{ color: dark ? "#b8b4b4" : "#0F0F0F" }}
                         >
                           {b.description}
                         </span>

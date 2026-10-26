@@ -162,7 +162,7 @@ export default function AilmentsMudrashero() {
                   style={{
                     backgroundColor: dark ? "#1f2937" : "#ffffff",
                     borderColor: dark ? "#ffffff" : "#d1d5db",
-                    color: dark ? "#ffffff" : "#374151",
+                    color: dark ? "#ffffff" : "#00000066",
                   }}
                   whileFocus={{ scale: 1.02 }}
                   transition={{ duration: 0.2 }}
