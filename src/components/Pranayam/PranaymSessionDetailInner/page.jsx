@@ -47,8 +47,9 @@ const [likeLoading, setLikeLoading] = useState(false);
     }, [pranayamId]);
 
     const resolvedDuration = duration ? Number(duration) : pranayama?.duration || null;
-   const handleLikePranayam = async () => {
-    if (!pranayama || likeLoading || isLiked) return;
+
+const handleLikePranayam = async () => {
+    if (!pranayama || likeLoading) return;
 
     const pranayamDocumentId =
         pranayama.documentId || pranayama.id || pranayamId;
@@ -63,13 +64,15 @@ const [likeLoading, setLikeLoading] = useState(false);
             profileDocId
         );
 
-        setIsLiked(true);
+        // Toggle the UI after the API succeeds
+        setIsLiked((prev) => !prev);
     } catch (error) {
-        console.error("Failed to like pranayam:", error);
+        console.error("Failed to toggle pranayam like:", error);
     } finally {
         setLikeLoading(false);
     }
 };
+
 
     if (loading) {
         return (

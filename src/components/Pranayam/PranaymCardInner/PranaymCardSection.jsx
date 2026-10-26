@@ -6,7 +6,8 @@ import { X } from "lucide-react";
 import { spacing, typography } from "../../../theme";
 import { useTheme } from "../../../context/ThemeContext";
 import { IMAGES } from "../../../assets/assets";
-
+import { pranayamService } from "../../../services/apiService";
+import { useAuthStore } from "../../../store/useAuthStore";
 function QuoteIcon({ color }) {
   return (
     <svg width="32" height="26" viewBox="0 0 32 26" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -51,7 +52,13 @@ function LotusImageIcon({ dark }) {
   );
 }
 
-function PranayamaTimerModal({ dark, duration, onClose }) {
+function PranayamaTimerModal({
+    dark,
+    duration,
+    onClose,
+    pranayamId,
+    profileDocId,
+}) {
   const { textColor } = useTheme();
   const totalSeconds = duration * 60;
   const [secondsLeft, setSecondsLeft] = useState(totalSeconds);
@@ -118,7 +125,36 @@ function PranayamaTimerModal({ dark, duration, onClose }) {
     setIsRunning(true);
   };
 
-  const handlePauseToggle = () => setIsRunning((prev) => !prev);
+ 
+const handlePauseToggle = async () => {
+    if (!isRunning) {
+        // Resume timer without calling the API
+        setIsRunning(true);
+        return;
+    }
+
+    // Pause timer immediately
+    setIsRunning(false);
+
+    try {
+        if (!pranayamId || !profileDocId) {
+            console.error("Missing pranayamId or profileDocId");
+            return;
+        }
+
+        await pranayamService.savePranayamProgress(
+            pranayamId,
+            profileDocId,
+            secondsLeft,
+            totalSeconds
+        );
+
+        console.log("Pranayam progress saved successfully");
+    } catch (error) {
+        console.error("Failed to save pranayam progress:", error);
+    }
+};
+
   const handleStop = () => {
     setIsRunning(false);
     setSecondsLeft(totalSeconds);

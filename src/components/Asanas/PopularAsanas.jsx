@@ -4,6 +4,8 @@ import { useRouter } from "next/navigation";
 import { IMAGES } from "../../assets/assets";
 import { useEffect, useState } from "react";
 import { asanaService } from "../../services/apiService";
+import useAuthStore from "../../store/useAuthStore";
+
 const IMAGE_BASE_URL = process.env.NEXT_PUBLIC_IMAGE_BASE_URL || "http://192.168.1.14:1337";
 
 const pastelPalette = [
@@ -23,6 +25,7 @@ const getApiImageUrl = (url) => {
 
 function AsanaCard({ asana }) {
   const router = useRouter();
+  const { isLoggedIn } = useAuthStore();
 
   const cardData = {
     id: asana.documentId || asana.id,
@@ -46,6 +49,10 @@ function AsanaCard({ asana }) {
   };
 
   const handleCardClick = () => {
+     if (!isLoggedIn) {
+      router.push("/Login");
+      return;
+    }
     router.push(`/AsanasSessionDetail?id=${cardData.id}`);
   };
 

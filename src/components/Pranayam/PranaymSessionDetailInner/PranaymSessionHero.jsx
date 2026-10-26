@@ -420,7 +420,6 @@ export default function PranaymSessionHero({
              <button
     type="button"
     onClick={onLikeClick}
-    disabled={likeLoading || isLiked}
     className={`flex items-center gap-2 border font-medium text-sm rounded-lg px-4 py-2.5 transition-colors shadow-2xs disabled:cursor-not-allowed ${
         isLiked
             ? "border-red-200 bg-red-50 text-red-600"
@@ -433,13 +432,13 @@ export default function PranaymSessionHero({
         className={isLiked ? "text-red-500" : "text-gray-500"}
     />
 
-    <span>
-        {likeLoading
-            ? "Liking..."
-            : isLiked
-                ? "Liked"
-                : "Like"}
-    </span>
+  <span>
+    {likeLoading
+        ? "Please wait..."
+        : isLiked
+            ? "Unlike"
+            : "Like"}
+</span>
 </button>
 
               {/* Share */}
