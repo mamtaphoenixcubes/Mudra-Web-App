@@ -81,40 +81,18 @@ export const useAuthStore = create((set) => ({
         /**
          * Choose storage based on Remember Me
          */
-        const storage = rememberMe
-          ? localStorage
-          : sessionStorage;
+    
+/**
+ * Store login data in BOTH localStorage and sessionStorage
+ */
+[localStorage, sessionStorage].forEach((storage) => {
+  storage.setItem("isLoggedIn", "true");
+  storage.setItem("user", JSON.stringify(user));
+  storage.setItem("token", token);
+  storage.setItem("refreshToken", refreshToken);
+  storage.setItem("firebaseToken", firebaseToken);
+});
 
-        /**
-         * Store login state
-         */
-        storage.setItem("isLoggedIn", "true");
-
-        /**
-         * Store COMPLETE user object
-         */
-        storage.setItem("user", JSON.stringify(user));
-
-        /**
-         * Store tokens separately
-         */
-        storage.setItem("token", token);
-        storage.setItem("refreshToken", refreshToken);
-        storage.setItem("firebaseToken", firebaseToken);
-
-        /**
-         * Clear the other storage
-         * to avoid old login data remaining there.
-         */
-        const otherStorage = rememberMe
-          ? sessionStorage
-          : localStorage;
-
-        otherStorage.removeItem("isLoggedIn");
-        otherStorage.removeItem("user");
-        otherStorage.removeItem("token");
-        otherStorage.removeItem("refreshToken");
-        otherStorage.removeItem("firebaseToken");
 
         /**
          * Update Zustand state
