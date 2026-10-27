@@ -6,6 +6,7 @@ import { motion, useInView } from "framer-motion";
 import { IMAGES } from "../../assets/assets";
 import { card, spacing, typography } from "../../theme";
 import { useTheme } from "../../context/ThemeContext";
+import SiteContainer from "../../common/SiteContainer";
 
 const staticBenefits = [
   {
@@ -40,7 +41,13 @@ const staticBenefits = [
   },
 ];
 
-const fallbackBgs = ["bg-[#F5E6A8]", "bg-[#E3DDFF]", "bg-[#C8E8F5]", "bg-[#F8D4DC]", "bg-[#D4F5D4]"];
+const fallbackBgs = [
+  "bg-[#F5E6A8]",
+  "bg-[#E3DDFF]",
+  "bg-[#C8E8F5]",
+  "bg-[#F8D4DC]",
+  "bg-[#D4F5D4]",
+];
 
 function Card({ item, dark, textColor, index }) {
   const cardVariants = {
@@ -78,7 +85,7 @@ function Card({ item, dark, textColor, index }) {
       whileHover={{
         y: -6,
         boxShadow: "0 8px 30px rgba(0,0,0,0.08)",
-        transition: { duration: 0.2 }
+        transition: { duration: 0.2 },
       }}
     >
       <motion.div
@@ -92,7 +99,7 @@ function Card({ item, dark, textColor, index }) {
         whileHover={{
           scale: 1.1,
           rotate: 5,
-          transition: { duration: 0.2 }
+          transition: { duration: 0.2 },
         }}
       >
         <Image
@@ -104,40 +111,51 @@ function Card({ item, dark, textColor, index }) {
         />
       </motion.div>
 
-      <motion.h3 
-        className={`${typography.benefitsCardTitle} ${spacing.cardTitleMb}`} 
+      <motion.h3
+        className={`${typography.benefitsCardTitle} ${spacing.cardTitleMb}`}
         style={{ color: textColor }}
         whileHover={{
           scale: 1.05,
-          transition: { duration: 0.2 }
+          transition: { duration: 0.2 },
         }}
       >
         {item.title}
       </motion.h3>
-      <p className={`${typography.benefitsCardBody}`} style={{ color: dark ? "#000000" : "#4b5563" }}>
+      <p
+        className={`${typography.benefitsCardBody}`}
+        style={{ color: dark ? "#000000" : "#4b5563" }}
+      >
         {item.description}
       </p>
     </motion.div>
   );
 }
 
-export default function BalanceEarth({ howToBalance = [], elementName = "Earth" }) {
+export default function BalanceEarth({
+  howToBalance = [],
+  elementName = "Earth",
+}) {
   const { dark, textColor } = useTheme();
   const sectionRef = useRef(null);
-  const isInView = useInView(sectionRef, { 
-    once: true, 
+  const isInView = useInView(sectionRef, {
+    once: true,
     amount: 0.05,
-    margin: "-50px"
+    margin: "-50px",
   });
 
-  const finalBenefits = howToBalance.length > 0
-    ? howToBalance.map((h, idx) => ({
-        title: h.title || h.Name || "",
-        description: h.description || h.Description || "",
-        bg: h.CardBg || fallbackBgs[idx % fallbackBgs.length],
-        image: h.Icon?.url ? (h.Icon.url.startsWith("http") ? h.Icon.url : `http://192.168.1.14:1337${h.Icon.url}`) : IMAGES.HastaMudras,
-      }))
-    : staticBenefits;
+  const finalBenefits =
+    howToBalance.length > 0
+      ? howToBalance.map((h, idx) => ({
+          title: h.title || h.Name || "",
+          description: h.description || h.Description || "",
+          bg: h.CardBg || fallbackBgs[idx % fallbackBgs.length],
+          image: h.Icon?.url
+            ? h.Icon.url.startsWith("http")
+              ? h.Icon.url
+              : `http://192.168.1.14:1337${h.Icon.url}`
+            : IMAGES.HastaMudras,
+        }))
+      : staticBenefits;
 
   const isOdd = finalBenefits.length % 2 !== 0;
 
@@ -172,9 +190,9 @@ export default function BalanceEarth({ howToBalance = [], elementName = "Earth" 
   };
 
   return (
-    <motion.section 
+    <motion.section
       ref={sectionRef}
-      className={`w-full ${spacing.sectionPaddingX} ${spacing.sectionPaddingY} flex justify-center`} 
+      className="w-full flex justify-center"
       style={{
         backgroundColor: dark ? "#111827" : "#ffffff",
       }}
@@ -182,11 +200,11 @@ export default function BalanceEarth({ howToBalance = [], elementName = "Earth" 
       animate={{ opacity: 1 }}
       transition={{ duration: 0.6 }}
     >
-      <div className="w-full max-w-[1400px] lg:max-w-[1600px] xl:max-w-[1800px] 2xl:max-w-[2100px] mx-auto px-4 sm:px-6 md:px-8">
-        
+      {/* SiteContainer owns max-width + horizontal + vertical padding */}
+      <SiteContainer>
         {/* Heading - Character by character */}
-        <motion.h2 
-          className={typography.howToPractice.heading} 
+        <motion.h2
+          className={typography.howToPractice.heading}
           style={{ color: textColor }}
         >
           {headingChars.map((char, i) => (
@@ -204,22 +222,20 @@ export default function BalanceEarth({ howToBalance = [], elementName = "Earth" 
         </motion.h2>
 
         {/* Divider */}
-        <motion.div 
+        <motion.div
           className={typography.howToPractice.dividerWrapper}
           initial={{ opacity: 0, scale: 0.8 }}
           animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
           transition={{ duration: 0.5, delay: 0.3 }}
         >
-          <motion.span 
-            className={typography.whySubscribe.dividerLine} 
-            style={{ backgroundColor: dark ? "#ffffff" : "#e5e7eb" }}
+          <motion.span
+            className={typography.whySubscribe.dividerLine}
+            style={{ backgroundColor: dark ? "#ffffff" : "#0F0F0F99" }}
             initial={{ scaleX: 0 }}
             animate={isInView ? { scaleX: 1 } : { scaleX: 0 }}
             transition={{ duration: 0.4, delay: 0.2 }}
           />
-          <motion.div 
-            className={typography.howToPractice.lotusDivider}
-          >
+          <motion.div className={typography.howToPractice.lotusDivider}>
             <Image
               src={IMAGES.Energy}
               alt="Lotus divider"
@@ -231,9 +247,9 @@ export default function BalanceEarth({ howToBalance = [], elementName = "Earth" 
               }}
             />
           </motion.div>
-          <motion.span 
-            className={typography.whySubscribe.dividerLine} 
-            style={{ backgroundColor: dark ? "#ffffff" : "#e5e7eb" }}
+          <motion.span
+            className={typography.whySubscribe.dividerLine}
+            style={{ backgroundColor: dark ? "#ffffff" : "#0F0F0F99" }}
             initial={{ scaleX: 0 }}
             animate={isInView ? { scaleX: 1 } : { scaleX: 0 }}
             transition={{ duration: 0.4, delay: 0.2 }}
@@ -241,7 +257,7 @@ export default function BalanceEarth({ howToBalance = [], elementName = "Earth" 
         </motion.div>
 
         {/* Grid */}
-        <motion.div 
+        <motion.div
           className="grid grid-cols-2 sm:grid-cols-5 gap-3 sm:gap-4"
           variants={containerVariants}
           initial="hidden"
@@ -250,18 +266,22 @@ export default function BalanceEarth({ howToBalance = [], elementName = "Earth" 
           {finalBenefits.map((item, i) => {
             const isLast = i === finalBenefits.length - 1;
             const shouldCenter = isOdd && isLast;
-            
+
             return (
-              <div 
-                key={i} 
-                className={shouldCenter ? "col-span-2 sm:col-span-1 max-w-[calc(50%-0.5rem)] sm:max-w-full justify-self-center w-full sm:w-auto" : "w-full"}
+              <div
+                key={i}
+                className={
+                  shouldCenter
+                    ? "col-span-2 sm:col-span-1 max-w-[calc(50%-0.5rem)] sm:max-w-full justify-self-center w-full sm:w-auto"
+                    : "w-full"
+                }
               >
                 <Card item={item} dark={dark} textColor={textColor} index={i} />
               </div>
             );
           })}
         </motion.div>
-      </div>
+      </SiteContainer>
     </motion.section>
   );
 }

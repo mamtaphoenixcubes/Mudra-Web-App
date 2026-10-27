@@ -10,7 +10,7 @@ import { useTheme } from "../../context/ThemeContext";
 import SiteContainer from "../../common/SiteContainer";
 
 const IMAGE_BASE_URL =
-  process.env.NEXT_PUBLIC_IMAGE_BASE_URL || "http://192.168.1.14:1337";
+  process.env.NEXT_PUBLIC_IMAGE_BASE_URL || "http://192.168.1.14:1331";
 
 export default function ElementDetailTemplateHero({
   category = "Five Elements",
@@ -101,7 +101,7 @@ export default function ElementDetailTemplateHero({
       animate={{ opacity: 1 }}
       transition={{ duration: 0.6 }}
     >
-      {/* ✅ SiteContainer replaces sectionPaddingX/Y + spacing.container */}
+      {/* SiteContainer owns max-width + horizontal padding + vertical padding */}
       <SiteContainer>
         <motion.div
           className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 lg:gap-16 items-center"
@@ -169,12 +169,12 @@ export default function ElementDetailTemplateHero({
               ))}
             </motion.h1>
 
-            {/* Tag pill */}
+            {/* Tag pill — text color now respects dark mode */}
             <motion.div
               className="text-xs md:text-[10px] lg:text-sm font-medium rounded-full px-4 py-1.5 mb-5"
               style={{
                 backgroundColor: textColor + "20",
-                color: "#0F0F0F99",
+                color: dark ? "#e5e7eb" : "#0F0F0F99",
               }}
               variants={tagVariants}
               initial="hidden"
@@ -184,7 +184,7 @@ export default function ElementDetailTemplateHero({
               {tags.join(" • ")}
             </motion.div>
 
-            {/* Description — word by word (delay handled by variant) */}
+            {/* Description — word by word */}
             <motion.p
               className="text-xs md:text-[10px] lg:text-base leading-relaxed mb-6 max-w-xl"
               style={{ color: dark ? "#ffffff" : "#0F0F0F" }}

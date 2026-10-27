@@ -16,7 +16,6 @@ export default function NewsletterSection() {
   const { dark, textColor } = useTheme();
 
   const sectionRef = useRef(null);
-
   const isInView = useInView(sectionRef, {
     once: true,
     amount: 0.1,
@@ -31,94 +30,54 @@ export default function NewsletterSection() {
       toast.error("Please enter a valid email address.");
       return;
     }
-
     setIsLoading(true);
-
     try {
       const res = await newsletterService.subscribe(email);
-
       toast.success(
         res?.message || "Successfully subscribed to our newsletter."
       );
-
       setEmail("");
     } catch (err) {
       console.error(err);
-
-      toast.error(
-        err?.message || "Failed to subscribe. Please try again."
-      );
+      toast.error(err?.message || "Failed to subscribe. Please try again.");
     } finally {
       setIsLoading(false);
     }
   };
 
+  /* ──────── animation variants ──────── */
   const fadeUp = {
-    hidden: {
-      opacity: 0,
-      y: 30,
-    },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.6,
-        ease: "easeOut",
-      },
-    },
+    hidden: { opacity: 0, y: 30 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
   };
-
   const slideInLeft = {
-    hidden: {
-      opacity: 0,
-      x: -40,
-    },
+    hidden: { opacity: 0, x: -40 },
     visible: {
       opacity: 1,
       x: 0,
-      transition: {
-        duration: 0.7,
-        ease: [0.22, 1, 0.36, 1],
-      },
+      transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] },
     },
   };
-
   const slideInRight = {
-    hidden: {
-      opacity: 0,
-      x: 40,
-    },
+    hidden: { opacity: 0, x: 40 },
     visible: {
       opacity: 1,
       x: 0,
-      transition: {
-        duration: 0.7,
-        ease: [0.22, 1, 0.36, 1],
-      },
+      transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] },
     },
   };
-
   const charVariants = {
-    hidden: {
-      opacity: 0,
-      y: 20,
-      rotateX: -10,
-    },
+    hidden: { opacity: 0, y: 20, rotateX: -10 },
     visible: (i) => ({
       opacity: 1,
       y: 0,
       rotateX: 0,
-      transition: {
-        delay: i * 0.06,
-        duration: 0.5,
-        ease: [0.22, 1, 0.36, 1],
-      },
+      transition: { delay: i * 0.06, duration: 0.5, ease: [0.22, 1, 0.36, 1] },
     }),
   };
 
-  const headingText = "Stay Inspired";
-  const headingChars = headingText.split("");
-
+  /* ──────── shared styles ──────── */
+  const headingChars = "Stay Inspired".split("");
   const description =
     "Get weekly insights on mudras, Yoga Nidra wellness tips and new articles delivered to your inbox.";
 
@@ -133,11 +92,12 @@ export default function NewsletterSection() {
     color: "#ffffff",
   };
 
+  const bodyColor = { color: dark ? "#9ca3af" : "#4b5563" };
+  const mutedColor = { color: dark ? "#6b7280" : "#9ca3af" };
+
+  /* ──────── render helpers ──────── */
   const renderHeading = (headingClass) => (
-    <motion.h2
-      className={headingClass}
-      style={{ color: textColor }}
-    >
+    <motion.h2 className={headingClass} style={{ color: textColor }}>
       {headingChars.map((char, i) => (
         <motion.span
           key={`${char}-${i}`}
@@ -153,17 +113,18 @@ export default function NewsletterSection() {
     </motion.h2>
   );
 
-  const renderSubscribeForm = (inputClass, disclaimerClass) => (
+  /**
+   * ✅ `compact` replaces the previous fragile argument-type dispatch.
+   *    compact=true  → mobile stack (gap-1 flex-shrink-0)
+   *    compact=false → desktop row (spacing.newsletterInputWrapper)
+   */
+  const renderSubscribeForm = ({ inputClass, compact = false }) => (
     <motion.div
-      className={`flex flex-col ${disclaimerClass === typography.newsletterDisclaimer
-        ? "gap-1 flex-shrink-0"
-        : spacing.newsletterInputWrapper}`}
+      className={`flex flex-col ${
+        compact ? "gap-1 flex-shrink-0" : spacing.newsletterInputWrapper
+      }`}
       initial={{ opacity: 0, y: 20 }}
-      animate={
-        isInView
-          ? { opacity: 1, y: 0 }
-          : { opacity: 0, y: 20 }
-      }
+      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
       transition={{ duration: 0.5, delay: 0.4 }}
     >
       <form
@@ -183,9 +144,7 @@ export default function NewsletterSection() {
           required
           className={`${inputClass} min-w-0`}
           style={inputStyle}
-          whileFocus={{
-            scale: 1.02,
-          }}
+          whileFocus={{ scale: 1.02 }}
           transition={{ duration: 0.2 }}
         />
 
@@ -214,9 +173,7 @@ export default function NewsletterSection() {
 
       <motion.p
         className={typography.newsletterDisclaimer}
-        style={{
-          color: dark ? "#6b7280" : "#9ca3af",
-        }}
+        style={mutedColor}
         initial={{ opacity: 0 }}
         animate={isInView ? { opacity: 1 } : { opacity: 0 }}
         transition={{ duration: 0.4, delay: 0.5 }}
@@ -230,33 +187,16 @@ export default function NewsletterSection() {
     <motion.section
       ref={sectionRef}
       className="w-full"
-      style={{
-        backgroundColor: dark ? "#111827" : "#ffffff",
-      }}
+      style={{ backgroundColor: dark ? "#111827" : "#ffffff" }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.6 }}
     >
-      {/* Responsive width container */}
+      {/* ✅ Removed the local `sx` override — SiteContainer defaults now apply.
+          If you *intentionally* want this section wider than the rest of the
+          site, uncomment the `sx` block below and adjust. */}
       <SiteContainer
-        sx={{
-          width: "100%",
-          maxWidth: {
-            xs: "100%",
-            sm: "100%",
-            md: "1200px",
-            lg: "1360px",
-            xl: "1900px",
-          },
-          mx: "auto",
-          px: {
-            xs: 2,
-            sm: 3,
-            md: 3,
-            lg: 3,
-            xl: 3,
-          },
-        }}
+      // sx={{ maxWidth: { xs: "100%", sm: "100%", md: "1200px", lg: "1360px", xl: "1900px" } }}
       >
         <motion.div
           className={spacing.newsletterInner}
@@ -265,23 +205,15 @@ export default function NewsletterSection() {
           animate={isInView ? "visible" : "hidden"}
         >
           {/* MOBILE LAYOUT */}
-          <div
-            className={`flex flex-col ${spacing.newsletterMobileGap} sm:hidden`}
-          >
-            {/* Image */}
+          <div className={`flex flex-col ${spacing.newsletterMobileGap} sm:hidden`}>
             <motion.div
               className={spacing.newsletterMobileImage}
-              style={{
-                backgroundColor: dark ? "#374151" : "#f3f4f6",
-              }}
+              style={{ backgroundColor: dark ? "#374151" : "#f3f4f6" }}
               variants={slideInLeft}
             >
               <motion.div
                 className="w-full h-full"
-                whileHover={{
-                  scale: 1.05,
-                  transition: { duration: 0.3 },
-                }}
+                whileHover={{ scale: 1.05, transition: { duration: 0.3 } }}
               >
                 <Image
                   src={IMAGES.AilmentsHero}
@@ -293,52 +225,36 @@ export default function NewsletterSection() {
               </motion.div>
             </motion.div>
 
-            {/* Text */}
             <motion.div variants={slideInRight}>
               {renderHeading(typography.newsletterMobileHeading)}
-
               <motion.p
                 className={typography.newsletterMobileBody}
-                style={{
-                  color: dark ? "#9ca3af" : "#4b5563",
-                }}
+                style={bodyColor}
                 initial={{ opacity: 0, y: 10 }}
-                animate={
-                  isInView
-                    ? { opacity: 1, y: 0 }
-                    : { opacity: 0, y: 10 }
-                }
+                animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
               >
                 {description}
               </motion.p>
             </motion.div>
 
-            {/* Email Subscription */}
-            {renderSubscribeForm(
-              spacing.newsletterMobileInput,
-              spacing.newsletterInputWrapper
-            )}
+            {/* ✅ explicit `compact` instead of argument-type dispatch */}
+            {renderSubscribeForm({
+              inputClass: spacing.newsletterMobileInput,
+              compact: true,
+            })}
           </div>
 
           {/* TABLET / DESKTOP LAYOUT */}
-          <div
-            className={`hidden sm:flex items-center ${spacing.newsletterDesktopGap}`}
-          >
-            {/* Image */}
+          <div className={`hidden sm:flex items-center ${spacing.newsletterDesktopGap}`}>
             <motion.div
               className={spacing.newsletterImageWrapper}
-              style={{
-                backgroundColor: dark ? "#374151" : "#f3f4f6",
-              }}
+              style={{ backgroundColor: dark ? "#374151" : "#f3f4f6" }}
               variants={slideInLeft}
             >
               <motion.div
                 className="w-full h-full"
-                whileHover={{
-                  scale: 1.05,
-                  transition: { duration: 0.3 },
-                }}
+                whileHover={{ scale: 1.05, transition: { duration: 0.3 } }}
               >
                 {IMAGES.JourneyInward && (
                   <Image
@@ -352,35 +268,23 @@ export default function NewsletterSection() {
               </motion.div>
             </motion.div>
 
-            {/* Text */}
-            <motion.div
-              className="flex-1 min-w-0"
-              variants={slideInRight}
-            >
+            <motion.div className="flex-1 min-w-0" variants={slideInRight}>
               {renderHeading(typography.newsletterHeading)}
-
               <motion.p
                 className={`${typography.newsletterBody} max-w-sm`}
-                style={{
-                  color: dark ? "#9ca3af" : "#4b5563",
-                }}
+                style={bodyColor}
                 initial={{ opacity: 0, y: 10 }}
-                animate={
-                  isInView
-                    ? { opacity: 1, y: 0 }
-                    : { opacity: 0, y: 10 }
-                }
+                animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
               >
                 {description}
               </motion.p>
             </motion.div>
 
-            {/* Email Subscription */}
-            {renderSubscribeForm(
-              spacing.newsletterInput,
-              typography.newsletterDisclaimer
-            )}
+            {renderSubscribeForm({
+              inputClass: spacing.newsletterInput,
+              compact: false,
+            })}
           </div>
         </motion.div>
       </SiteContainer>

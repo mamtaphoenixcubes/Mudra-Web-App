@@ -5,12 +5,21 @@ import DetailBenefits from "../../components/BenefitsDetail/DetailBenefits";
 
 
 export default function BenefitsDetail() {
- return (
-   <main>
-     <BenefitsdetailHero/>
-     <DetailBenefits/>
-     <Benefitsinfromaction/>
-     <YogaNidraSessionsList/>
-   </main>
- );
+  return (
+    <main>
+      <BenefitsdetailHero />
+      <div className="max-w-10xl mx-auto">
+        <hr className="border-t border-gray-300 dark:border-gray-800" />
+      </div>
+      <DetailBenefits />
+      <div className="max-w-10xl mx-auto">
+        <hr className="border-t border-gray-300 dark:border-gray-800" />
+      </div>
+      <Benefitsinfromaction />
+      <div className="max-w-10xl mx-auto">
+        <hr className="border-t border-gray-300 dark:border-gray-800" />
+      </div>
+      <YogaNidraSessionsList />
+    </main>
+  );
 }

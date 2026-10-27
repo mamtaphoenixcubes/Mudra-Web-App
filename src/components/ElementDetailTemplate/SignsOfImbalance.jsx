@@ -3,9 +3,10 @@
 import Image from "next/image";
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import { spacing, typography } from "../../theme";
+import { typography } from "../../theme";
 import { IMAGES } from "../../assets/assets";
 import { useTheme } from "../../context/ThemeContext";
+import SiteContainer from "../../common/SiteContainer";
 
 const defaultExcess = {
   icon: IMAGES.LeafOutline,
@@ -31,14 +32,14 @@ const defaultDeficient = {
 
 function LotusDivider({ dark }) {
   return (
-    <motion.div 
+    <motion.div
       className="flex items-center justify-center gap-4 mb-12"
       initial={{ opacity: 0, scale: 0.8 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.5, delay: 0.2 }}
     >
-      <motion.span 
-        className="h-px w-20 sm:w-32 md:w-40" 
+      <motion.span
+        className="h-px w-20 sm:w-32 md:w-40"
         style={{ backgroundColor: dark ? "#ffffff" : "#d1d5db" }}
         initial={{ scaleX: 0 }}
         animate={{ scaleX: 1 }}
@@ -60,8 +61,8 @@ function LotusDivider({ dark }) {
           <div className="w-5 h-5 shrink-0" />
         )}
       </motion.div>
-      <motion.span 
-        className="h-px w-20 sm:w-32 md:w-40" 
+      <motion.span
+        className="h-px w-20 sm:w-32 md:w-40"
         style={{ backgroundColor: dark ? "#f7f7f7" : "#d1d5db" }}
         initial={{ scaleX: 0 }}
         animate={{ scaleX: 1 }}
@@ -88,8 +89,8 @@ function IconCircle({ src, alt, dark }) {
   };
 
   return (
-    <motion.div 
-      className="rounded-full w-16 h-16 flex items-center justify-center shrink-0 shadow-sm" 
+    <motion.div
+      className="rounded-full w-16 h-16 flex items-center justify-center shrink-0 shadow-sm"
       style={{
         backgroundColor: dark ? "#fcfcfc" : "#ffffff",
       }}
@@ -100,20 +101,22 @@ function IconCircle({ src, alt, dark }) {
       whileHover={{
         scale: 1.1,
         rotate: 5,
-        transition: { duration: 0.2 }
+        transition: { duration: 0.2 },
       }}
     >
       {src ? (
         <Image src={src} alt={alt} width={28} height={28} className="object-contain" />
       ) : (
-        <div className="w-7 h-7 rounded-full" style={{ backgroundColor: dark ? "#4b5563" : "#e5e7eb" }} />
+        <div
+          className="w-7 h-7 rounded-full"
+          style={{ backgroundColor: dark ? "#4b5563" : "#e5e7eb" }}
+        />
       )}
     </motion.div>
   );
 }
 
 function ImbalanceColumn({ icon, title, points, dark, textColor, side }) {
-  // Character animation for title
   const charVariants = {
     hidden: { opacity: 0, y: 15 },
     visible: (i) => ({
@@ -127,7 +130,6 @@ function ImbalanceColumn({ icon, title, points, dark, textColor, side }) {
     }),
   };
 
-  // Staggered point variants
   const pointVariants = {
     hidden: { opacity: 0, x: side === "left" ? -10 : 10 },
     visible: (i) => ({
@@ -141,7 +143,6 @@ function ImbalanceColumn({ icon, title, points, dark, textColor, side }) {
     }),
   };
 
-  // Column slide variants
   const columnVariants = {
     hidden: { opacity: 0, x: side === "left" ? -30 : 30 },
     visible: {
@@ -158,7 +159,7 @@ function ImbalanceColumn({ icon, title, points, dark, textColor, side }) {
   const titleChars = title.split("");
 
   return (
-    <motion.div 
+    <motion.div
       className="flex items-start gap-5"
       variants={columnVariants}
       initial="hidden"
@@ -167,8 +168,8 @@ function ImbalanceColumn({ icon, title, points, dark, textColor, side }) {
     >
       <IconCircle src={icon} alt={title} dark={dark} />
       <div>
-        <motion.h3 
-          className="text-sm md:text-xs lg:text-base font-semibold mb-2" 
+        <motion.h3
+          className="text-sm md:text-xs lg:text-base font-semibold mb-2"
           style={{ color: textColor }}
         >
           {titleChars.map((char, i) => (
@@ -198,15 +199,15 @@ function ImbalanceColumn({ icon, title, points, dark, textColor, side }) {
               viewport={{ once: true }}
               whileHover={{
                 x: 3,
-                transition: { duration: 0.2 }
+                transition: { duration: 0.2 },
               }}
             >
-              <motion.span 
-                className="mt-0.5" 
-                style={{ color: dark ? "#ffffff" : "#9ca3af" }}
+              <motion.span
+                className="mt-0.5"
+                style={{ color: dark ? "#ffffff" : "#0F0F0F99" }}
                 whileHover={{
                   scale: 1.5,
-                  transition: { duration: 0.2 }
+                  transition: { duration: 0.2 },
                 }}
               >
                 •
@@ -228,17 +229,21 @@ export default function SignsOfImbalance({
 }) {
   const { dark, textColor } = useTheme();
   const sectionRef = useRef(null);
-  const isInView = useInView(sectionRef, { 
-    once: true, 
+  const isInView = useInView(sectionRef, {
+    once: true,
     amount: 0.05,
-    margin: "-50px"
+    margin: "-50px",
   });
 
   const finalExcess = excess
     ? {
         title: excess.Title || excess.title || "Excess Element",
         points: excess.points || [],
-        icon: excess.Icon?.url ? (excess.Icon.url.startsWith("http") ? excess.Icon.url : `http://192.168.1.14:1337${excess.Icon.url}`) : IMAGES.LeafOutline
+        icon: excess.Icon?.url
+          ? excess.Icon.url.startsWith("http")
+            ? excess.Icon.url
+            : `http://192.168.1.14:1337${excess.Icon.url}`
+          : IMAGES.LeafOutline,
       }
     : defaultExcess;
 
@@ -246,11 +251,14 @@ export default function SignsOfImbalance({
     ? {
         title: deficient.Title || deficient.title || "Deficient Element",
         points: deficient.points || [],
-        icon: deficient.Icon?.url ? (deficient.Icon.url.startsWith("http") ? deficient.Icon.url : `http://192.168.1.14:1337${deficient.Icon.url}`) : IMAGES.DeficientEarth
+        icon: deficient.Icon?.url
+          ? deficient.Icon.url.startsWith("http")
+            ? deficient.Icon.url
+            : `http://192.168.1.14:1337${deficient.Icon.url}`
+          : IMAGES.DeficientEarth,
       }
     : defaultDeficient;
 
-  // Character animation for heading
   const charVariants = {
     hidden: { opacity: 0, y: 20, rotateX: -10 },
     visible: (i) => ({
@@ -268,13 +276,15 @@ export default function SignsOfImbalance({
   const headingText = heading;
   const headingChars = headingText.split("");
 
-  const finalBgColor = cardBackground || (dark ? "#374151" : "#FFF5E6");
+  // Default card bg: lavender tint (#9A85FE33). Dark mode keeps the darker gray.
+  const finalBgColor =
+    cardBackground || (dark ? "#374151" : "#9A85FE33");
   const isHexBg = finalBgColor.startsWith("#");
 
   return (
-    <motion.section 
+    <motion.section
       ref={sectionRef}
-      className={`w-full ${spacing.sectionPaddingX} ${spacing.sectionPaddingY}`} 
+      className="w-full"
       style={{
         backgroundColor: dark ? "#111827" : "#ffffff",
       }}
@@ -282,11 +292,11 @@ export default function SignsOfImbalance({
       animate={{ opacity: 1 }}
       transition={{ duration: 0.6 }}
     >
-      <div className={spacing.container}>
-        
-        {/* Heading - Character by character */}
-        <motion.h2 
-          className={`${typography.heroHeading} text-center mb-3`} 
+      {/* SiteContainer owns max-width + horizontal + vertical padding */}
+      <SiteContainer>
+        {/* Heading */}
+        <motion.h2
+          className={typography.howToPractice.heading}
           style={{ color: textColor }}
         >
           {headingChars.map((char, i) => (
@@ -306,8 +316,8 @@ export default function SignsOfImbalance({
         <LotusDivider dark={dark} />
 
         {/* Card */}
-        <motion.div 
-          className={`rounded-3xl p-8 md:p-10 ${isHexBg ? "" : finalBgColor}`} 
+        <motion.div
+          className={`rounded-3xl p-8 md:p-10 ${isHexBg ? "" : finalBgColor}`}
           style={{
             backgroundColor: isHexBg ? finalBgColor : undefined,
           }}
@@ -315,35 +325,45 @@ export default function SignsOfImbalance({
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ duration: 0.5, delay: 0.1 }}
           whileHover={{
-            boxShadow: dark 
+            boxShadow: dark
               ? "0 8px 30px rgba(0,0,0,0.3)"
               : "0 8px 30px rgba(0,0,0,0.06)",
-            transition: { duration: 0.3 }
+            transition: { duration: 0.3 },
           }}
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-0">
-            <motion.div 
-              className="md:pr-10 md:border-r" 
+            <motion.div
+              className="md:pr-10 md:border-r"
               style={{
-                borderColor: dark ? "#fafafa" : "#E8D5C4",
+                borderColor: dark ? "#fafafa" : "#0F0F0F99",
               }}
               initial={{ opacity: 0, x: -20 }}
               animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
-              <ImbalanceColumn {...finalExcess} dark={dark} textColor={textColor} side="left" />
+              <ImbalanceColumn
+                {...finalExcess}
+                dark={dark}
+                textColor={textColor}
+                side="left"
+              />
             </motion.div>
-            <motion.div 
+            <motion.div
               className="md:pl-10"
               initial={{ opacity: 0, x: 20 }}
               animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 20 }}
               transition={{ duration: 0.5, delay: 0.3 }}
             >
-              <ImbalanceColumn {...finalDeficient} dark={dark} textColor={textColor} side="right" />
+              <ImbalanceColumn
+                {...finalDeficient}
+                dark={dark}
+                textColor={textColor}
+                side="right"
+              />
             </motion.div>
           </div>
         </motion.div>
-      </div>
+      </SiteContainer>
     </motion.section>
   );
 }

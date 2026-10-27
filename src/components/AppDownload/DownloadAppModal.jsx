@@ -243,7 +243,7 @@ export default function DownloadAppModal() {
               {/* Heading - Character by character */}
               <motion.h2 
                 className={typography.downloadModal.heading} 
-                style={{ color: textColor }}
+                style={{ color: "#0F0F0FCC" }}
               >
                 {headingChars.map((char, i) => (
                   <motion.span
@@ -305,7 +305,7 @@ export default function DownloadAppModal() {
                   <div>
                     <motion.h3 
                       className={typography.downloadModal.featureTitle} 
-                      style={{ color: textColor }}
+                      style={{ color: "#0F0F0FCC" }}
                       whileHover={{
                         scale: 1.02,
                         transition: { duration: 0.2 }

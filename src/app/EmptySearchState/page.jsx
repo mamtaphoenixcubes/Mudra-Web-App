@@ -1,6 +1,6 @@
+import Categories from "../../components/EmptySearchState/Categories";
+import NoResultsStateHero from "../../components/EmptySearchState/NoResultsStateHero";
 import DownloadAppBanner from "../../components/Downloadapp/DownloadAppBanner";
-import Categories from "../../components/NoResultsState/Categories";
-import NoResultsStateHero from "../../components/NoResultsState/NoResultsStateHero";
 
 
 export default function NoResultsState() {

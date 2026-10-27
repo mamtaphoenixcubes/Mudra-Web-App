@@ -6,6 +6,7 @@ import { motion, useInView } from "framer-motion";
 import { typography, spacing } from "../../theme";
 import { IMAGES } from "../../assets/assets";
 import { useTheme } from "../../context/ThemeContext";
+import SiteContainer from "../../common/SiteContainer";
 
 const CARDS = [
   {
@@ -34,20 +35,20 @@ const CARDS = [
 export default function WhatYouCanDo() {
   const { dark, textColor } = useTheme();
   const sectionRef = useRef(null);
-  const isInView = useInView(sectionRef, { 
-    once: true, 
+  const isInView = useInView(sectionRef, {
+    once: true,
     amount: 0.1,
-    margin: "-50px"
+    margin: "-50px",
   });
 
   // Animation variants
   const fadeUp = {
     hidden: { opacity: 0, y: 30 },
-    visible: { 
-      opacity: 1, 
-      y: 0, 
-      transition: { duration: 0.6, ease: "easeOut" } 
-    }
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6, ease: "easeOut" },
+    },
   };
 
   // Character animation for heading
@@ -84,9 +85,9 @@ export default function WhatYouCanDo() {
   const headingChars = headingText.split("");
 
   return (
-    <motion.section 
+    <motion.section
       ref={sectionRef}
-      className={`w-full ${spacing.sectionPadding}`} 
+      className="w-full"
       style={{
         backgroundColor: dark ? "#111827" : "#ffffff",
       }}
@@ -95,14 +96,10 @@ export default function WhatYouCanDo() {
       viewport={{ once: true }}
       transition={{ duration: 0.6 }}
     >
-      <div className={`${spacing.whatYouCanDo.container} ${spacing.sectionPaddingY} ${spacing.sectionPaddingX}`} 
-        style={{
-          backgroundColor: dark ? "#111827" : "#ffffff",
-        }}
-      >
+      <SiteContainer>
         {/* Title - Character by character */}
-        <motion.h2 
-          className={typography.whatYouCanDo.title} 
+        <motion.h2
+          className={typography.whatYouCanDo.title}
           style={{ color: textColor }}
         >
           {headingChars.map((char, i) => (
@@ -121,25 +118,24 @@ export default function WhatYouCanDo() {
         </motion.h2>
 
         {/* Divider with lotus icon */}
-        <motion.div 
+        <motion.div
           className={typography.divider.wrapper}
           initial={{ opacity: 0, scale: 0.8 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.3 }}
         >
-          <motion.span 
-            className={typography.divider.line} 
+          <motion.span
+            className={typography.divider.line}
             style={{
-              backgroundColor: dark ? "#ffffff" : "#e5e7eb",
+              backgroundColor: dark ? "#ffffff" : "#0F0F0F99",
             }}
             initial={{ scaleX: 0 }}
             whileInView={{ scaleX: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.4, delay: 0.2 }}
           />
-          <motion.div 
-            className={typography.divider.icon}>
+          <motion.div className={typography.divider.icon}>
             <Image
               src={IMAGES.Energy}
               alt="Lotus divider"
@@ -151,10 +147,10 @@ export default function WhatYouCanDo() {
               }}
             />
           </motion.div>
-          <motion.span 
-            className={typography.divider.line} 
+          <motion.span
+            className={typography.divider.line}
             style={{
-              backgroundColor: dark ? "#ffffff" : "#e5e7eb",
+              backgroundColor: dark ? "#ffffff" : "#0F0F0F99",
             }}
             initial={{ scaleX: 0 }}
             whileInView={{ scaleX: 1 }}
@@ -164,7 +160,7 @@ export default function WhatYouCanDo() {
         </motion.div>
 
         {/* Cards */}
-        <motion.div 
+        <motion.div
           className={spacing.whatYouCanDo.cardsGrid}
           variants={{
             hidden: { opacity: 0 },
@@ -192,20 +188,20 @@ export default function WhatYouCanDo() {
               variants={cardVariants}
               whileHover={{
                 y: -6,
-                boxShadow: dark 
+                boxShadow: dark
                   ? "0 10px 30px rgba(0,0,0,0.3)"
                   : "0 10px 30px rgba(0,0,0,0.1)",
-                transition: { duration: 0.2 }
+                transition: { duration: 0.2 },
               }}
               whileTap={{ scale: 0.98 }}
             >
               <div className={spacing.whatYouCanDo.cardHeader}>
-                <motion.h3 
-                  className={typography.whatYouCanDo.cardTitle} 
+                <motion.h3
+                  className={typography.whatYouCanDo.cardTitle}
                   style={{ color: textColor }}
                   whileHover={{
                     scale: 1.02,
-                    transition: { duration: 0.2 }
+                    transition: { duration: 0.2 },
                   }}
                 >
                   {card.title}
@@ -231,12 +227,12 @@ export default function WhatYouCanDo() {
                   <path d="M12 5l7 7-7 7" />
                 </motion.svg>
               </div>
-              <motion.p 
-                className={typography.whatYouCanDo.cardDescription} 
+              <motion.p
+                className={typography.whatYouCanDo.cardDescription}
                 style={{ color: dark ? "#ffffff" : "#4b5563" }}
                 whileHover={{
                   scale: 1.02,
-                  transition: { duration: 0.2 }
+                  transition: { duration: 0.2 },
                 }}
               >
                 {card.description}
@@ -244,7 +240,7 @@ export default function WhatYouCanDo() {
             </motion.a>
           ))}
         </motion.div>
-      </div>
+      </SiteContainer>
     </motion.section>
   );
 }

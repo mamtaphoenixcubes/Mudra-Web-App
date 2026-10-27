@@ -359,7 +359,7 @@ export const spacing = {
 
   // ── Maintenance Hero Section ──────────────────────────────
   maintenanceHero: {
-    card: "w-full max-w-[95%] md:max-w-[105%] lg:max-w-[98%] 2xl:max-w-[88%] mx-auto rounded-2xl bg-ancient-card flex flex-col md:flex-row md:items-stretch px-3 py-3 sm:px-4 sm:py-4 md:px-5 md:py-5 lg:px-6 lg:py-6 gap-3 md:gap-3",
+    card: "w-full max-w-[95%] md:max-w-[105%] lg:max-w-[98%] 2xl:max-w-[100%] mx-auto rounded-2xl bg-ancient-card flex flex-col md:flex-row md:items-stretch px-3 py-3 sm:px-4 sm:py-4 md:px-5 md:py-5 lg:px-6 lg:py-6 gap-3 md:gap-3",
     imageCol: "flex w-full h-40 md:h-auto md:w-[170px] lg:w-[210px] xl:w-[450px] shrink-0 rounded-xl overflow-hidden bg-white items-center justify-center md:self-stretch",
     contentCol: "flex flex-col justify-start items-start text-start flex-1 px-2 sm:px-3 md:px-4 lg:px-8 gap-2 sm:gap-3",
     iconContainer: "w-15 h-15 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 xl:w-24 xl:h-24 2xl:w-28 2xl:h-28 rounded-full bg-white flex items-center justify-center shrink-0",
@@ -428,7 +428,7 @@ export const spacing = {
     imagePairItem: "w-full h-[260px] sm:h-[340px] md:h-[400px] object-cover",
 
     // ── Section 04 — Expanding the Horizon (card layout) ──────
-    expandCard: "bg-holistic-bg rounded-2xl max-w-6xl mx-auto flex flex-col sm:flex-row items-center gap-5 sm:gap-8 p-5 sm:p-6 md:p-7 lg:p-8 overflow-hidden",
+    expandCard: "bg-holistic-bg rounded-2xl max-w-9xl mx-auto flex flex-col sm:flex-row items-center gap-5 sm:gap-8 p-5 sm:p-6 md:p-7 lg:p-8 overflow-hidden",
     expandImageCol: "w-full sm:w-[220px] md:w-[260px] lg:w-[280px] shrink-0 rounded-xl overflow-hidden",
     expandImage: "w-full h-[160px] sm:h-[140px] md:h-[150px] lg:h-[160px] object-cover rounded-xl",
     expandContentCol: "flex-1 w-full",

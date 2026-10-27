@@ -6,24 +6,30 @@ import { motion, useInView } from "framer-motion";
 import { IMAGES } from "../../assets/assets";
 import { spacing, typography } from "../../theme";
 import { useTheme } from "../../context/ThemeContext";
+import SiteContainer from "../../common/SiteContainer";
 
 export default function CommonSymptoms({ symptoms = [] }) {
   const { dark, textColor } = useTheme();
   const sectionRef = useRef(null);
-  const isInView = useInView(sectionRef, { 
-    once: true, 
+  const isInView = useInView(sectionRef, {
+    once: true,
     amount: 0.1,
-    margin: "-50px"
+    margin: "-50px",
   });
 
-  const finalSymptoms = symptoms.length > 0
-    ? symptoms.map((s, idx) => ({
+  const finalSymptoms =
+    symptoms.length > 0
+      ? symptoms.map((s, idx) => ({
         title: s.SymptomsName || s.name || "",
         description: s.SymptomsDescText || s.description || "",
-        image: s.Icon?.url ? (s.Icon.url.startsWith("http") ? s.Icon.url : `http://192.168.1.14:1337${s.Icon.url}`) : IMAGES.Flower,
-        bgColor: s.IconBG || `bg-benefit-${(idx % 5) + 1}`
+        image: s.Icon?.url
+          ? s.Icon.url.startsWith("http")
+            ? s.Icon.url
+            : `http://192.168.1.14:1337${s.Icon.url}`
+          : IMAGES.Flower,
+        bgColor: s.IconBG || `bg-benefit-${(idx % 5) + 1}`,
       }))
-    : [
+      : [
         { title: "Racing Thoughts", description: "Constant overthinking and worry.", image: IMAGES.Flower, bgColor: "bg-benefit-1" },
         { title: "Restlessness", description: "Feeling on edge or unable to relax.", image: IMAGES.KayaMudras, bgColor: "bg-benefit-2" },
         { title: "Fatigue", description: "Mental and physical exhaustion.", image: IMAGES.focus, bgColor: "bg-benefit-3" },
@@ -75,9 +81,9 @@ export default function CommonSymptoms({ symptoms = [] }) {
   const headingChars = headingText.split("");
 
   return (
-    <motion.section 
+    <motion.section
       ref={sectionRef}
-      className={`w-full ${spacing.sectionPaddingX} ${spacing.sectionPaddingY} flex justify-center`} 
+      className="w-full flex justify-center"
       style={{
         backgroundColor: dark ? "#111827" : "#ffffff",
       }}
@@ -85,11 +91,11 @@ export default function CommonSymptoms({ symptoms = [] }) {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.6 }}
     >
-      <div className="w-full sm:max-w-[90%] md:max-w-[1100px] lg:max-w-[1200px] xl:max-w-[1300px] 2xl:max-w-[2100px] mx-auto">
-
+      {/* SiteContainer owns max-width + horizontal + vertical padding */}
+      <SiteContainer>
         {/* Heading - Character by character */}
-        <motion.h2 
-          className={typography.howToPractice.heading} 
+        <motion.h2
+          className={typography.howToPractice.heading}
           style={{ color: textColor }}
         >
           {headingChars.map((char, i) => (
@@ -107,22 +113,21 @@ export default function CommonSymptoms({ symptoms = [] }) {
         </motion.h2>
 
         {/* Divider with lotus image */}
-        <motion.div 
+        <motion.div
           className={typography.howToPractice.dividerWrapper}
+          style={{ marginBottom: 90 }}   // 👈 add this — overrides/adds bottom gap
           initial={{ opacity: 0, scale: 0.8 }}
           animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
           transition={{ duration: 0.5, delay: 0.3 }}
         >
-          <motion.span 
-            className={typography.whySubscribe.dividerLine} 
-            style={{ backgroundColor: dark ? "#ffffff" : "#e5e7eb" }}
+          <motion.span
+            className={typography.whySubscribe.dividerLine}
+            style={{ backgroundColor: dark ? "#ffffff" : "#0F0F0F99" }}
             initial={{ scaleX: 0 }}
             animate={isInView ? { scaleX: 1 } : { scaleX: 0 }}
             transition={{ duration: 0.4, delay: 0.2 }}
           />
-          <motion.div 
-            className={typography.howToPractice.lotusDivider}
-          >
+          <motion.div className={typography.howToPractice.lotusDivider}>
             <Image
               src={IMAGES.Energy}
               alt="Lotus divider"
@@ -134,9 +139,9 @@ export default function CommonSymptoms({ symptoms = [] }) {
               }}
             />
           </motion.div>
-          <motion.span 
-            className={typography.whySubscribe.dividerLine} 
-            style={{ backgroundColor: dark ? "#ffffff" : "#e5e7eb" }}
+          <motion.span
+            className={typography.whySubscribe.dividerLine}
+            style={{ backgroundColor: dark ? "#ffffff" : "#0F0F0F99" }}
             initial={{ scaleX: 0 }}
             animate={isInView ? { scaleX: 1 } : { scaleX: 0 }}
             transition={{ duration: 0.4, delay: 0.2 }}
@@ -144,14 +149,16 @@ export default function CommonSymptoms({ symptoms = [] }) {
         </motion.div>
 
         {/* Items */}
-        <motion.div 
+        <motion.div
           className="grid grid-cols-2 sm:flex sm:flex-row sm:items-start relative gap-x-4 gap-y-8 sm:gap-0"
           variants={containerVariants}
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
         >
           {finalSymptoms.map((item, i) => {
-            const isLastOdd = finalSymptoms.length % 2 !== 0 && i === finalSymptoms.length - 1;
+            const isLastOdd =
+              finalSymptoms.length % 2 !== 0 &&
+              i === finalSymptoms.length - 1;
             const isHexBg = item.bgColor.startsWith("#");
 
             return (
@@ -161,21 +168,27 @@ export default function CommonSymptoms({ symptoms = [] }) {
                 variants={itemVariants}
                 whileHover={{
                   y: -4,
-                  transition: { duration: 0.2 }
+                  transition: { duration: 0.2 },
                 }}
               >
-                <div className={`flex flex-col items-center text-center ${spacing.benefitItemGap} w-full ${spacing.benefitItemPad}`}>
-
+                <div
+                  className={`flex flex-col items-center text-center ${spacing.benefitItemGap} w-full ${spacing.benefitItemPad}`}
+                >
                   {/* Circle image */}
-                  <motion.div 
-                    className={`${spacing.benefitCircle} rounded-full flex items-center justify-center ${isHexBg ? "" : item.bgColor}`} 
+                  <motion.div
+                    className={`${spacing.benefitCircle} rounded-full flex items-center justify-center ${isHexBg ? "" : item.bgColor
+                      }`}
                     style={{
-                      backgroundColor: isHexBg ? item.bgColor : (dark ? undefined : undefined),
+                      backgroundColor: isHexBg
+                        ? item.bgColor
+                        : dark
+                          ? undefined
+                          : undefined,
                     }}
                     whileHover={{
                       scale: 1.1,
                       rotate: 5,
-                      transition: { duration: 0.2 }
+                      transition: { duration: 0.2 },
                     }}
                   >
                     {item.image && (
@@ -185,35 +198,44 @@ export default function CommonSymptoms({ symptoms = [] }) {
                         width={64}
                         height={64}
                         className={`${spacing.benefitImgInner} object-contain`}
-                        unoptimized={true}
+                        unoptimized
                       />
                     )}
                   </motion.div>
 
-                  <motion.h3 
-                    className={`${typography.benefitTitle}`} 
-                    style={{ color: textColor }}
+                  <motion.h3
+                    className={`${typography.benefitTitle}`}
+                    style={{ color: dark ? "#ffffff" : "#0F0F0F" }}
                     whileHover={{
                       scale: 1.05,
-                      transition: { duration: 0.2 }
+                      transition: { duration: 0.2 },
                     }}
                   >
                     {item.title}
                   </motion.h3>
-                  <p className={`${typography.benefitBody} ${spacing.benefitDescMaxW}`} style={{ color: dark ? "#ffffff" : "#2b2d30" }}>
+                  <p
+                    className={`${typography.benefitBody} ${spacing.benefitDescMaxW}`}
+                    style={{ color: dark ? "#ffffff" : "#0F0F0F80" }}
+                  >
                     {item.description}
                   </p>
                 </div>
 
                 {/* Vertical divider */}
                 {i < finalSymptoms.length - 1 && (
-                  <motion.div 
-                    className={`hidden sm:block absolute top-1/2 -translate-y-1/2 right-0 w-px ${spacing.featureDividerH}`} 
+                  <motion.div
+                    className={`hidden sm:block absolute top-1/2 -translate-y-1/2 right-0 w-px ${spacing.featureDividerH}`}
                     style={{
-                      backgroundColor: dark ? "#ffffff" : "var(--features-divider-vertical)",
+                      backgroundColor: dark
+                        ? "#ffffff"
+                        : "#00000066",
                     }}
                     initial={{ opacity: 0, scaleY: 0 }}
-                    animate={isInView ? { opacity: 1, scaleY: 1 } : { opacity: 0, scaleY: 0 }}
+                    animate={
+                      isInView
+                        ? { opacity: 1, scaleY: 1 }
+                        : { opacity: 0, scaleY: 0 }
+                    }
                     transition={{ duration: 0.4, delay: i * 0.08 + 0.3 }}
                   />
                 )}
@@ -221,8 +243,7 @@ export default function CommonSymptoms({ symptoms = [] }) {
             );
           })}
         </motion.div>
-
-      </div>
+      </SiteContainer>
     </motion.section>
   );
 }

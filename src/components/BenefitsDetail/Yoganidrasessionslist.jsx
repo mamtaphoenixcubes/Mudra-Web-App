@@ -1,45 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
-import { spacing, typography } from "../../theme";
+import { typography } from "../../theme";
 import { IMAGES } from "../../assets/assets";
 import { useTheme } from "../../context/ThemeContext";
+import SiteContainer from "../../common/SiteContainer";
 
-// ── Data ───────────────────────────────────────────────────────
+/* ────────── data ────────── */
 const SESSIONS = [
-  {
-    id: "healing-sleep",
-    title: "Healing Sleep Yoga Nidra",
-    duration: "45 min",
-    tag: "Deep Reset & Healing",
-    imgKey: "HealingRecovery",
-  },
-  {
-    id: "chakra-balancing",
-    title: "Chakra Balancing Yoga Nidra",
-    duration: "35 min",
-    tag: "Chakra Balance",
-    imgKey: "RestfulSleep",
-  },
-  {
-    id: "gratitude-before-sleep",
-    title: "Gratitude Before Sleep",
-    duration: "20 min",
-    tag: "Gratitude & Positivity",
-    imgKey: "PeacefulSleep",
-  },
-  {
-    id: "releasing-the-day",
-    title: "Releasing the Day Yoga Nidra",
-    duration: "25 min",
-    tag: "Let Go & Relax",
-    imgKey: "Relaxation",
-  },
+  { id: "healing-sleep", title: "Healing Sleep Yoga Nidra", duration: "45 min", tag: "Deep Reset & Healing", imgKey: "HealingRecovery" },
+  { id: "chakra-balancing", title: "Chakra Balancing Yoga Nidra", duration: "35 min", tag: "Chakra Balance", imgKey: "RestfulSleep" },
+  { id: "gratitude-before-sleep", title: "Gratitude Before Sleep", duration: "20 min", tag: "Gratitude & Positivity", imgKey: "PeacefulSleep" },
+  { id: "releasing-the-day", title: "Releasing the Day Yoga Nidra", duration: "25 min", tag: "Let Go & Relax", imgKey: "Relaxation" },
 ];
 
-// ── Icons ──────────────────────────────────────────────────────
+/* ────────── icons ────────── */
 const PlayIcon = () => (
   <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
     <path d="M4 2.8v10.4a.8.8 0 0 0 1.22.68l8.3-5.2a.8.8 0 0 0 0-1.36l-8.3-5.2A.8.8 0 0 0 4 2.8Z" />
@@ -54,14 +31,38 @@ const MoreIcon = () => (
   </svg>
 );
 
-// ── Session row ───────────────────────────────────────────────
+/* ────────── session row ────────── */
 function SessionRow({ session, index, onPlay, dark, textColor }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef(null);
 
   const titleColor = dark ? "#ffffff" : "#111827";
-  const metaColor = dark ? "rgba(255,255,255,0.5)" : "#6b7280";
-  const descColor = dark ? "rgba(255,255,255,0.4)" : "#9ca3af";
-  const borderColor = dark ? "rgba(87, 87, 87, 0.08)" : "#494848";
+  const metaColor = dark ? "rgba(255,255,255,0.6)" : "#6b7280";   // ✅ was 0.5
+  const descColor = dark ? "rgba(255,255,255,0.65)" : "#6b7280";  // ✅ was 0.4
+  // ✅ border was #494848 (light mode) / near-invisible (dark mode)
+  const borderColor = dark ? "rgba(255,255,255,0.08)" : "#e5e7eb";
+
+  /* close menu on click outside */
+  useEffect(() => {
+    if (!menuOpen) return;
+    const handle = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handle);
+    return () => document.removeEventListener("mousedown", handle);
+  }, [menuOpen]);
+
+  /* close on Escape */
+  useEffect(() => {
+    if (!menuOpen) return;
+    const handle = (e) => {
+      if (e.key === "Escape") setMenuOpen(false);
+    };
+    document.addEventListener("keydown", handle);
+    return () => document.removeEventListener("keydown", handle);
+  }, [menuOpen]);
 
   return (
     <motion.div
@@ -72,7 +73,10 @@ function SessionRow({ session, index, onPlay, dark, textColor }) {
       className="relative flex items-center gap-4 py-4 border-b last:border-0"
       style={{ borderColor }}
     >
-      <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0" style={{ backgroundColor: dark ? "#26262b" : "#f3f4f6" }}>
+      <div
+        className="w-16 h-16 rounded-xl overflow-hidden shrink-0"
+        style={{ backgroundColor: dark ? "#26262b" : "#f3f4f6" }}
+      >
         <Image
           src={IMAGES[session.imgKey]}
           alt={session.title}
@@ -100,10 +104,12 @@ function SessionRow({ session, index, onPlay, dark, textColor }) {
         <PlayIcon />
       </button>
 
-      <div className="relative shrink-0">
+      <div className="relative shrink-0" ref={menuRef}>
         <button
           onClick={() => setMenuOpen((v) => !v)}
           aria-label="More options"
+          aria-haspopup="menu"
+          aria-expanded={menuOpen}
           className="w-8 h-8 flex items-center justify-center"
           style={{ color: descColor }}
         >
@@ -112,6 +118,7 @@ function SessionRow({ session, index, onPlay, dark, textColor }) {
         <AnimatePresence>
           {menuOpen && (
             <motion.div
+              role="menu"
               initial={{ opacity: 0, y: -4, scale: 0.96 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -4, scale: 0.96 }}
@@ -122,30 +129,24 @@ function SessionRow({ session, index, onPlay, dark, textColor }) {
                 border: `1px solid ${dark ? "rgba(255,255,255,0.08)" : "#e5e7eb"}`,
               }}
             >
-              <button
-                className="w-full text-left px-3 py-2 hover:bg-black/5"
-                style={{ color: titleColor }}
-                onClick={() => {
-                  onPlay(session);
-                  setMenuOpen(false);
-                }}
-              >
-                Play session
-              </button>
-              <button
-                className="w-full text-left px-3 py-2 hover:bg-black/5"
-                style={{ color: titleColor }}
-                onClick={() => setMenuOpen(false)}
-              >
-                Add to saved
-              </button>
-              <button
-                className="w-full text-left px-3 py-2 hover:bg-black/5"
-                style={{ color: titleColor }}
-                onClick={() => setMenuOpen(false)}
-              >
-                Share
-              </button>
+              {[
+                { label: "Play session", action: () => onPlay(session) },
+                { label: "Add to saved", action: () => {} },
+                { label: "Share", action: () => {} },
+              ].map((item, i) => (
+                <button
+                  key={i}
+                  role="menuitem"
+                  className="w-full text-left px-3 py-2 hover:bg-black/5"
+                  style={{ color: titleColor }}
+                  onClick={() => {
+                    item.action();
+                    setMenuOpen(false);
+                  }}
+                >
+                  {item.label}
+                </button>
+              ))}
             </motion.div>
           )}
         </AnimatePresence>
@@ -154,33 +155,44 @@ function SessionRow({ session, index, onPlay, dark, textColor }) {
   );
 }
 
-// ── Main component ───────────────────────────────────────────
-export default function YogaNidraSessionsList({ sessions = SESSIONS, onPlay = () => {} }) {
+/* ────────── main ────────── */
+export default function YogaNidraSessionsList({
+  sessions = SESSIONS,
+  onPlay = () => {},
+}) {
   const { dark, textColor } = useTheme();
 
   return (
-    <section
-      className={` ${spacing.sectionPaddingX} py-6 md:py-10`}
+    <motion.section
       style={{ backgroundColor: dark ? "#111827" : "#ffffff" }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.6 }}
     >
-      <div
-      className={` ${spacing.sectionPaddingX} py-6 md:py-10  rounded-3xl px-5 border`}
-        style={{
-          backgroundColor: dark ? "#413f3f" : "#f0f0f0",
-          borderColor: dark ? "rgba(255,255,255,0.06)" : "#f3f4f6",
-        }}
-      >
-        {sessions.map((session, i) => (
-          <SessionRow
-            key={session.id}
-            session={session}
-            index={i}
-            onPlay={onPlay}
-            dark={dark}
-            textColor={textColor}
-          />
-        ))}
-      </div>
-    </section>
+      {/* ✅ SiteContainer handles px + max-width.
+          Removed the inner double `spacing.sectionPaddingX` that was
+          adding a second round of gutters inside the card. */}
+      <SiteContainer>
+        <div
+          className="rounded-3xl px-5 py-6 md:py-8 border"
+          style={{
+            // ✅ unified with the rest of the site's dark surface
+            backgroundColor: dark ? "#1f2937" : "#f0f0f0",
+            borderColor: dark ? "rgba(255,255,255,0.06)" : "#e5e7eb",
+          }}
+        >
+          {sessions.map((session, i) => (
+            <SessionRow
+              key={session.id}
+              session={session}
+              index={i}
+              onPlay={onPlay}
+              dark={dark}
+              textColor={textColor}
+            />
+          ))}
+        </div>
+      </SiteContainer>
+    </motion.section>
   );
 }

@@ -1,6 +1,7 @@
 import WhySubscribeSection from "../../components/NewsletterSubscribe/Whysubscribesection";
 import Newsletter from "../../components/NewsletterSubscribe/Newsletter";
 import NewsletterSubscribeHero from "../../components/NewsletterSubscribe/NewsletterSubscribeHero";
+import DownloadAppBanner from "../../components/Downloadapp/DownloadAppBanner";
 
 
 export default function NewsletterSubscribe() {
@@ -15,6 +16,10 @@ export default function NewsletterSubscribe() {
         <hr className="border-t border-gray-300" />
       </div>
       <WhySubscribeSection />
+      <div className="max-w-10xl mx-auto">
+        <hr className="border-t border-gray-300" />
+      </div>
+      <DownloadAppBanner />
     </main>
   );
 }

@@ -232,7 +232,7 @@ export const typography = {
     "text-base sm:text-base md:text-xl lg:text-2xl xl:text-3xl 2xl:text-5xl " +
     "font-semibold leading-tight 2xl:leading-[1.2]",
   sectionBody:
-    "text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl 2xl:text-3xl " +
+    "text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl 2xl:text-2xl " +
     "leading-relaxed 2xl:leading-[1.4]",
   sectionMbBody:
     "text-[10px] sm:text-sm md:text-sm lg:text-xl xl:text-2xl 2xl:text-3xl " +
@@ -246,7 +246,7 @@ export const typography = {
     "text-[11px] sm:text-[11px] md:text-[11px] lg:text-xs xl:text-sm 2xl:text-2xl " +
     "font-medium leading-tight",
   cardBody:
-    "text-[8px] sm:text-[11px] md:text-[10px] lg:text-[11px] xl:text-xs 2xl:text-xl " +
+    "text-[8px] sm:text-[11px] md:text-[10px] lg:text-[11px] xl:text-xs 2xl:text-lg " +
     "leading-relaxed 2xl:leading-[1.5]",
   yogaNidraCard:
     "text-[6px] sm:text-[6px] md:text-[11px] lg:text-[15px] xl:text-[16px] 2xl:text-[20px] " +
