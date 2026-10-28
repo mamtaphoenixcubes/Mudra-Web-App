@@ -16,7 +16,7 @@ function LoginForm() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const redirectTo = searchParams.get("redirectTo") || "/Home";
-    
+
     const { dark, textColor } = useTheme();
     const { login, error: authError, loading: isLoading } = useAuthStore();
     const [form, setForm] = useState({
@@ -91,7 +91,7 @@ function LoginForm() {
     };
 
     return (
-        <motion.section 
+        <motion.section
             className="min-h-screen flex items-center justify-center px-4 py-6 w-full overflow-hidden"
             style={{
                 backgroundColor: dark ? "#111827" : "#F7F7FA",
@@ -100,18 +100,18 @@ function LoginForm() {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6 }}
         >
-            <motion.div 
+            <motion.div
                 className="w-full max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-6 md:gap-12"
                 variants={containerVariants}
                 initial="hidden"
                 animate="visible"
             >
                 {/* Left Column - Image */}
-                <motion.div 
+                <motion.div
                     className="w-full md:w-1/2 flex justify-center md:justify-start md:-ml-1 lg:-ml-1 xl:-ml-16 2xl:-ml-20"
                     variants={imageVariants}
                 >
-                    <motion.div 
+                    <motion.div
                         className="relative w-72 h-72 sm:w-80 sm:h-80 md:w-[450px] md:h-[450px] lg:w-[520px] lg:h-[520px] xl:w-[580px] xl:h-[580px] 2xl:w-[650px] 2xl:h-[650px] rounded-3xl overflow-hidden shadow-xl"
                         style={{
                             backgroundColor: dark ? "#374151" : "#f3f4f6",
@@ -127,7 +127,7 @@ function LoginForm() {
                             sizes="(max-width: 640px) 288px, (max-width: 768px) 320px, (max-width: 1024px) 450px, (max-width: 1280px) 520px, 580px"
                             priority
                         />
-                        <motion.div 
+                        <motion.div
                             className="absolute inset-0"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
@@ -140,21 +140,21 @@ function LoginForm() {
                 </motion.div>
 
                 {/* Right Column - Form */}
-                <motion.div 
+                <motion.div
                     className="w-full md:w-1/2"
                     variants={formVariants}
                 >
                     {/* Title */}
-                    <motion.h1 
-                        className={`${typography.sectionSbHeading} text-center md:text-left mb-1`} 
+                    <motion.h1
+                        className={`${typography.sectionSbHeading} text-center md:text-left mb-1`}
                         style={{ color: textColor }}
                         variants={itemVariants}
                     >
                         Log In
                     </motion.h1>
-                    
-                    <motion.p 
-                        className={`${typography.solutionBody} text-center md:text-left mb-5`} 
+
+                    <motion.p
+                        className={`${typography.solutionBody} text-center md:text-left mb-5`}
                         style={{ color: dark ? "#ffffff" : "#9ca3af" }}
                         variants={itemVariants}
                     >
@@ -163,7 +163,7 @@ function LoginForm() {
 
                     {/* Error message */}
                     {displayError && (
-                        <motion.div 
+                        <motion.div
                             className="bg-red-50 text-red-500 text-xs px-4 py-2.5 rounded-xl border border-red-200 mb-2"
                             initial={{ opacity: 0, y: -10 }}
                             animate={{ opacity: 1, y: 0 }}
@@ -173,13 +173,13 @@ function LoginForm() {
                     )}
 
                     {/* Form */}
-                    <motion.div 
+                    <motion.div
                         className="flex flex-col gap-2.5"
                         variants={containerVariants}
                     >
                         {/* Email */}
-                        <motion.div 
-                            className="flex items-center gap-3 border rounded-xl px-4 py-3" 
+                        <motion.div
+                            className="flex items-center gap-3 border rounded-xl px-4 py-3"
                             style={{
                                 backgroundColor: dark ? "#1f2937" : "#ffffff",
                                 borderColor: dark ? "#374151" : "#e5e7eb",
@@ -188,12 +188,12 @@ function LoginForm() {
                             whileHover={{ scale: 1.01 }}
                             transition={{ duration: 0.2 }}
                         >
-                            <motion.svg 
-                                className="w-5 h-5 shrink-0" 
-                                style={{ color: dark ? "#ffffff" : "#9ca3af" }} 
-                                fill="none" 
-                                viewBox="0 0 24 24" 
-                                stroke="currentColor" 
+                            <motion.svg
+                                className="w-5 h-5 shrink-0"
+                                style={{ color: dark ? "#ffffff" : "#9ca3af" }}
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
                                 strokeWidth={1.5}
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
@@ -215,8 +215,8 @@ function LoginForm() {
                         </motion.div>
 
                         {/* Password */}
-                        <motion.div 
-                            className="flex items-center gap-3 border rounded-xl px-4 py-3" 
+                        <motion.div
+                            className="flex items-center gap-3 border rounded-xl px-4 py-3"
                             style={{
                                 backgroundColor: dark ? "#1f2937" : "#ffffff",
                                 borderColor: dark ? "#374151" : "#e5e7eb",
@@ -225,12 +225,12 @@ function LoginForm() {
                             whileHover={{ scale: 1.01 }}
                             transition={{ duration: 0.2 }}
                         >
-                            <motion.svg 
-                                className="w-5 h-5 shrink-0" 
-                                style={{ color: dark ? "#ffffff" : "#9ca3af" }} 
-                                fill="none" 
-                                viewBox="0 0 24 24" 
-                                stroke="currentColor" 
+                            <motion.svg
+                                className="w-5 h-5 shrink-0"
+                                style={{ color: dark ? "#ffffff" : "#9ca3af" }}
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
                                 strokeWidth={1.5}
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
@@ -278,11 +278,11 @@ function LoginForm() {
                         </motion.div>
 
                         {/* Remember me + Forgot Password */}
-                        <motion.div 
+                        <motion.div
                             className="flex items-center justify-between mt-0.5"
                             variants={itemVariants}
                         >
-                            <motion.label 
+                            <motion.label
                                 className="flex items-center gap-2 cursor-pointer"
                                 whileHover={{ scale: 1.02 }}
                                 transition={{ duration: 0.2 }}
@@ -320,7 +320,7 @@ function LoginForm() {
                                 backgroundColor: textColor,
                             }}
                             variants={itemVariants}
-                            whileHover={!isLoading ? { 
+                            whileHover={!isLoading ? {
                                 scale: 1.02,
                                 opacity: 0.85,
                                 transition: { duration: 0.2 }
@@ -343,7 +343,7 @@ function LoginForm() {
                         </motion.button>
 
                         {/* Divider */}
-                        <motion.div 
+                        <motion.div
                             className="flex items-center gap-3 my-0.5"
                             variants={itemVariants}
                         >
@@ -354,110 +354,209 @@ function LoginForm() {
 
                         {/* Google */}
 
-<GoogleLoginButton
-    clientId={process.env.NEXT_PUBLIC_GOOGLE_WEB_CLIENT_ID}
-    className="w-full"
-    onSuccess={(response) => {
-        console.log("GOOGLE LOGIN SUCCESS");
-
-        if (response.success && response.data) {
-            // Store the COMPLETE user object from API
-            const userObj = response.data.user;
-
-            // Tokens
-            const token = response.data.accessToken;
-            const refreshToken = response.data.refreshToken;
-            const firebaseToken = response.data.firebaseToken;
-
-            // Always use localStorage for Google login
-            localStorage.setItem(
-                "isLoggedIn",
-                "true"
-            );
-
-            // Store COMPLETE user object
-            localStorage.setItem(
-                "user",
-                JSON.stringify(userObj)
-            );
-
-            // Store access token
-            localStorage.setItem(
-                "token",
-                token
-            );
-
-            // Store refresh token
-            localStorage.setItem(
-                "refreshToken",
-                refreshToken
-            );
-
-            // Store Firebase token
-            if (firebaseToken) {
-                localStorage.setItem(
-                    "firebaseToken",
-                    firebaseToken
-                );
-            }
-
-            // Clear sessionStorage so there is no stale auth data
-            sessionStorage.removeItem("isLoggedIn");
-            sessionStorage.removeItem("user");
-            sessionStorage.removeItem("token");
-            sessionStorage.removeItem("refreshToken");
-            sessionStorage.removeItem("firebaseToken");
-
-            // Update Zustand
-            useAuthStore.setState({
-                user: userObj,
-                token: token,
-                refreshToken: refreshToken,
-                firebaseToken: firebaseToken || null,
-                isLoggedIn: true,
-                loading: false,
-                error: null,
-            });
-
-            // Notify other components
-            window.dispatchEvent(
-                new Event("storage")
-            );
-
-            // Redirect
-            router.push(redirectTo);
-        } else {
-            setLocalError(
-                response.message ||
-                "Google login failed"
-            );
-        }
-    }}
-    onError={(error) => {
-        console.error(
-            "GOOGLE LOGIN FAILED:",
-            error
-        );
-
-        setLocalError(
-            error?.message ||
-            "Google login failed"
-        );
-    }}
-/>
-
-
-
-                        {/* Apple */}
-                        <motion.button 
-                            className="flex items-center justify-center gap-3 w-full border rounded-xl px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer" 
+                        <motion.button
+                            className="flex items-center justify-center gap-3 w-full border rounded-xl px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer"
                             style={{
                                 backgroundColor: dark ? "#1f2937" : "#ffffff",
                                 borderColor: dark ? "#374151" : "#e5e7eb",
                                 color: dark ? "#ffffff" : "#374151",
                             }}
                             variants={itemVariants}
-                            whileHover={{ 
+                            whileHover={{
+                                scale: 1.02,
+                                backgroundColor: dark ? "#374151" : "#f9fafb",
+                                transition: { duration: 0.2 }
+                            }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={() => {
+                                // Trigger the hidden GoogleLoginButton
+                                const googleBtn = document.getElementById('hidden-google-login');
+                                if (googleBtn) {
+                                    const innerButton = googleBtn.querySelector('div[role="button"], button, div[tabindex]');
+                                    if (innerButton) innerButton.click();
+                                }
+                            }}
+                        >
+                            <svg className="w-5 h-5" viewBox="0 0 24 24">
+                                <path
+                                    fill="#4285F4"
+                                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                                />
+                                <path
+                                    fill="#34A853"
+                                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                                />
+                                <path
+                                    fill="#FBBC05"
+                                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                                />
+                                <path
+                                    fill="#EA4335"
+                                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                                />
+                            </svg>
+                            Continue with Google
+
+                            {/* Hidden GoogleLoginButton - positioned off-screen */}
+                            <div id="hidden-google-login" style={{ position: 'absolute', opacity: 0, pointerEvents: 'none', width: 0, height: 0, overflow: 'hidden' }}>
+                                <GoogleLoginButton
+                                    clientId={process.env.NEXT_PUBLIC_GOOGLE_WEB_CLIENT_ID}
+                                    className="w-full"
+                                    onSuccess={(response) => {
+                                        console.log("GOOGLE LOGIN SUCCESS");
+
+                                        if (response.success && response.data) {
+                                            const userObj = response.data.user;
+                                            const token = response.data.accessToken;
+                                            const refreshToken = response.data.refreshToken;
+                                            const firebaseToken = response.data.firebaseToken;
+
+                                            localStorage.setItem("isLoggedIn", "true");
+                                            localStorage.setItem("user", JSON.stringify(userObj));
+                                            localStorage.setItem("token", token);
+                                            localStorage.setItem("refreshToken", refreshToken);
+
+                                            if (firebaseToken) {
+                                                localStorage.setItem("firebaseToken", firebaseToken);
+                                            }
+
+                                            sessionStorage.removeItem("isLoggedIn");
+                                            sessionStorage.removeItem("user");
+                                            sessionStorage.removeItem("token");
+                                            sessionStorage.removeItem("refreshToken");
+                                            sessionStorage.removeItem("firebaseToken");
+
+                                            useAuthStore.setState({
+                                                user: userObj,
+                                                token: token,
+                                                refreshToken: refreshToken,
+                                                firebaseToken: firebaseToken || null,
+                                                isLoggedIn: true,
+                                                loading: false,
+                                                error: null,
+                                            });
+
+                                            window.dispatchEvent(new Event("storage"));
+                                            router.push(redirectTo);
+                                        } else {
+                                            setLocalError(response.message || "Google login failed");
+                                        }
+                                    }}
+                                    onError={(error) => {
+                                        <motion.button
+                                            className="flex items-center justify-center gap-3 w-full border rounded-xl px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer"
+                                            style={{
+                                                backgroundColor: dark ? "#1f2937" : "#ffffff",
+                                                borderColor: dark ? "#374151" : "#e5e7eb",
+                                                color: dark ? "#ffffff" : "#374151",
+                                            }}
+                                            variants={itemVariants}
+                                            whileHover={{
+                                                scale: 1.02,
+                                                backgroundColor: dark ? "#374151" : "#f9fafb",
+                                                transition: { duration: 0.2 }
+                                            }}
+                                            whileTap={{ scale: 0.98 }}
+                                            onClick={() => {
+                                                // Trigger the hidden GoogleLoginButton
+                                                const googleBtn = document.getElementById('hidden-google-login');
+                                                if (googleBtn) {
+                                                    const innerButton = googleBtn.querySelector('div[role="button"], button, div[tabindex]');
+                                                    if (innerButton) innerButton.click();
+                                                }
+                                            }}
+                                        >
+                                        <svg className="w-5 h-5" viewBox="0 0 24 24">
+                                            <path
+                                                fill="#4285F4"
+                                                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                                            />
+                                            <path
+                                                fill="#34A853"
+                                                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                                            />
+                                            <path
+                                                fill="#FBBC05"
+                                                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                                            />
+                                            <path
+                                                fill="#EA4335"
+                                                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                                            />
+                                        </svg>
+                                        Continue with Google
+
+                                        {/* Hidden GoogleLoginButton - positioned off-screen */}
+                                        <div id="hidden-google-login" style={{ position: 'absolute', opacity: 0, pointerEvents: 'none', width: 0, height: 0, overflow: 'hidden' }}>
+                                            <GoogleLoginButton
+                                                clientId={process.env.NEXT_PUBLIC_GOOGLE_WEB_CLIENT_ID}
+                                                className="w-full"
+                                                onSuccess={(response) => {
+                                                    console.log("GOOGLE LOGIN SUCCESS");
+
+                                                    if (response.success && response.data) {
+                                                        const userObj = response.data.user;
+                                                        const token = response.data.accessToken;
+                                                        const refreshToken = response.data.refreshToken;
+                                                        const firebaseToken = response.data.firebaseToken;
+
+                                                        localStorage.setItem("isLoggedIn", "true");
+                                                        localStorage.setItem("user", JSON.stringify(userObj));
+                                                        localStorage.setItem("token", token);
+                                                        localStorage.setItem("refreshToken", refreshToken);
+
+                                                        if (firebaseToken) {
+                                                            localStorage.setItem("firebaseToken", firebaseToken);
+                                                        }
+
+                                                        sessionStorage.removeItem("isLoggedIn");
+                                                        sessionStorage.removeItem("user");
+                                                        sessionStorage.removeItem("token");
+                                                        sessionStorage.removeItem("refreshToken");
+                                                        sessionStorage.removeItem("firebaseToken");
+
+                                                        useAuthStore.setState({
+                                                            user: userObj,
+                                                            token: token,
+                                                            refreshToken: refreshToken,
+                                                            firebaseToken: firebaseToken || null,
+                                                            isLoggedIn: true,
+                                                            loading: false,
+                                                            error: null,
+                                                        });
+
+                                                        window.dispatchEvent(new Event("storage"));
+                                                        router.push(redirectTo);
+                                                    } else {
+                                                        setLocalError(response.message || "Google login failed");
+                                                    }
+                                                }}
+                                                onError={(error) => {
+                                                    console.error("GOOGLE LOGIN FAILED:", error);
+                                                    setLocalError(error?.message || "Google login failed");
+                                                }}
+                                            />
+                                        </div>
+                                    </motion.button>
+                                        console.error("GOOGLE LOGIN FAILED:", error);
+                                        setLocalError(error?.message || "Google login failed");
+                                    }}
+                                />
+                            </div>
+                        </motion.button>
+
+
+
+                        {/* Apple */}
+                        <motion.button
+                            className="flex items-center justify-center gap-3 w-full border rounded-xl px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer"
+                            style={{
+                                backgroundColor: dark ? "#1f2937" : "#ffffff",
+                                borderColor: dark ? "#374151" : "#e5e7eb",
+                                color: dark ? "#ffffff" : "#374151",
+                            }}
+                            variants={itemVariants}
+                            whileHover={{
                                 scale: 1.02,
                                 backgroundColor: dark ? "#374151" : "#f9fafb",
                                 transition: { duration: 0.2 }
@@ -471,8 +570,8 @@ function LoginForm() {
                         </motion.button>
 
                         {/* Sign Up link */}
-                        <motion.p 
-                            className="text-center text-sm mt-1.5" 
+                        <motion.p
+                            className="text-center text-sm mt-1.5"
                             style={{ color: dark ? "#ffffff" : "#9ca3af" }}
                             variants={itemVariants}
                         >
