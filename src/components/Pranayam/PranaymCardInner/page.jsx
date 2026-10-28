@@ -66,6 +66,7 @@ console.log("pranayamService.getPranayamById", payload);
         meditation={pranayama}
         duration={duration}
         setDuration={setDuration}
+        pranayamId={pranayamId}
       />
 
       <hr className="w-full border-t border-gray-200" />

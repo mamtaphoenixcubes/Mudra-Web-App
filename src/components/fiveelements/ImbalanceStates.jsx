@@ -258,7 +258,8 @@ function Card({ item, dark, textColor, index, isInView }) {
   );
 }
 
-export default function ImbalanceStates() {
+// ImbalanceStates.jsx
+export default function ImbalanceStates({ elements = [], loading }) {
   const { dark, textColor } = useTheme();
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, {

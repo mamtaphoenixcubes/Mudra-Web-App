@@ -1,64 +1,15 @@
 "use client";
 
 import Image from "next/image";
-import { useRef, useEffect, useState } from "react";
+import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { typography, spacing } from "../../theme";
 import { IMAGES } from "../../assets/assets";
 import { useTheme } from "../../context/ThemeContext";
-import { elementsService } from "../../services/apiService";
 
-const ELEMENTS = [
-  {
-    key: "Earth",
-    name: "Earth",
-    finger: "Thumb",
-    description: "Stability, structure, nourishment",
-    imageKey: "EarthElement",
-    color: "#4CAF50",
-  },
-  {
-    key: "Water",
-    name: "Water",
-    finger: "Index Finger",
-    description: "Flow, emotion, adaptability",
-    imageKey: "WaterElement",
-    color: "#2196F3",
-  },
-  {
-    key: "Fire",
-    name: "Fire",
-    finger: "Middle Finger",
-    description: "Transformation, energy, digestion",
-    imageKey: "FireElement",
-    color: "#f44336",
-  },
-  {
-    key: "Air",
-    name: "Air",
-    finger: "Ring Finger",
-    description: "Movement, creativity, communication",
-    imageKey: "AirElement",
-    color: "#9C27B0",
-  },
-  {
-    key: "Space",
-    name: "Space",
-    finger: "Little Finger",
-    description: "Expansion, awareness, connection",
-    imageKey: "SpaceElement",
-    color: "#FF9800",
-  },
-];
 
-const documentIds = {
-  "Water": "taqtjc5zg7zt46uv3fy0dimr",
-  "Fire": "b7vupswbjvkqyxijo50swxkr",
-  "Air": "vf3u1ukmxn229f66p6jg6m6r",
-  "Space": "sr0xc8z5coitas3l7l2n75g1",
-  "Earth": "in4vcbjj65hiqpk4gs49mja7"
-};
+
 
 function VDivider({ dark }) {
   return <div className="self-stretch w-px shrink-0" style={{
@@ -263,7 +214,7 @@ function ElementCard({ el, dark, textColor, index, isInView }) {
   );
 }
 
-export default function FingerMapping() {
+export default function FingerMapping({ elements = [], loading }) {
   const { dark, textColor } = useTheme();
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, {
@@ -271,34 +222,16 @@ export default function FingerMapping() {
     amount: 0.15,
     margin: "-50px"
   });
-  const [elements, setElements] = useState([]);
-  useEffect(() => {
-    const fetchElements = async () => {
-      try {
-        const response = await elementsService.getElements();
+  const formattedElements = elements.map((item) => ({
+  key: item.Name,
+  name: item.Name,
+  finger: item.FingerMapping?.Finger || "",
+  description: item.FingerMapping?.ShortDescription || "",
+  image: item.FingerMapping?.Image?.url || "",
+  documentId: item.documentId,
+  color: "#9C27B0",
+}));
 
-        console.log("FIVE ELEMENTS RESPONSE:", response);
-
-        const apiElements = response?.data || [];
-
-        const formattedElements = apiElements.map((item) => ({
-          key: item.Name,
-          name: item.Name,
-          finger: item.FingerMapping?.Finger || "",
-          description: item.FingerMapping?.ShortDescription || "",
-          image: item.FingerMapping?.Image?.url || "",
-          documentId: item.documentId,
-          color: "#9C27B0",
-        }));
-
-        setElements(formattedElements);
-      } catch (error) {
-        console.error("FIVE ELEMENTS API ERROR:", error);
-      }
-    };
-
-    fetchElements();
-  }, []);
   // Letter animation for label
   const letterVariants = {
     hidden: { opacity: 0, y: 20, rotateX: -10 },
@@ -459,7 +392,7 @@ export default function FingerMapping() {
 
         {/* Desktop: single horizontal row (md and above) */}
         <div className="hidden md:flex flex-row items-start justify-between">
-          {elements.map((el, i) => (
+          {formattedElements.map((el, i) => (
             <div
               key={el.documentId}
               className="flex flex-row items-stretch flex-1 min-w-0"
@@ -474,18 +407,18 @@ export default function FingerMapping() {
                 />
               </div>
 
-              {i < elements.length - 1 && <VDivider dark={dark} />}
+              {i < formattedElements.length - 1 && <VDivider dark={dark} />}
             </div>
           ))}
         </div>
 
         {/* Mobile: 2-col rows + Space centred (below md) */}
         <div className="md:hidden">
-          {elements.length >= 2 && (
+          {formattedElements.length >= 2 && (
             <div className="flex flex-row mb-8">
               <div className="flex-1 flex justify-center">
                 <ElementCard
-                  el={elements[0]}
+                  el={formattedElements[0]}
                   dark={dark}
                   textColor={textColor}
                   index={0}
@@ -502,7 +435,7 @@ export default function FingerMapping() {
 
               <div className="flex-1 flex justify-center">
                 <ElementCard
-                  el={elements[1]}
+                  el={formattedElements[1]}
                   dark={dark}
                   textColor={textColor}
                   index={1}
@@ -512,11 +445,11 @@ export default function FingerMapping() {
             </div>
           )}
 
-          {elements.length >= 4 && (
+          {formattedElements.length >= 4 && (
             <div className="flex flex-row mb-8">
               <div className="flex-1 flex justify-center">
                 <ElementCard
-                  el={elements[2]}
+                  el={formattedElements[2]}
                   dark={dark}
                   textColor={textColor}
                   index={2}
@@ -533,7 +466,7 @@ export default function FingerMapping() {
 
               <div className="flex-1 flex justify-center">
                 <ElementCard
-                  el={elements[3]}
+                  el={formattedElements[3]}
                   dark={dark}
                   textColor={textColor}
                   index={3}
@@ -543,10 +476,10 @@ export default function FingerMapping() {
             </div>
           )}
 
-          {elements[4] && (
+          {formattedElements[4] && (
             <div className="flex justify-center">
               <ElementCard
-                el={elements[4]}
+                el={formattedElements[4]}
                 dark={dark}
                 textColor={textColor}
                 index={4}

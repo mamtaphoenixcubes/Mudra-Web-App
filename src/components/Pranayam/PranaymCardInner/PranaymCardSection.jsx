@@ -113,12 +113,50 @@ function PranayamaTimerModal({
     };
   }, [isRunning, secondsLeft]);
 
-  useEffect(() => {
-    if (secondsLeft === 0 && isRunning) {
-      setIsRunning(false);
-      if (playTune) playSingingBowlSound();
+
+const [completionCalled, setCompletionCalled] = useState(false);
+
+useEffect(() => {
+  if (secondsLeft !== 0 || !isRunning || completionCalled) return;
+
+  setIsRunning(false);
+  setCompletionCalled(true);
+
+  if (playTune) {
+    playSingingBowlSound();
+  }
+
+  const completeSession = async () => {
+    try {
+      if (!pranayamId || !profileDocId) {
+        console.error("Missing pranayamId or profileDocId");
+        return;
+      }
+
+      await pranayamService.completePranayam(
+        pranayamId,
+        profileDocId,
+        totalSeconds,
+        totalSeconds
+      );
+
+      console.log("Pranayama session completed successfully");
+    } catch (error) {
+      console.error("Failed to complete pranayama session:", error);
     }
-  }, [isRunning, secondsLeft, playTune]);
+  };
+
+  completeSession();
+}, [
+  secondsLeft,
+  isRunning,
+  completionCalled,
+  playTune,
+  pranayamId,
+  profileDocId,
+  totalSeconds,
+]);
+
 
   const handleStart = () => {
     if (secondsLeft === 0) setSecondsLeft(totalSeconds);
@@ -277,8 +315,21 @@ function TipBanner({ dark, text }) {
   );
 }
 
-export default function PranaymCardSection({ meditation = null, duration, setDuration }) {
+export default function PranaymCardSection({
+  meditation = null,
+  duration,
+  setDuration,
+  pranayamId,
+}) {
+
   const { dark, textColor } = useTheme();
+  const { user, profileDocumentId } = useAuthStore();
+
+const profileDocId =
+  profileDocumentId ||
+  user?.id ||
+  user?.profile?.documentId;
+  
   const [localDuration, setLocalDuration] = useState(10);
   const activeDuration = duration !== undefined ? Number(duration) : localDuration;
   const activeSetDuration = setDuration || setLocalDuration;
@@ -309,7 +360,15 @@ export default function PranaymCardSection({ meditation = null, duration, setDur
         <TipBanner dark={dark} text={tipText} />
       </div>
 
-      {timerOpen && <PranayamaTimerModal dark={dark} duration={activeDuration} onClose={() => setTimerOpen(false)} />}
+    {timerOpen && (
+  <PranayamaTimerModal
+    dark={dark}
+    duration={activeDuration}
+    pranayamId={pranayamId || meditation?.documentId || meditation?.id}
+    profileDocId={profileDocId}
+    onClose={() => setTimerOpen(false)}
+  />
+)}
     </div>
   );
 }

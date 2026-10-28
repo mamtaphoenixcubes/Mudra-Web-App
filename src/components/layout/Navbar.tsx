@@ -809,7 +809,6 @@ function NavbarContent() {
   const [mobileFeaturesOpen, setMobileFeaturesOpen] = useState(false);
   const [getStartedHovered, setGetStartedHovered] = useState(false);
   const { isLoggedIn, user, loading, logout } = useAuth();
-console.log(user,isLoggedIn,"dwadwa");
 
   // ✅ NEW: track mount so we don't render theme-dependent markup on server
   const [mounted, setMounted] = useState(false);
