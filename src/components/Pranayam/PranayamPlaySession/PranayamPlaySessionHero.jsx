@@ -433,6 +433,7 @@ export default function PranayamPlaySessionHero({
   sessionData = null,
   type = "pranayama",
   mode = "guided",
+    playerKind = "audio",
   durationParam = null,
   selectedMedia = null,
   playlistTracks: propPlaylistTracks = null,
@@ -463,10 +464,7 @@ export default function PranayamPlaySessionHero({
     actualData?.MediaType ||
     selectedMedia?.mediaType ||
     null;
-  const isVideoMode =
-    resolvedMediaType === "VIDEO_SINGLE" ||
-    resolvedMediaType === "VIDEO_PLAYLIST" ||
-    (isMudra && (actualData?.mediaType === "VIDEO_SINGLE" || actualData?.mediaType === "VIDEO_PLAYLIST"));
+ const isVideoMode = playerKind === "video";
   const isPlaylist = isMudra
     ? (actualData?.mediaType === "AUDIO_PLAYLIST" || actualData?.mediaType === "VIDEO_PLAYLIST")
     : (

@@ -22,7 +22,11 @@ function ElementCard({ el, dark, textColor, index, isInView }) {
   // Split text for animations
   const nameChars = el.name.split("");
   const fingerWords = el.finger.split(" ");
-  const descWords = el.description.split(" ");
+const descText = (el.characteristics || [])
+  .map((item) => item.name)
+  .join(", ");
+
+const descWords = descText.split(" ");
 
   // Card animation
   const cardVariants = {
@@ -222,13 +226,21 @@ export default function FingerMapping({ elements = [], loading }) {
     amount: 0.15,
     margin: "-50px"
   });
-  const formattedElements = elements.map((item) => ({
+const formattedElements = elements.map((item) => ({
   key: item.Name,
-  name: item.Name,
-  finger: item.FingerMapping?.Finger || "",
-  description: item.FingerMapping?.ShortDescription || "",
-  image: item.FingerMapping?.Image?.url || "",
+  name: item.Name || "",
+  finger: item.Finger || "",
+  description: item.Description || "",
+  overview: item.Overview || "",
+  image: item.Image?.url || "",
   documentId: item.documentId,
+  characteristics: (item.Characteristics || [])
+    .filter((characteristic) => characteristic.IsActive)
+    .map((characteristic) => ({
+      name: characteristic.Name || "",
+      description: characteristic.Description || "",
+      documentId: characteristic.documentId,
+    })),
   color: "#9C27B0",
 }));
 

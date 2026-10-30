@@ -8,38 +8,6 @@ import { card, spacing, typography } from "../../theme";
 import { useTheme } from "../../context/ThemeContext";
 import SiteContainer from "../../common/SiteContainer";
 
-const staticBenefits = [
-  {
-    title: "Mudras",
-    description: "Practice Prithvi Mudra to strengthen and balance Earth energy.",
-    bg: "bg-[#F5E6A8]",
-    image: IMAGES.HastaMudras,
-  },
-  {
-    title: "Yoga Nidra",
-    description: "Earth-focused Yoga Nidra sessions promote deep grounding.",
-    bg: "bg-[#E3DDFF]",
-    image: IMAGES.IconYogaNidra,
-  },
-  {
-    title: "Diet",
-    description: "Eat nourishing, whole foods like root vegetables, grains, and nuts.",
-    bg: "bg-[#C8E8F5]",
-    image: IMAGES.Diet,
-  },
-  {
-    title: "Nature",
-    description: "Spend time in nature and connect with the ground.",
-    bg: "bg-[#F8D4DC]",
-    image: IMAGES.Tree,
-  },
-  {
-    title: "Boosts Immunity",
-    description: "Supports the body's natural defence mechanisms.",
-    bg: "bg-[#D4F5D4]",
-    image: IMAGES.Crystals,
-  },
-];
 
 const fallbackBgs = [
   "bg-[#F5E6A8]",
@@ -135,6 +103,8 @@ export default function BalanceEarth({
   howToBalance = [],
   elementName = "Earth",
 }) {
+  console.log(howToBalance, "howToBalance");
+  
   const { dark, textColor } = useTheme();
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, {
@@ -143,19 +113,29 @@ export default function BalanceEarth({
     margin: "-50px",
   });
 
-  const finalBenefits =
-    howToBalance.length > 0
-      ? howToBalance.map((h, idx) => ({
-          title: h.title || h.Name || "",
-          description: h.description || h.Description || "",
-          bg: h.CardBg || fallbackBgs[idx % fallbackBgs.length],
-          image: h.Icon?.url
-            ? h.Icon.url.startsWith("http")
-              ? h.Icon.url
-              : `http://192.168.1.14:1337${h.Icon.url}`
-            : IMAGES.HastaMudras,
-        }))
-      : staticBenefits;
+ const finalBenefits =
+  howToBalance.length > 0
+    ? howToBalance
+        .filter((h) => h.IsActive)
+        .map((h, idx) => {
+          const type = h.Type?.toUpperCase();
+
+          const imageMap = {
+            MUDRA: IMAGES.HastaMudras,
+            YOGA_NIDRA: IMAGES.IconYogaNidra,
+            DIET: IMAGES.Diet,
+            NATURE: IMAGES.Tree,
+            CRYSTAL: IMAGES.Crystals,
+          };
+
+          return {
+            title: h.Title || "",
+            description: h.Description || "",
+            bg: fallbackBgs[idx % fallbackBgs.length],
+            image: imageMap[type] || IMAGES.HastaMudras,
+          };
+        })
+    : staticBenefits;
 
   const isOdd = finalBenefits.length % 2 !== 0;
 

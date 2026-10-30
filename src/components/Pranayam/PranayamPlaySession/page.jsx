@@ -156,22 +156,23 @@ function PranayamPlaySession() {
           </button>
         </div>
 
-        <PranayamPlaySessionHero
-          meditationId={pranayamId}
-          durationParam={routeDurationSeconds}
-          sessionData={actualData}
-          selectedMedia={selectedMedia}
-          playlistTracks={effectivePlaylistTracks}
-          currentTrackIndex={currentTrackIndex}
-          setCurrentTrackIndex={setCurrentTrackIndex}
-          playing={playing}
-          setPlaying={setPlaying}
-          current={current}
-          setCurrent={setCurrent}
-          totalSecs={totalSecs}
-          setTotalSecs={setTotalSecs}
-          type="pranayama"
-        />
+      <PranayamPlaySessionHero
+  meditationId={pranayamId}
+  durationParam={routeDurationSeconds}
+  sessionData={actualData}
+  selectedMedia={selectedMedia}
+  playerKind={selectedMedia.playerKind}
+  playlistTracks={effectivePlaylistTracks}
+  currentTrackIndex={currentTrackIndex}
+  setCurrentTrackIndex={setCurrentTrackIndex}
+  playing={playing}
+  setPlaying={setPlaying}
+  current={current}
+  setCurrent={setCurrent}
+  totalSecs={totalSecs}
+  setTotalSecs={setTotalSecs}
+  type="pranayama"
+/>
 
         <div className="mx-auto max-w-6xl px-4 pb-8">
           <UpNextWithMiniPranayamPlay
@@ -262,13 +263,17 @@ function PranayamPlaySession() {
               return (
                 <button
                   key={`${item.mediaType}-${item.documentId || item.id || index}`}
-                  onClick={() => {
-                    setSelectedMedia(item);
-                    setCurrentTrackIndex(0);
-                    setCurrent(0);
-                    setPlaying(true);
-                    setTotalSecs(0);
-                  }}
+                 onClick={() => {
+  setSelectedMedia({
+    ...item,
+    playerKind: activeTab, // "audio" or "video" based on clicked tab
+  });
+
+  setCurrentTrackIndex(0);
+  setCurrent(0);
+  setPlaying(true);
+  setTotalSecs(0);
+}}
                   className="group flex w-full items-center gap-4 rounded-2xl border border-gray-200 bg-white p-3 text-left transition hover:border-[#C5B7FF] hover:shadow-md sm:gap-5 sm:p-4"
                 >
                   <div className="relative h-20 w-24 shrink-0 overflow-hidden rounded-xl bg-[#F0ECFF] sm:h-24 sm:w-32">

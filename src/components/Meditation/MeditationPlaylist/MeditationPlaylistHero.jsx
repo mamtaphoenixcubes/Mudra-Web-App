@@ -646,6 +646,7 @@ export default function MeditationPlaylistHero({
   sessionData = null,
   type = "yogameditation",
   mode = "guided",
+    playerKind = "audio",
   durationParam = null,
   playlistTracks: propPlaylistTracks = null,
   currentTrackIndex: controlledTrackIndex,
@@ -671,7 +672,7 @@ export default function MeditationPlaylistHero({
   // Unwrap nested data if present (e.g. from Strapi/Express response wrapper)
   const actualData = sessionData?.data || sessionData;
   const isMudra = type === "yogameditation";
-  const isVideoMode = isMudra && (actualData?.mediaType === "VIDEO_SINGLE" || actualData?.mediaType === "VIDEO_PLAYLIST");
+  const isVideoMode = playerKind === "video";
   const isPlaylist = isMudra
     ? (actualData?.mediaType === "AUDIO_PLAYLIST" || actualData?.mediaType === "VIDEO_PLAYLIST")
     : (actualData?.AudioPlaylist && actualData.AudioPlaylist.length > 0);

@@ -680,6 +680,7 @@ export default function AsanasPlayHero({
   selectedMedia = null,
   mediaType = null,
   selectedMediaId = null,
+    playerKind = "audio",
 }) {
   const { dark, textColor } = useTheme();
   const router = useRouter();
@@ -698,7 +699,7 @@ export default function AsanasPlayHero({
   const selectedMediaKey = selectedMediaId || selectedMedia?.documentId || selectedMedia?.id || null;
   const isMudra = type === "asanas";
   
-  const isVideoMode = isMudra && (resolvedMediaType === "VIDEO_SINGLE" || resolvedMediaType === "VIDEO_PLAYLIST");
+  const isVideoMode = playerKind === "video";
   const isPlaylist = isMudra
     ? (resolvedMediaType === "AUDIO_PLAYLIST" || resolvedMediaType === "VIDEO_PLAYLIST")
     : (actualData?.AudioPlaylist && actualData.AudioPlaylist.length > 0);

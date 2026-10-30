@@ -158,24 +158,25 @@ export default function AsanasMeditation() {
           </button>
         </div>
 
-        <AsanasPlayHero
-          sessionData={asana}
-          asana={asana}
-          selectedMedia={selectedMedia}
-          selectedMediaId={selectedMedia?.documentId || selectedMedia?.id}
-          mediaType={selectedMedia?.mediaType}
-          type="asanas"
-          durationParam={durationSeconds}
-          mode="timer"
-          currentTrackIndex={currentTrackIndex}
-          setCurrentTrackIndex={setCurrentTrackIndex}
-          playing={playing}
-          setPlaying={setPlaying}
-          current={current}
-          setCurrent={setCurrent}
-          totalSecs={totalSecs}
-          setTotalSecs={setTotalSecs}
-        />
+    <AsanasPlayHero
+  sessionData={asana}
+  asana={asana}
+  selectedMedia={selectedMedia}
+  selectedMediaId={selectedMedia?.documentId || selectedMedia?.id}
+  mediaType={selectedMedia?.mediaType}
+  playerKind={selectedMedia?.playerKind || activeTab}
+  type="asanas"
+  durationParam={durationSeconds}
+  mode="timer"
+  currentTrackIndex={currentTrackIndex}
+  setCurrentTrackIndex={setCurrentTrackIndex}
+  playing={playing}
+  setPlaying={setPlaying}
+  current={current}
+  setCurrent={setCurrent}
+  totalSecs={totalSecs}
+  setTotalSecs={setTotalSecs}
+/>
 
         <hr className="w-full border-t border-gray-200" />
 
@@ -280,13 +281,17 @@ export default function AsanasMeditation() {
               return (
                 <button
                   key={`${item.mediaType}-${item.documentId || item.id || index}`}
-                  onClick={() => {
-                    setSelectedMedia(item);
-                    setCurrentTrackIndex(0);
-                    setCurrent(0);
-                    setPlaying(false);
-                    setTotalSecs(0);
-                  }}
+                onClick={() => {
+  setSelectedMedia({
+    ...item,
+    playerKind: activeTab,
+  });
+
+  setCurrentTrackIndex(0);
+  setCurrent(0);
+  setPlaying(false);
+  setTotalSecs(0);
+}}
                   className="group flex w-full items-center gap-4 rounded-2xl border border-gray-200 bg-white p-3 text-left transition hover:border-[#C5B7FF] hover:shadow-md sm:gap-5 sm:p-4"
                 >
                   {/* Thumbnail */}

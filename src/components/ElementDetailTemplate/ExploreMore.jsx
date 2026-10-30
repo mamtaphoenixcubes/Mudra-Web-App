@@ -27,7 +27,7 @@ const exploreLinks = [
   {
     title: "Benefits",
     linkLabel: "View Benefits",
-    href: "/Home#benefits",
+    href: "/Benefits",
     bg: "bg-[#F8D4DC]",
     image: IMAGES.Energy,
   },

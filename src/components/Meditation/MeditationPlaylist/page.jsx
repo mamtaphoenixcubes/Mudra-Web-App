@@ -170,21 +170,23 @@ export default function MeditationPlaylist() {
           </button>
         </div>
 
-        <MeditationPlaylistHero
-          sessionData={meditation}
-          type="yogameditation"
-          mode="guided"
-          durationParam={durationSeconds}
-          playlistTracks={effectivePlaylistTracks}
-          currentTrackIndex={currentTrackIndex}
-          setCurrentTrackIndex={setCurrentTrackIndex}
-          playing={playing}
-          setPlaying={setPlaying}
-          current={current}
-          setCurrent={setCurrent}
-          totalSecs={totalSecs}
-          setTotalSecs={setTotalSecs}
-        />
+       <MeditationPlaylistHero
+  sessionData={meditation}
+  type="yogameditation"
+  mode="guided"
+  durationParam={durationSeconds}
+  selectedMedia={selectedMedia}
+  playerKind={selectedMedia.playerKind}
+  playlistTracks={effectivePlaylistTracks}
+  currentTrackIndex={currentTrackIndex}
+  setCurrentTrackIndex={setCurrentTrackIndex}
+  playing={playing}
+  setPlaying={setPlaying}
+  current={current}
+  setCurrent={setCurrent}
+  totalSecs={totalSecs}
+  setTotalSecs={setTotalSecs}
+/>
 
         <div className="mx-auto max-w-6xl px-4 pb-8">
           <UpNextWithMiniMeditationPlaylist
@@ -282,13 +284,17 @@ export default function MeditationPlaylist() {
               return (
                 <button
                   key={`${item.mediaType}-${item.documentId || item.id || index}`}
-                  onClick={() => {
-                    setSelectedMedia(item);
-                    setCurrentTrackIndex(0);
-                    setCurrent(0);
-                    setPlaying(false);
-                    setTotalSecs(0);
-                  }}
+               onClick={() => {
+  setSelectedMedia({
+    ...item,
+    playerKind: activeTab,
+  });
+
+  setCurrentTrackIndex(0);
+  setCurrent(0);
+  setPlaying(false);
+  setTotalSecs(0);
+}}
                   className="group flex w-full items-center gap-4 rounded-2xl border border-gray-200 bg-white p-3 text-left transition hover:border-[#C5B7FF] hover:shadow-md sm:gap-5 sm:p-4"
                 >
                   <div className="relative h-20 w-24 shrink-0 overflow-hidden rounded-xl bg-[#F0ECFF] sm:h-24 sm:w-32">

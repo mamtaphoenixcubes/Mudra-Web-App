@@ -107,16 +107,43 @@ function PlaySessionContent() {
           : (actualData?.AudioPlaylist?.[0]?.audios || [])
       );
 
-  const mediaItems =
-    activeTab === "audio"
-      ? [
-          ...(actualData?.audioSingleSessions || []).map((item) => ({ ...item, mediaType: "AUDIO_SINGLE" })),
-          ...(actualData?.audio_playlists || []).map((item) => ({ ...item, mediaType: "AUDIO_PLAYLIST" })),
-        ]
-      : [
-          ...(actualData?.videoSingleSessions || []).map((item) => ({ ...item, mediaType: "VIDEO_SINGLE" })),
-          ...(actualData?.video_playlists || []).map((item) => ({ ...item, mediaType: "VIDEO_PLAYLIST" })),
-        ];
+const mediaItems =
+  activeTab === "audio"
+    ? [
+        ...(isMudra
+          ? actualData?.audioSingleSessions || []
+          : actualData?.AudioSingleSessions || []
+        ).map((item) => ({
+          ...item,
+          mediaType: "AUDIO_SINGLE",
+        })),
+
+        ...(isMudra
+          ? actualData?.audio_playlists || []
+          : actualData?.AudioPlaylist || []
+        ).map((item) => ({
+          ...item,
+          mediaType: "AUDIO_PLAYLIST",
+        })),
+      ]
+    : [
+        ...(actualData?.videoSingleSessions ||
+          actualData?.VideoSingleSessions ||
+          []
+        ).map((item) => ({
+          ...item,
+          mediaType: "VIDEO_SINGLE",
+        })),
+
+        ...(actualData?.video_playlists ||
+          actualData?.VideoPlaylist ||
+          actualData?.VideoPlaylists ||
+          []
+        ).map((item) => ({
+          ...item,
+          mediaType: "VIDEO_PLAYLIST",
+        })),
+      ];
 
   const getImageUrl = (item) => {
     const url =
@@ -177,21 +204,22 @@ function PlaySessionContent() {
         </div>
 
         {isMudra ? (
-          <SessionPlayerHero
-            sessionData={detailData}
-            type={type}
-            mode={mode}
-            durationParam={durationParam}
-            currentTrackIndex={currentTrackIndex}
-            setCurrentTrackIndex={setCurrentTrackIndex}
-            playing={playing}
-            setPlaying={setPlaying}
-            current={current}
-            setCurrent={setCurrent}
-            totalSecs={totalSecs}
-            setTotalSecs={setTotalSecs}
-            playlistTracks={effectivePlaylistTracks}
-          />
+        <SessionPlayerHero
+  sessionData={detailData}
+  type={type}
+  mode={mode}
+  durationParam={durationParam}
+  playerKind={selectedMedia.playerKind}
+  currentTrackIndex={currentTrackIndex}
+  setCurrentTrackIndex={setCurrentTrackIndex}
+  playing={playing}
+  setPlaying={setPlaying}
+  current={current}
+  setCurrent={setCurrent}
+  totalSecs={totalSecs}
+  setTotalSecs={setTotalSecs}
+  playlistTracks={effectivePlaylistTracks}
+/>
         ) : (
           <SessionPlayerHeroNidra
             sessionData={detailData}
@@ -303,13 +331,17 @@ function PlaySessionContent() {
               return (
                 <button
                   key={`${item.mediaType}-${item.documentId || item.id || index}`}
-                  onClick={() => {
-                    setSelectedMedia(item);
-                    setCurrentTrackIndex(0);
-                    setCurrent(0);
-                    setPlaying(false);
-                    setTotalSecs(0);
-                  }}
+               onClick={() => {
+                      setSelectedMedia({
+                        ...item,
+                        playerKind: activeTab, // Based on the tab the user clicked
+                      });
+
+                      setCurrentTrackIndex(0);
+                      setCurrent(0);
+                      setPlaying(false);
+                      setTotalSecs(0);
+                    }}
                   className="group flex w-full items-center gap-4 rounded-2xl border border-gray-200 bg-white p-3 text-left transition hover:border-[#C5B7FF] hover:shadow-md sm:gap-5 sm:p-4"
                 >
                   <div className="relative h-20 w-24 shrink-0 overflow-hidden rounded-xl bg-[#F0ECFF] sm:h-24 sm:w-32">

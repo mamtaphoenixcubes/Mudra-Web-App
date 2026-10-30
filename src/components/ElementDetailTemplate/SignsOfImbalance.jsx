@@ -227,6 +227,7 @@ export default function SignsOfImbalance({
   deficient = null,
   cardBackground = null,
 }) {
+  
   const { dark, textColor } = useTheme();
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, {
@@ -235,29 +236,27 @@ export default function SignsOfImbalance({
     margin: "-50px",
   });
 
-  const finalExcess = excess
-    ? {
-        title: excess.Title || excess.title || "Excess Element",
-        points: excess.points || [],
-        icon: excess.Icon?.url
-          ? excess.Icon.url.startsWith("http")
-            ? excess.Icon.url
-            : `http://192.168.1.14:1337${excess.Icon.url}`
-          : IMAGES.LeafOutline,
-      }
-    : defaultExcess;
+const finalExcess = excess
+  ? {
+      title: excess.Title || "Excess Element",
+      points: (excess.Description || "")
+        .split("\n")
+        .map((item) => item.trim())
+        .filter(Boolean),
+      icon: IMAGES.LeafOutline,
+    }
+  : defaultExcess;
 
-  const finalDeficient = deficient
-    ? {
-        title: deficient.Title || deficient.title || "Deficient Element",
-        points: deficient.points || [],
-        icon: deficient.Icon?.url
-          ? deficient.Icon.url.startsWith("http")
-            ? deficient.Icon.url
-            : `http://192.168.1.14:1337${deficient.Icon.url}`
-          : IMAGES.DeficientEarth,
-      }
-    : defaultDeficient;
+const finalDeficient = deficient
+  ? {
+      title: deficient.Title || "Deficient Element",
+      points: (deficient.Description || "")
+        .split("\n")
+        .map((item) => item.trim())
+        .filter(Boolean),
+      icon: IMAGES.DeficientEarth,
+    }
+  : defaultDeficient;
 
   const charVariants = {
     hidden: { opacity: 0, y: 20, rotateX: -10 },

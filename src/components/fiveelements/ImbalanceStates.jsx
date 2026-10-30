@@ -130,7 +130,7 @@ function Card({ item, dark, textColor, index, isInView }) {
 
   return (
     <motion.div
-      onClick={() => router.push(`/ElementDetailTemplate?id=${documentIds[element]}`)}
+      // onClick={() => router.push(`/ElementDetailTemplate?id=${documentIds[element]}`)}
       className={`${item.bg} ${card.radius} ${card.hover} ${spacing.cardPadding} ${spacing.cardMinH} flex flex-col items-center w-full h-full relative overflow-hidden cursor-pointer`}
       variants={cardVariants}
       initial="hidden"
@@ -260,6 +260,7 @@ function Card({ item, dark, textColor, index, isInView }) {
 
 // ImbalanceStates.jsx
 export default function ImbalanceStates({ elements = [], loading }) {
+  
   const { dark, textColor } = useTheme();
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, {

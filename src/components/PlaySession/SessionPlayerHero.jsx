@@ -311,6 +311,7 @@ export default function SessionPlayer({
   type = "yoganidra",
   mode = "guided",
   durationParam = null,
+   playerKind = "audio",
   playlistTracks: propPlaylistTracks = null,
   currentTrackIndex: controlledTrackIndex,
   setCurrentTrackIndex: setControlledTrackIndex,
@@ -335,7 +336,10 @@ export default function SessionPlayer({
   // Unwrap nested data if present (e.g. from Strapi/Express response wrapper)
   const actualData = sessionData?.data || sessionData;
   const isMudra = type === "mudra";
-  const isVideoMode = isMudra && (actualData?.mediaType === "VIDEO_SINGLE" || actualData?.mediaType === "VIDEO_PLAYLIST");
+  console.log(isMudra,"actualData",actualData);
+
+  const isVideoMode = isMudra && playerKind === "video";
+  
   const isPlaylist = isMudra 
     ? (actualData?.mediaType === "AUDIO_PLAYLIST" || actualData?.mediaType === "VIDEO_PLAYLIST")
     : (actualData?.AudioPlaylist && actualData.AudioPlaylist.length > 0);
