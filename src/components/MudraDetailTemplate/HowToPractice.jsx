@@ -13,6 +13,7 @@ import SiteContainer from "../../common/SiteContainer";
 export default function HowToPractice({ mudra }) {
   const { dark } = useTheme();
   const sectionRef = useRef(null);
+console.log(mudra, "mudra");
 
   const isInView = useInView(sectionRef, {
     once: true,
@@ -23,50 +24,35 @@ export default function HowToPractice({ mudra }) {
   const IMAGE_BASE_URL =
     process.env.NEXT_PUBLIC_IMAGE_BASE_URL ||
     "http://192.168.1.14:1337";
+const staticSteps = [
+  {
+    number: 1,
+    bg: "bg-[#FEF9C3]",
+    title: "Hand Position",
+    desc: "Sit in a comfortable position with your spine straight.",
+    icon: null,
+  },
+];
 
-  const staticSteps = [
-    {
-      number: 1,
-      bg: "bg-[#FEF9C3]",
-      title: "Hand Position",
-      desc: "Sit in a comfortable position with your spine straight. Rest your hands on your knees.",
-    },
-    {
-      number: 2,
-      bg: "bg-[#F3E8FF]",
-      title: "Finger Placement",
-      desc: "Touch the tip of your index finger with the tip of your thumb.",
-    },
-    {
-      number: 4,
-      bg: "bg-[#BFDDF2]",
-      title: "Other Fingers",
-      desc: "Keep the remaining three fingers extended but relaxed.",
-    },
-    {
-      number: 5,
-      bg: "bg-[#FCE7F3]",
-      title: "Focus",
-      desc: "Close your eyes, take deep breaths, and focus on your breath or a positive affirmation.",
-    },
-  ];
+const apiSteps = Array.isArray(mudra?.practiceSteps)
+  ? mudra.practiceSteps.map((step, index) => ({
+      id: step.id,
+      number: index + 1,
+      bg: [
+        "bg-[#FEF9C3]",
+        "bg-[#F3E8FF]",
+        "bg-[#BFDDF2]",
+        "bg-[#FCE7F3]",
+      ][index % 4],
+      title: step.nameOfTheSteps,
+      desc: step.describeTheStep,
+      icon: step.stepIcon?.url
+        ? `${IMAGE_BASE_URL}${step.stepIcon.url}`
+        : null,
+    }))
+  : [];
 
-  const apiSteps =
-    mudra?.web?.WebPracticeSteps?.PracticeSteps?.map(
-      (step, index) => ({
-        number: [1, 2, 4, 5][index] ?? index + 1,
-        bg: [
-          "bg-[#FEF9C3]",
-          "bg-[#F3E8FF]",
-          "bg-[#BFDDF2]",
-          "bg-[#FCE7F3]",
-        ][index % 4],
-        title: step.nameOfTheSteps,
-        desc: step.describeTheStep,
-      })
-    ) || [];
-
-  const steps = apiSteps.length > 0 ? apiSteps : staticSteps;
+const steps = apiSteps.length > 0 ? apiSteps : staticSteps;
 
   const practiceImageUrl =
     mudra?.web?.WebPracticeSteps?.StepImages?.[0]?.url

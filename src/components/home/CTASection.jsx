@@ -73,7 +73,7 @@ export default function CTASection() {
             </motion.p>
 
             <motion.button
-              onClick={() => router.push("/SignUp")}
+              onClick={() => router.push("/PricingMembership")}
               className={`${typography.ctaBtnText} px-6 py-3.5 rounded-xl font-bold shadow-xs hover:shadow-md transition-all mb-4 cursor-pointer`}
               style={{ 
                 backgroundColor: dark ? "#ffffff" : "#ffffff",
@@ -89,7 +89,7 @@ export default function CTASection() {
               transition={{ duration: 0.5, delay: 0.6 }}
               viewport={{ once: true }}
             >
-              Get Started For Free
+              Get Started
             </motion.button>
 
             <motion.div 

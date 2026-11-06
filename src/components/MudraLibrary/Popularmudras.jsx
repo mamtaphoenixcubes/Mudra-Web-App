@@ -5,7 +5,7 @@ import { motion, useInView } from "framer-motion";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { IMAGES } from "../../assets/assets";
-import { mudraService } from "../../services/apiService";
+import { mudraService,combinedBenefitService } from "../../services/apiService";
 import { useAuthStore } from "../../store/useAuthStore";
 import SiteContainer from "../../common/SiteContainer";
 import SectionHeader from "../../common/SectionHeader";
@@ -20,19 +20,6 @@ const CATEGORIES = [
   "Detox",
   "Healing",
   "Emotional",
-];
-const BENEFITS = [
-  "All Benefits",
-  "Focus",
-  "Vitality",
-  "Cleansing",
-  "Digestion",
-  "Calm",
-  "Immunity",
-  "Skin",
-  "Heart",
-  "Hearing",
-  "Metabolism",
 ];
 const ELEMENTS = ["All Elements", "Space", "Earth", "Air", "Fire", "Water"];
 const SORT_OPTIONS = ["Sort By", "Newest", "Oldest", "A–Z", "Z–A"];
@@ -93,7 +80,8 @@ export default function PopularMudras() {
   const [mudrasList, setMudrasList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [categoriesList, setCategoriesList] = useState(CATEGORIES);
-  const [benefitsList, setBenefitsList] = useState(BENEFITS);
+  const [benefitsList, setBenefitsList] = useState(["All Benefits"]);
+const [combinedBenefits, setCombinedBenefits] = useState([]);
   const [elementsList, setElementsList] = useState(ELEMENTS);
 
   const [search, setSearch] = useState("");
@@ -118,6 +106,33 @@ export default function PopularMudras() {
       setElement(formatted);
     }
   }, [elementParam]);
+
+  useEffect(() => {
+  const fetchCombinedBenefits = async () => {
+    try {
+      const response =
+        await combinedBenefitService.getCombinedBenefits();
+
+      if (response?.success && Array.isArray(response.data)) {
+        // Only get Mudra benefits
+        const mudraBenefits = response.data.filter(
+          (item) => item.type === "MUDRA"
+        );
+
+        setCombinedBenefits(mudraBenefits);
+
+        setBenefitsList([
+          "All Benefits",
+          ...mudraBenefits.map((item) => item.title),
+        ]);
+      }
+    } catch (error) {
+      console.error("Error fetching combined benefits:", error);
+    }
+  };
+
+  fetchCombinedBenefits();
+}, []);
 
   useEffect(() => {
     async function fetchMudras() {
@@ -160,55 +175,62 @@ export default function PopularMudras() {
           rawList = json.data;
         }
 
-        const mapped = rawList.map((item, idx) => {
-          const firstCategory = item.categories?.[0];
-          const categoryName = firstCategory?.Name || "Healing";
-          const benefitName =
-            item.intentions?.[0]?.name ||
-            firstCategory?.Name ||
-            "Wellbeing";
-          const elementVal = item.element || "Earth";
+      const mapped = rawList.map((item, idx) => {
+  const firstCategory = item.categories?.[0];
+  const categoryName = firstCategory?.Name || "Healing";
 
-          let iconUrl = null;
-          if (item.web?.IntroCardWeb?.IntrocardImage?.url) {
-            iconUrl = `${IMAGE_BASE_URL}${item.web.IntroCardWeb.IntrocardImage.url}`;
-          } else if (item.thumbnail?.url) {
-            iconUrl = `${IMAGE_BASE_URL}${item.thumbnail.url}`;
-          } else if (item.image?.url) {
-            iconUrl = `${IMAGE_BASE_URL}${item.image.url}`;
-          } else if (Array.isArray(item.image) && item.image[0]?.url) {
-            iconUrl = `${IMAGE_BASE_URL}${item.image[0].url}`;
-          }
+  // Get all benefits from web.Benefits
+  const mudraBenefits = Array.isArray(item.web?.Benefits)
+    ? item.web.Benefits
+    : [];
 
-          const imgKey = item.name
-            ? item.name
-                .toLowerCase()
-                .replace(/\s+mudra/g, "Mudra")
-                .replace(/\s+/g, "")
-            : "";
+  const benefitNames = mudraBenefits
+    .map((benefit) => benefit.title)
+    .filter(Boolean);
 
-          return {
-            id: item.documentId || item.id,
-            name: item.name,
-            elements: `${categoryName} • ${elementVal}`,
-            desc:
-              item.web?.IntroCardWeb?.Description ||
-              item.description ||
-              "",
-            bg: CARD_COLORS[idx % CARD_COLORS.length],
-            imgKey,
-            category: categoryName,
-            benefit: benefitName,
-            element: elementVal,
-            createdAt:
-              item.createdAt ||
-              item.publishedAt ||
-              item.created_at ||
-              item.id,
-            iconUrl,
-            isRemote: !!iconUrl,
-          };
-        });
+  const elementVal = item.element || "Earth";
+
+  let iconUrl = null;
+
+  if (item.web?.IntroCardWeb?.IntrocardImage?.url) {
+    iconUrl = `${IMAGE_BASE_URL}${item.web.IntroCardWeb.IntrocardImage.url}`;
+  } else if (item.thumbnail?.url) {
+    iconUrl = `${IMAGE_BASE_URL}${item.thumbnail.url}`;
+  } else if (item.image?.url) {
+    iconUrl = `${IMAGE_BASE_URL}${item.image.url}`;
+  } else if (Array.isArray(item.image) && item.image[0]?.url) {
+    iconUrl = `${IMAGE_BASE_URL}${item.image[0].url}`;
+  }
+
+  const imgKey = item.name
+    ? item.name
+        .toLowerCase()
+        .replace(/\s+mudra/g, "Mudra")
+        .replace(/\s+/g, "")
+    : "";
+
+  return {
+    id: item.documentId || item.id,
+    name: item.name,
+    elements: `${categoryName} • ${elementVal}`,
+    desc:
+      item.web?.IntroCardWeb?.Description ||
+      item.description ||
+      "",
+    bg: CARD_COLORS[idx % CARD_COLORS.length],
+    imgKey,
+    category: categoryName,
+    benefits: benefitNames,
+    element: elementVal,
+    createdAt:
+      item.createdAt ||
+      item.publishedAt ||
+      item.created_at ||
+      item.id,
+    iconUrl,
+    isRemote: !!iconUrl,
+  };
+});
 
         setMudrasList(mapped);
 
@@ -216,13 +238,9 @@ export default function PopularMudras() {
           "All Categories",
           ...new Set(mapped.map((m) => m.category).filter(Boolean)),
         ];
-        const uniqueBenefits = [
-          "All Benefits",
-          ...new Set(mapped.map((m) => m.benefit).filter(Boolean)),
-        ];
+
 
         setCategoriesList(uniqueCategories);
-        setBenefitsList(uniqueBenefits);
         setElementsList(ELEMENTS);
       } catch (err) {
         console.warn("Error fetching mudras:", err);
@@ -246,7 +264,10 @@ export default function PopularMudras() {
         return false;
       if (category !== "All Categories" && m.category !== category)
         return false;
-      if (benefit !== "All Benefits" && m.benefit !== benefit)
+      if (
+          benefit !== "All Benefits" &&
+          !m.benefits.includes(benefit)
+        )
         return false;
       if (element !== "All Elements" && m.element !== element)
         return false;
@@ -329,23 +350,24 @@ export default function PopularMudras() {
             </div>
           </div>
 
-          {/* Benefit Dropdown */}
-          <div className="relative w-full">
-            <select
-              value={benefit}
-              onChange={(e) => setBenefit(e.target.value)}
-              className="appearance-none w-full bg-white border border-gray-200 rounded-lg pl-4 pr-10 py-2.5 text-xs sm:text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#9A85FE]/30 cursor-pointer shadow-sm"
-            >
-              {benefitsList.map((b) => (
-                <option key={b} value={b}>
-                  {b}
-                </option>
-              ))}
-            </select>
-            <div className="absolute right-3 top-1/2 -translate-y-1/2">
-              <ChevronDown />
-            </div>
-          </div>
+         {/* Benefit Dropdown */}
+<div className="relative w-full">
+  <select
+    value={benefit}
+    onChange={(e) => setBenefit(e.target.value)}
+    className="appearance-none w-full bg-white border border-gray-200 rounded-lg pl-4 pr-10 py-2.5 text-xs sm:text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#9A85FE]/30 cursor-pointer shadow-sm"
+  >
+    {benefitsList.map((b, index) => (
+      <option key={`${b}-${index}`} value={b}>
+        {b}
+      </option>
+    ))}
+  </select>
+
+  <div className="absolute right-3 top-1/2 -translate-y-1/2">
+    <ChevronDown />
+  </div>
+</div>
 
           {/* Element Dropdown */}
           <div className="relative w-full">

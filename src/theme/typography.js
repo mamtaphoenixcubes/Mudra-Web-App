@@ -314,10 +314,10 @@ export const typography = {
 
   // ── Benefits of Yoga Nidra cards ──────────────────────────
   benefitsCardTitle:
-    "text-[15px] sm:text-[11px] md:text-[8px] lg:text-[11px] xl:text-xs 2xl:text-[16px] " +
+    "text-[17px] sm:text-[12px] md:text-[10px] lg:text-[12px] xl:text-xs 2xl:text-[18px] " +
     "font-semibold leading-tight",
   benefitsCardBody:
-    "text-[12px] sm:text-[10px] md:text-[7px] lg:text-[10px] xl:text-[11px] 2xl:text-[14px] " +
+    "text-[14px] sm:text-[12px] md:text-[8px] lg:text-[12px] xl:text-[12px] 2xl:text-[16px] " +
     "leading-relaxed",
   benefitsSectionLabel:
     "text-[9px] sm:text-[10px] md:text-[11px] lg:text-xs xl:text-sm 2xl:text-base " +
@@ -325,6 +325,7 @@ export const typography = {
   benefitsSectionHeading:
     "text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl 2xl:text-6xl " +
     "font-semibold leading-tight",
+    
 
   // ── Finger Mapping ────────────────────────────────────────
   fingerLabel:

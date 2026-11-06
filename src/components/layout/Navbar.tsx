@@ -9,6 +9,7 @@ import { IMAGES } from "../../assets/assets";
 import { useState, useRef, useEffect } from "react";
 import { spacing, typography, btn } from "../../theme";
 import { useTheme } from "../../context/ThemeContext";
+import { elementsService } from "../../services/apiService";
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
 interface User {
@@ -323,7 +324,180 @@ function FeaturesDropdown({ dark }: { dark: boolean }) {
     </div>
   );
 }
+interface ElementItem {
+  id: number;
+  documentId: string;
+  Name: string;
+  Code: string;
+  IsActive: boolean;
+}
 
+function ElementsDropdown({ dark }: { dark: boolean }) {
+  const [open, setOpen] = useState(false);
+  const [showFiveElementsSubmenu, setShowFiveElementsSubmenu] = useState(false);
+  const [elements, setElements] = useState<ElementItem[]>([]);
+  const ref = useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
+
+  useEffect(() => {
+    const fetchElements = async () => {
+      try {
+        const response = await elementsService.getElements();
+
+        const data = Array.isArray(response)
+          ? response
+          : response?.data || response?.data?.data || [];
+
+        setElements(
+          data.filter((element: ElementItem) => element.IsActive)
+        );
+      } catch (error) {
+        console.error("Error fetching elements:", error);
+      }
+    };
+
+    fetchElements();
+  }, []);
+
+  useEffect(() => {
+    const handleOutsideClick = (event: MouseEvent) => {
+      if (ref.current && !ref.current.contains(event.target as Node)) {
+        setOpen(false);
+        setShowFiveElementsSubmenu(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleOutsideClick);
+
+    return () =>
+      document.removeEventListener("mousedown", handleOutsideClick);
+  }, []);
+
+  const topLevelItems = [
+    { id: "element", label: "Element", path: "/FiveElements" },
+    { id: "five-elements", label: "Five Elements", hasChildren: true },
+    { id: "element-tracker", label: "Element Tracker", path: "/FiveElements" },
+  ];
+
+  return (
+    <div className="relative flex items-center gap-0.5" ref={ref}>
+      <button
+        type="button"
+        onClick={() => setOpen((value) => !value)}
+        aria-expanded={open}
+        className={`${typography.navLink} whitespace-nowrap border-b-2 transition-all duration-200 text-[0.95rem] lg:text-[0.95rem] xl:text-[1.05rem] 2xl:text-[1.15rem] ${
+          pathname === "/FiveElements"
+            ? "border-[#9A85FE]"
+            : "border-transparent hover:border-[#9A85FE]"
+        }`}
+        style={{
+          color: NAV_ACCENT,
+          paddingBottom: "4px",
+        }}
+      >
+        Elements
+      </button>
+
+      <button
+        type="button"
+        onClick={() => setOpen((value) => !value)}
+        aria-label="Toggle Elements submenu"
+        aria-expanded={open}
+        className="rounded p-1 text-[#9A85FE] transition-colors hover:bg-[#F1EDFF]"
+      >
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          className={`transition-transform duration-200 ${
+            open ? "rotate-180" : ""
+          }`}
+        >
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+      </button>
+
+      {open && (
+        <div
+          className={`absolute left-0 top-full mt-6 w-56 overflow-hidden rounded-2xl border py-2 shadow-xl z-50 ${
+            dark
+              ? "bg-gray-800 border-gray-700"
+              : "bg-white border-gray-100"
+          }`}
+        >
+          {!showFiveElementsSubmenu ? (
+            topLevelItems.map((item) =>
+              item.hasChildren ? (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => setShowFiveElementsSubmenu((value) => !value)}
+                  className="flex w-full items-center justify-between px-4 py-2.5 text-left text-[0.95rem] xl:text-[1.05rem] font-medium text-[#9A85FE] transition-colors hover:bg-[#F1EDFF] hover:text-[#8068E8] dark:hover:bg-[#9A85FE]/15"
+                >
+                  <span>{item.label}</span>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    className="transition-transform duration-200"
+                  >
+                    <polyline points="9 6 15 12 9 18" />
+                  </svg>
+                </button>
+              ) : (
+                <Link
+                  key={item.id}
+                  href={item.path}
+                  onClick={() => setOpen(false)}
+                  className="block px-4 py-2.5 text-[0.95rem] xl:text-[1.05rem] font-medium text-[#9A85FE] transition-colors hover:bg-[#F1EDFF] hover:text-[#8068E8] dark:hover:bg-[#9A85FE]/15"
+                >
+                  {item.label}
+                </Link>
+              )
+            )
+          ) : (
+            <div>
+              <button
+                type="button"
+                onClick={() => setShowFiveElementsSubmenu(false)}
+                className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-[0.9rem] font-medium text-[#9A85FE] hover:bg-[#F1EDFF] dark:hover:bg-[#9A85FE]/15"
+              >
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                >
+                  <polyline points="15 18 9 12 15 6" />
+                </svg>
+                <span>Five Elements</span>
+              </button>
+
+              {elements.map((element) => (
+                <Link
+                  key={element.documentId}
+                  href={`/ElementDetailTemplate?id=${element.documentId}`}
+                  onClick={() => setOpen(false)}
+                  className="block px-4 py-2.5 text-[0.95rem] xl:text-[1.05rem] font-medium text-[#9A85FE] transition-colors hover:bg-[#F1EDFF] hover:text-[#8068E8] dark:hover:bg-[#9A85FE]/15"
+                >
+                  {element.Name}
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
 function HowItWorksDropdown({
   dark,
   onNavigate,
@@ -886,20 +1060,22 @@ function NavbarContent() {
           {/* Nav links */}
           <div className="flex min-w-0 items-center gap-2 lg:gap-4">
             <div className="flex min-w-0 items-center gap-1 lg:gap-3">
-              {NAV_ITEMS.map((item) =>
-                item.label === "How It Works" ? (
-                  <HowItWorksDropdown key={item.label} dark={dark} />
-                ) : item.label === "Features" ? (
-                  <FeaturesDropdown key={item.label} dark={dark} />
-                ) : (
-                  <NavLink
-                    key={item.label}
-                    item={item}
-                    dark={dark}
-                    textColor={NAV_ACCENT}
-                  />
-                )
-              )}
+           {NAV_ITEMS.map((item) =>
+              item.label === "How It Works" ? (
+                <HowItWorksDropdown key={item.label} dark={dark} />
+              ) : item.label === "Features" ? (
+                <FeaturesDropdown key={item.label} dark={dark} />
+              ) : item.label === "Elements" ? (
+                <ElementsDropdown key={item.label} dark={dark} />
+              ) : (
+                <NavLink
+                  key={item.label}
+                  item={item}
+                  dark={dark}
+                  textColor={NAV_ACCENT}
+                />
+              )
+            )}
             </div>
 
             {/* Auth area */}

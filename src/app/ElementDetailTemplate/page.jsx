@@ -70,7 +70,11 @@ console.log(detailData,"detailDatadetailDatadetailData");
   const image = detailData?.Image?.url || null;
   const finger = detailData?.Finger || "";
 
-  const tags = finger ? [finger] : [];
+const tags = [
+  ...(detailData?.Characteristics || [])
+    .filter((item) => item.IsActive)
+    .map((item) => item.Name),
+];
 
   // Overview
   const overview = detailData?.Overview || "";

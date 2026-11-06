@@ -231,7 +231,7 @@ export default function FullPowerOfMudras() {
                   transition: { duration: 0.2 },
                 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => router.push("/AppDownload")}
+                onClick={() => router.push("/PricingMembership")}
               >
                 Explore the Mudras App
               </motion.button>

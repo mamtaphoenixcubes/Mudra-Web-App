@@ -58,7 +58,12 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-
+export const combinedBenefitService = {
+  getCombinedBenefits: async () => {
+    const response = await api.get("/combined-benefits");
+    return response.data;
+  },
+};
 export const mudraService = {
   getTypeOfMudras: async () => {
     const response = await api.get("/type-of-mudras");
@@ -760,5 +765,91 @@ export const playlistService = {
     return response.data;
   },
 };
+
+
+
+export const progressInsightService = {
+  // 1. Get overall progress overview
+  getOverview: async (profileDocumentId) => {
+    const response = await api.get(
+      `${MOBILE_API_BASE_URL}/progress-insight/overview`,
+      {
+        params: { profileDocumentId },
+      }
+    );
+    return response.data;
+  },
+
+  // 2. Create / Update user goal
+  createUserGoal: async (payload) => {
+    const response = await api.post(
+      `${MOBILE_API_BASE_URL}/user-goal`,
+      payload
+    );
+    return response.data;
+  },
+
+  // 3. Get user goal
+  getUserGoal: async (profileDocumentId) => {
+    const response = await api.get(
+      `${MOBILE_API_BASE_URL}/user-goal`,
+      {
+        params: { profileDocumentId },
+      }
+    );
+    return response.data;
+  },
+
+  // 4. Get progress summary (weekly / monthly / yearly)
+  getSummary: async (profileDocumentId, type = "monthly") => {
+    const response = await api.get(
+      `${MOBILE_API_BASE_URL}/progress-insight/summary`,
+      {
+        params: {
+          profileDocumentId,
+          type,
+        },
+      }
+    );
+    return response.data;
+  },
+
+  // 5. Get progress distribution
+  getDistribution: async (profileDocumentId) => {
+    const response = await api.get(
+      `${MOBILE_API_BASE_URL}/progress-insight/distribution`,
+      {
+        params: { profileDocumentId },
+      }
+    );
+    return response.data;
+  },
+
+  // 6. Get progress analytics
+  getAnalytics: async (profileDocumentId) => {
+    const response = await api.get(
+      `${MOBILE_API_BASE_URL}/progress-insight/analytics`,
+      {
+        params: { profileDocumentId },
+      }
+    );
+    return response.data;
+  },
+
+  // 7. Get progress analysis (weekly / monthly / yearly)
+  getAnalysis: async (profileDocumentId, type = "monthly") => {
+    const response = await api.get(
+      `${MOBILE_API_BASE_URL}/progress-insight/analysis`,
+      {
+        params: {
+          profileDocumentId,
+          type,
+        },
+      }
+    );
+    return response.data;
+  },
+};
+
 
 export default api;

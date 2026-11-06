@@ -8,58 +8,27 @@ import { IMAGES } from "../../assets/assets";
 import { card, spacing, typography } from "../../theme";
 import { useTheme } from "../../context/ThemeContext";
 
-const benefits = [
-  {
-    title: "Reduces Stress",
-    description: "Calm the nervous system and promotes relaxation.",
-    bg: "bg-problem-1",
-    image: IMAGES.Energy,
-    path: "/ListofBenefits" // Add path for navigation
-  },
-  {
-    title: "Improves Sleep",
-    description: "Supports deep, restful sleep and reduces insomnia.",
-    bg: "bg-problem-2",
-    image: IMAGES.YogaNidra,
-    path: "/ListofBenefits?benefit=sleep"
-  },
-  {
-    title: "Enhances Focus",
-    description: "Improves concentration, memory and mental clarity.",
-    bg: "bg-problem-3",
-    image: IMAGES.Mind,
-    path: "/ListofBenefits?benefit=focus"
-  },
-  {
-    title: "Emotional Balance",
-    description: "Helps regulate emotions and supports inner stability.",
-    bg: "bg-problem-4",
-    image: IMAGES.EmotionalBalance,
-    path: "/ListofBenefits?benefit=emotional"
-  },
-  {
-    title: "Boosts Immunity",
-    description: "Supports the body's natural defence mechanisms.",
-    bg: "bg-problem-5",
-    image: IMAGES.Holistic,
-    path: "/ListofBenefits?benefit=immunity"
-  },
-  {
-    title: "Increases Energy",
-    description: "Balances energy levels and reduces fatigue.",
-    bg: "bg-problem-1",
-    image: IMAGES.Increases,
-    path: "/ListofBenefits?benefit=energy"
-  },
-  {
-    title: "Supports Healing",
-    description: "Aids recovery and promotes overall well-being.",
-    bg: "bg-problem-2",
-    image: IMAGES.KayaMudras,
-    path: "/ListofBenefits?benefit=healing"
-  },
-];
+const getBenefitImage = (title = "") => {
+  const value = title.toLowerCase();
+  if (value.includes("sleep")) return IMAGES.YogaNidra;
+  if (value.includes("stress") || value.includes("relax"))
+    return IMAGES.Energy;
+  if (value.includes("focus") || value.includes("clarity"))
+    return IMAGES.Mind;
+  if (value.includes("emotional")) return IMAGES.EmotionalBalance;
+  if (value.includes("energy")) return IMAGES.Increases;
+  if (value.includes("well-being")) return IMAGES.Holistic;
 
+  return IMAGES.KayaMudras;
+};
+
+const fallbackBackgrounds = [
+  "bg-problem-1",
+  "bg-problem-2",
+  "bg-problem-3",
+  "bg-problem-4",
+  "bg-problem-5",
+];
 function Card({ item, dark, textColor, index, onClick }) {
   const cardVariants = {
     hidden: { opacity: 0, y: 30, scale: 0.95 },
@@ -76,13 +45,16 @@ function Card({ item, dark, textColor, index, onClick }) {
   };
 
   return (
-    <motion.div
-      className={`
-        ${item.bg} ${card.radius} ${card.hover}
-        ${spacing.cardPadding} ${spacing.benefitsCardMinH}
-        flex flex-col items-center text-center
-        w-full h-full cursor-pointer
-      `}
+  <motion.div
+  className={`
+    ${item.bg || ""} ${card.radius} ${card.hover}
+    ${spacing.cardPadding} ${spacing.benefitsCardMinH}
+    flex flex-col items-center text-center
+    w-full h-full cursor-pointer
+  `}
+  style={{
+    backgroundColor: item.cardBg || undefined,
+  }}
       variants={cardVariants}
       initial="hidden"
       whileInView="visible"
@@ -134,8 +106,16 @@ function Card({ item, dark, textColor, index, onClick }) {
   );
 }
 
-export default function MudraNidraBenefits() {
+export default function MudraNidraBenefits({ benefits = [] }) {
   const { dark, textColor } = useTheme();
+  const formattedBenefits = benefits.map((item, index) => ({
+  ...item,
+  bg: fallbackBackgrounds[index % fallbackBackgrounds.length],
+  image: getBenefitImage(item.title),
+path: `/ListofBenefits?benefit=${encodeURIComponent(
+  item.title.toLowerCase().replace(/\s+/g, "-")
+)}&type=${encodeURIComponent(item.type)}`,
+}));
   const router = useRouter();
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { 
@@ -144,8 +124,6 @@ export default function MudraNidraBenefits() {
     margin: "-50px"
   });
 
-  const pairs = benefits.slice(0, 6);
-  const last = benefits[6];
 
   // Navigation handler
   const handleBenefitClick = (path) => {
@@ -205,55 +183,46 @@ export default function MudraNidraBenefits() {
         </motion.div>
 
         {/* MOBILE (< sm): 2-col grid + centred 7th card */}
-        <motion.div 
-          className="sm:hidden"
-          variants={containerVariants}
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
-        >
-          <div className={`grid grid-cols-2 ${spacing.cardGapSm}`}>
-            {pairs.map((item, i) => (
-              <Card 
-                key={i} 
-                item={item} 
-                dark={dark} 
-                textColor={textColor} 
-                index={i}
-                onClick={() => handleBenefitClick(item.path)}
-              />
-            ))}
-          </div>
-          <div className="flex justify-center mt-3">
-            <div className="w-[calc(50%-6px)]">
-              <Card 
-                item={last} 
-                dark={dark} 
-                textColor={textColor} 
-                index={6}
-                onClick={() => handleBenefitClick(last.path)}
-              />
-            </div>
-          </div>
-        </motion.div>
+   {/* MOBILE */}
+<motion.div
+  className="sm:hidden"
+  variants={containerVariants}
+  initial="hidden"
+  animate={isInView ? "visible" : "hidden"}
+>
+  <div className={`grid grid-cols-2 ${spacing.cardGapSm}`}>
+    {formattedBenefits.map((item, i) => (
+      <Card
+        key={item.documentId || item.id}
+        item={item}
+        dark={dark}
+        textColor={textColor}
+        index={i}
+        onClick={() => handleBenefitClick(item.path)}
+      />
+    ))}
+  </div>
+</motion.div>
 
         {/* TABLET / DESKTOP (sm+): 7 columns in one row */}
-        <motion.div 
-          className={`hidden ${spacing.mubraclaims}`}
-          variants={containerVariants}
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
-        >
-          {benefits.map((item, i) => (
-            <Card 
-              key={i} 
-              item={item} 
-              dark={dark} 
-              textColor={textColor} 
-              index={i}
-              onClick={() => handleBenefitClick(item.path)}
-            />
-          ))}
-        </motion.div>
+    {/* TABLET / DESKTOP */}
+<motion.div
+  className={`hidden ${spacing.mubraclaims}`}
+  variants={containerVariants}
+  initial="hidden"
+  animate={isInView ? "visible" : "hidden"}
+>
+  {formattedBenefits.map((item, i) => (
+    <Card
+      key={item.documentId || item.id}
+      item={item}
+      dark={dark}
+      textColor={textColor}
+      index={i}
+      onClick={() => handleBenefitClick(item.path)}
+    />
+  ))}
+</motion.div>
       </div>
     </motion.section>
   );

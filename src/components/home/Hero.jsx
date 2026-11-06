@@ -181,7 +181,7 @@ export default function Hero() {
                 {/* Start Your Journey */}
                 <motion.button
                   type="button"
-                  onClick={() => router.push("/SignUp")}
+                  onClick={() => router.push("/PricingMembership")}
                   className={`${btn.primary} relative overflow-hidden group`}
                   style={{
                     width: "220px",

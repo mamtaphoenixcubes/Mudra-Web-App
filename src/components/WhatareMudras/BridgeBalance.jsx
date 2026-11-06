@@ -128,7 +128,7 @@ export default function BridgeBalance() {
             {/* CTA Button */}
             <motion.button
               type="button"
-              onClick={() => router.push("/MudraLibrary")}
+              onClick={() => router.push("/PricingMembership")}
               className={`${typography.ctaBtnText} px-6 py-3.5 rounded-xl font-bold transition-all cursor-pointer`}
               style={{
                 background: "#FFFFFF",
@@ -148,7 +148,7 @@ export default function BridgeBalance() {
               }
               transition={{ duration: 0.5, delay: 0.6 }}
             >
-              Explore Mudras
+              Start Your journey
             </motion.button>
           </motion.div>
         </motion.div>

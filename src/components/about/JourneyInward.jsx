@@ -79,7 +79,7 @@ export default function JourneyInward() {
 
             <motion.button
               type="button"
-              onClick={() => router.push("/SignUp")}
+              onClick={() => router.push("/PricingMembership")}
               className={`${typography.ctaBtnText} mb-4 cursor-pointer`}
               style={{
                 width: "260px",

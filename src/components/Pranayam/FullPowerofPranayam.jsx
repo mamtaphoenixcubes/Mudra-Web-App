@@ -101,6 +101,7 @@ export default function FullPowerofPranayam() {
                   backgroundColor: textColor,
                   color: "#ffffff",
                 }}
+                onClick={() => router.push("/PricingMembership")}
               >
                 Explore the Mudras App
               </button>
