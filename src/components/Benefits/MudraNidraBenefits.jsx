@@ -7,6 +7,7 @@ import { motion, useInView } from "framer-motion";
 import { IMAGES } from "../../assets/assets";
 import { card, spacing, typography } from "../../theme";
 import { useTheme } from "../../context/ThemeContext";
+import { ArrowRight } from "lucide-react";
 
 const getBenefitImage = (title = "") => {
   const value = title.toLowerCase();
@@ -29,6 +30,7 @@ const fallbackBackgrounds = [
   "bg-problem-4",
   "bg-problem-5",
 ];
+
 function Card({ item, dark, textColor, index, onClick }) {
   const cardVariants = {
     hidden: { opacity: 0, y: 30, scale: 0.95 },
@@ -45,16 +47,16 @@ function Card({ item, dark, textColor, index, onClick }) {
   };
 
   return (
-  <motion.div
-  className={`
-    ${item.bg || ""} ${card.radius} ${card.hover}
-    ${spacing.cardPadding} ${spacing.benefitsCardMinH}
-    flex flex-col items-center text-center
-    w-full h-full cursor-pointer
-  `}
-  style={{
-    backgroundColor: item.cardBg || undefined,
-  }}
+    <motion.div
+      className={`
+        ${item.bg || ""} ${card.radius} ${card.hover}
+        ${spacing.cardPadding} ${spacing.benefitsCardMinH}
+        flex flex-col items-center text-center
+        w-full h-full cursor-pointer
+      `}
+      style={{
+        backgroundColor: item.cardBg || undefined,
+      }}
       variants={cardVariants}
       initial="hidden"
       whileInView="visible"
@@ -63,7 +65,7 @@ function Card({ item, dark, textColor, index, onClick }) {
         y: -6,
         transition: { duration: 0.2, ease: "easeOut" },
       }}
-      onClick={onClick} // Add click handler
+      onClick={onClick}
     >
       {/* Icon circle */}
       <motion.div
@@ -71,9 +73,7 @@ function Card({ item, dark, textColor, index, onClick }) {
           rounded-full flex items-center justify-center shrink-0
           ${card.benefitsIconBox} ${spacing.benefitsIconBoxMb}
         `}
-        style={{
-          backgroundColor: dark ? "#ffffff" : "#ffffff",
-        }}
+        style={{ backgroundColor: "#ffffff" }}
         whileHover={{
           scale: 1.1,
           rotate: 5,
@@ -89,8 +89,9 @@ function Card({ item, dark, textColor, index, onClick }) {
         />
       </motion.div>
 
-      <motion.h3 
-        className={`${typography.benefitsCardTitle} ${spacing.cardTitleMb}`} 
+      {/* Title */}
+      <motion.h3
+        className={`${typography.benefitsCardTitle} ${spacing.cardTitleMb}`}
         style={{ color: textColor }}
         whileHover={{
           scale: 1.05,
@@ -99,12 +100,35 @@ function Card({ item, dark, textColor, index, onClick }) {
       >
         {item.title}
       </motion.h3>
-      <p className={`${typography.benefitsCardBody}`} style={{ color: dark ? "#000000" : "#4b5563" }}>
+
+      {/* Description */}
+      <p
+        className={`${typography.benefitsCardBody}`}
+        style={{
+          color: dark ? "#000000" : "#4b5563",
+        }}
+      >
         {item.description}
       </p>
+
+      {/* Click to see more */}
+      <motion.div
+        className="mt-auto pt-4 flex items-center justify-center gap-2 font-semibold text-sm"
+        style={{
+          color: dark ? "#111827" : "#374151",
+        }}
+        whileHover={{
+          x: 4,
+          transition: { duration: 0.2 },
+        }}
+      >
+        <span>Click to see more</span>
+        <ArrowRight size={16} />
+      </motion.div>
     </motion.div>
   );
 }
+
 
 export default function MudraNidraBenefits({ benefits = [] }) {
   const { dark, textColor } = useTheme();

@@ -103,7 +103,6 @@ export default function BalanceEarth({
   howToBalance = [],
   elementName = "Earth",
 }) {
-  console.log(howToBalance, "howToBalance");
   
   const { dark, textColor } = useTheme();
   const sectionRef = useRef(null);
@@ -113,29 +112,26 @@ export default function BalanceEarth({
     margin: "-50px",
   });
 
- const finalBenefits =
-  howToBalance.length > 0
-    ? howToBalance
-        .filter((h) => h.IsActive)
-        .map((h, idx) => {
-          const type = h.Type?.toUpperCase();
+const finalBenefits = howToBalance
+  .filter((h) => h.IsActive)
+  .map((h, idx) => {
+    const type = h.Type?.toUpperCase();
 
-          const imageMap = {
-            MUDRA: IMAGES.HastaMudras,
-            YOGA_NIDRA: IMAGES.IconYogaNidra,
-            DIET: IMAGES.Diet,
-            NATURE: IMAGES.Tree,
-            CRYSTAL: IMAGES.Crystals,
-          };
+    const imageMap = {
+      MUDRA: IMAGES.HastaMudras,
+      YOGA_NIDRA: IMAGES.IconYogaNidra,
+      DIET: IMAGES.Diet,
+      NATURE: IMAGES.Tree,
+      CRYSTAL: IMAGES.Crystals,
+    };
 
-          return {
-            title: h.Title || "",
-            description: h.Description || "",
-            bg: fallbackBgs[idx % fallbackBgs.length],
-            image: imageMap[type] || IMAGES.HastaMudras,
-          };
-        })
-    : staticBenefits;
+    return {
+      title: h.Title || "",
+      description: h.Description || "",
+      bg: fallbackBgs[idx % fallbackBgs.length],
+      image: imageMap[type] || IMAGES.HastaMudras,
+    };
+  });
 
   const isOdd = finalBenefits.length % 2 !== 0;
 

@@ -73,7 +73,9 @@ export default function PopularMudras() {
   const elementParam = searchParams.get("element");
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, amount: 0.05 });
-
+ const { user } = useAuthStore();
+  const profileDocId = user?.id || user?.profileDocId || (typeof user?.id === "string" && user.id.length > 5 ? user.id : null) || "nh0p1vtynpr7mge2orest5mt";
+ 
   const router = useRouter();
   const { isLoggedIn } = useAuthStore();
 
@@ -154,9 +156,10 @@ const [combinedBenefits, setCombinedBenefits] = useState([]);
             : null;
 
         const json = await mudraService.getAllMudras(
-          elementFilter,
-          sortQuery ? { sort: sortQuery } : {}
-        );
+  profileDocId,
+  elementFilter,
+  sortQuery ? { sort: sortQuery } : {}
+);
 
         let rawList = [];
 

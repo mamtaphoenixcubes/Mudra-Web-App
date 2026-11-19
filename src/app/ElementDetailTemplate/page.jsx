@@ -8,14 +8,15 @@ import Characteristics from "../../components/ElementDetailTemplate/Characterist
 import SignsOfImbalance from "../../components/ElementDetailTemplate/SignsOfImbalance";
 import BalanceEarth from "../../components/ElementDetailTemplate/BalanceEarth";
 import ExploreMore from "../../components/ElementDetailTemplate/ExploreMore";
+import RelatedElementsMudra from "../../components/ElementDetailTemplate/RelatedElementsMudra";
 import { elementsService } from "../../services/apiService";
 
 function ElementDetailContent() {
   const searchParams = useSearchParams();
-  const documentId = searchParams.get("id") || "in4vcbjj65hiqpk4gs49mja7";
+  const documentId = searchParams.get("id") || " ";
+  const params = searchParams.get("title");
 
   const [detailData, setDetailData] = useState(null);
-console.log(detailData,"detailDatadetailDatadetailData");
 
   const [loading, setLoading] = useState(true);
 
@@ -27,7 +28,6 @@ console.log(detailData,"detailDatadetailDatadetailData");
 
       try {
         const response = await elementsService.getElementDetails(documentId);
-          console.log(response?.data,"adwdwa");
 
         if (response?.data) {
           
@@ -54,13 +54,13 @@ console.log(detailData,"detailDatadetailDatadetailData");
     );
   }
 
-  if (!detailData) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        Element details not found.
-      </div>
-    );
-  }
+  // if (!detailData) {
+  //   return (
+  //     <div className="flex items-center justify-center min-h-screen">
+  //       Element details not found.
+  //     </div>
+  //   );
+  // }
 
   const name = detailData?.Name || "Earth";
   const title = `${name} Element`;
@@ -104,66 +104,72 @@ const howToBalance = (detailData?.BalancingMethods || []).filter(
   (item) => item.IsActive
 );
 
-  return (
-    <main>
-      <ElementDetailTemplateHero
-        title={title}
-        description={description}
-        tags={tags}
-        image={image}
-        category="Five Elements"
-        onPlayClick={() => {
-          const el = document.getElementById("imbalance");
-          if (el) el.scrollIntoView({ behavior: "smooth" });
-        }}
-        onSaveClick={() => {
-          const el = document.getElementById("balance");
-          if (el) el.scrollIntoView({ behavior: "smooth" });
-        }}
-      />
-
-      <div className="max-w-10xl mx-auto">
-        <hr className="border-t border-gray-300" />
-      </div>
-
-      <OverviewElement overview={overview} title={title} />
-
-      <div className="max-w-10xl mx-auto">
-        <hr className="border-t border-gray-300" />
-      </div>
-
-      <Characteristics characteristics={characteristics} />
-
-      <div className="max-w-10xl mx-auto">
-        <hr className="border-t border-gray-300" />
-      </div>
-
-      <div id="imbalance">
-        <SignsOfImbalance
-          excess={excess}
-          deficient={deficient}
-          cardBackground={null}
+return (
+  <main>
+    {params ? (
+      <RelatedElementsMudra title={params} />
+    ) : (
+      <>
+        <ElementDetailTemplateHero
+          title={title}
+          description={description}
+          tags={tags}
+          image={image}
+          category="Five Elements"
+          onPlayClick={() => {
+            const el = document.getElementById("imbalance");
+            if (el) el.scrollIntoView({ behavior: "smooth" });
+          }}
+          onSaveClick={() => {
+            const el = document.getElementById("balance");
+            if (el) el.scrollIntoView({ behavior: "smooth" });
+          }}
         />
-      </div>
 
-      <div className="max-w-10xl mx-auto">
-        <hr className="border-t border-gray-300" />
-      </div>
+        <div className="max-w-10xl mx-auto">
+          <hr className="border-t border-gray-300" />
+        </div>
 
-      <div id="balance">
-        <BalanceEarth
-          howToBalance={howToBalance}
-          elementName={name}
-        />
-      </div>
+        <OverviewElement overview={overview} title={title} />
 
-      <div className="max-w-10xl mx-auto">
-        <hr className="border-t border-gray-300" />
-      </div>
+        <div className="max-w-10xl mx-auto">
+          <hr className="border-t border-gray-300" />
+        </div>
 
-      <ExploreMore />
-    </main>
-  );
+        <Characteristics characteristics={characteristics} />
+
+        <div className="max-w-10xl mx-auto">
+          <hr className="border-t border-gray-300" />
+        </div>
+
+        <div id="imbalance">
+          <SignsOfImbalance
+            excess={excess}
+            deficient={deficient}
+            cardBackground={null}
+          />
+        </div>
+
+        <div className="max-w-10xl mx-auto">
+          <hr className="border-t border-gray-300" />
+        </div>
+
+        <div id="balance">
+          <BalanceEarth
+            howToBalance={howToBalance}
+            elementName={name}
+          />
+        </div>
+
+        <div className="max-w-10xl mx-auto">
+          <hr className="border-t border-gray-300" />
+        </div>
+
+        <ExploreMore title={name} />
+      </>
+    )}
+  </main>
+);
 }
 
 export default function ElementDetailTemplate() {

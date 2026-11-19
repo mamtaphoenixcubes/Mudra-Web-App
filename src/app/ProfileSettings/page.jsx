@@ -484,104 +484,53 @@ function DetailModal({ isOpen, onClose, item }) {
 function MoreSection({ onLogOut }) {
   const { dark, textColor } = useTheme();
   const [activeItem, setActiveItem] = useState(null);
+  const router = useRouter();
 
   const MORE_ITEMS = [
     {
       id: "about",
       icon: <InfoIcon />,
       label: "About Mudras",
-      content: (
-        <div className="space-y-3 text-xs leading-relaxed">
-          <p style={{ color: dark ? "#e5e7eb" : "#374151" }}>
-            Mudras are ancient hand gestures used in yoga and meditation to channel energy and promote healing.
-          </p>
-          <div 
-            className="rounded-xl p-3 space-y-1" 
-            style={{ 
-              backgroundColor: textColor + "15",
-              color: dark ? "#e5e7eb" : "#374151"
-            }}
-          >
-            <p className="font-semibold mb-1" style={{ color: textColor }}>Key Benefits</p>
-            <p style={{ color: dark ? "#e5e7eb" : "#374151" }}>• Balance the body's energy flow</p>
-            <p style={{ color: dark ? "#e5e7eb" : "#374151" }}>• Enhance meditation and focus</p>
-            <p style={{ color: dark ? "#e5e7eb" : "#374151" }}>• Promote physical and mental healing</p>
-          </div>
-        </div>
-      ),
     },
     {
       id: "help",
       icon: <HelpIcon />,
       label: "Help & Support",
-      content: (
-        <div className="space-y-2 text-xs">
-          <div 
-            className="rounded-xl p-3" 
-            style={{ 
-              backgroundColor: textColor + "15",
-              color: dark ? "#e5e7eb" : "#374151"
-            }}
-          >
-            <p className="font-semibold mb-0.5" style={{ color: textColor }}>Contact</p>
-            <p style={{ color: dark ? "#e5e7eb" : "#374151" }}>support@mudras.com</p>
-          </div>
-          <div 
-            className="rounded-xl p-3" 
-            style={{ 
-              backgroundColor: textColor + "15",
-              color: dark ? "#e5e7eb" : "#374151"
-            }}
-          >
-            <p className="font-semibold mb-0.5" style={{ color: textColor }}>Live Chat</p>
-            <p style={{ color: dark ? "#e5e7eb" : "#374151" }}>Available 24/7</p>
-          </div>
-        </div>
-      ),
     },
     {
       id: "privacy",
       icon: <ShieldIcon />,
       label: "Privacy Policy",
-      content: (
-        <div className="space-y-2 text-xs leading-relaxed">
-          <p style={{ color: textColor }}>We take your privacy seriously.</p>
-          <div 
-            className="rounded-xl p-3 space-y-1" 
-            style={{ 
-              backgroundColor: textColor + "15",
-              color: dark ? "#e5e7eb" : "#374151"
-            }}
-          >
-            <p style={{ color: dark ? "#e5e7eb" : "#374151" }}>✓ We never share your data</p>
-            <p style={{ color: dark ? "#e5e7eb" : "#374151" }}>✓ You can delete your data anytime</p>
-            <p style={{ color: dark ? "#e5e7eb" : "#374151" }}>✓ All data is encrypted</p>
-          </div>
-        </div>
-      ),
     },
     {
       id: "terms",
       icon: <DocumentIcon />,
       label: "Terms of Use",
-      content: (
-        <div className="space-y-2 text-xs leading-relaxed">
-          <p style={{ color: textColor }}>By using Mudras, you agree to these terms.</p>
-          <div 
-            className="rounded-xl p-3 space-y-1" 
-            style={{ 
-              backgroundColor: textColor + "15",
-              color: dark ? "#e5e7eb" : "#374151"
-            }}
-          >
-            <p style={{ color: dark ? "#e5e7eb" : "#374151" }}>• You must be 13+ to use this app</p>
-            <p style={{ color: dark ? "#e5e7eb" : "#374151" }}>• All content is for wellness purposes</p>
-            <p style={{ color: dark ? "#e5e7eb" : "#374151" }}>• Your account is non-transferable</p>
-          </div>
-        </div>
-      ),
+    },
+    {
+      id: "disclaimer",
+      icon: <InfoIcon />,
+      label: "Disclaimer",
     },
   ];
+
+  const handleMoreItemClick = (item) => {
+    if (item?.id === "privacy") {
+      router.push("/PrivacyPolicy");
+      return;
+    }
+
+    if (item?.id === "terms") {
+      router.push("/TermsConditions");
+      return;
+    }
+     if (item?.id === "disclaimer") {
+      router.push("/DisclaimerPage");
+      return;
+    }
+
+    setActiveItem(item);
+  };
 
   return (
     <>
@@ -591,7 +540,7 @@ function MoreSection({ onLogOut }) {
             key={item.id}
             icon={item.icon}
             label={item.label}
-            onClick={() => setActiveItem(item)}
+            onClick={() => handleMoreItemClick(item)}
             right={
               <span style={{ color: dark ? "#6b7280" : "#9ca3af" }}>
                 <ChevronRightIcon />

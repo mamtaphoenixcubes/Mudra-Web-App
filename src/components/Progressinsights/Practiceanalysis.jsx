@@ -10,31 +10,68 @@ import { useTheme } from "../../context/ThemeContext";
 import { IMAGES } from "../../assets/assets";
 
 // ─── Config ─────────────────────────────────────────────────────────────────
-const PRACTICE_DATA = [
-  {
-    id: "mudra",
-    label: "Mudra Meditation",
-    duration: "1h 20m",
-    percent: 40,
-    color: "#8A6FF0",
-  },
-  {
-    id: "yogaNidra",
-    label: "Yoga Nidra",
-    duration: "1h 10m",
-    percent: 35,
-    color: "#B7A6FA",
-  },
-  {
-    id: "elementBalance",
-    label: "Element Balance",
-    duration: "55m",
-    percent: 25,
-    color: "#E4DDFD",
-  },
+const PRACTICE_TYPE_CONFIG = {
+  mudra: { label: "Mudra Meditation", color: "#8A6FF0" },
+  nidra: { label: "Yoga Nidra", color: "#B7A6FA" },
+  pranayam: { label: "Pranayama", color: "#A7D8FF" },
+  asana: { label: "Asanas", color: "#D9E7FF" },
+  meditation: { label: "Meditation", color: "#E4DDFD" },
+};
+
+const FALLBACK_PRACTICE_DATA = [
+  { id: "mudra", label: "Mudra Meditation", duration: "0m", percent: 0, color: "#8A6FF0" },
+  { id: "nidra", label: "Yoga Nidra", duration: "0m", percent: 0, color: "#B7A6FA" },
+  { id: "pranayam", label: "Pranayama", duration: "0m", percent: 0, color: "#A7D8FF" },
+  { id: "asana", label: "Asanas", duration: "0m", percent: 0, color: "#D9E7FF" },
+  { id: "meditation", label: "Meditation", duration: "0m", percent: 0, color: "#E4DDFD" },
 ];
 
-const INSIGHT_TEXT = "You practice Mudra Meditation the most.";
+const formatDuration = (seconds = 0) => {
+  const totalSeconds = Number(seconds) || 0;
+  if (totalSeconds <= 0) return "0m";
+
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+
+  if (hours && minutes) return `${hours}h ${minutes}m`;
+  if (hours) return `${hours}h`;
+  return `${minutes}m`;
+};
+
+const getPracticeData = (overview = {}) => {
+  const rawData = overview?.data ?? overview ?? {};
+
+  const entries = Object.entries(rawData).filter(([, value]) => !!value && typeof value === "object");
+
+  const totalSessions = entries.reduce((sum, [, value]) => sum + (Number(value.sessions) || 0), 0);
+
+  const data = entries
+    .map(([key, value]) => {
+      const config = PRACTICE_TYPE_CONFIG[key] || { label: key, color: "#8A6FF0" };
+      const sessions = Number(value.sessions) || 0;
+      const duration = Number(value.duration) || 0;
+      const percent = totalSessions > 0 ? Number(((sessions / totalSessions) * 100).toFixed(1)) : 0;
+
+      return {
+        id: key,
+        label: config.label,
+        duration: formatDuration(duration),
+        percent,
+        color: config.color,
+        sessions,
+      };
+    })
+    .sort((a, b) => (b.sessions || 0) - (a.sessions || 0));
+
+  if (!data.length) return { data: FALLBACK_PRACTICE_DATA, insightText: "Start practicing to see your insights." };
+
+  const topItem = data.reduce((best, item) => (item.sessions > (best?.sessions || 0) ? item : best), data[0]);
+
+  return {
+    data: data.length ? data : FALLBACK_PRACTICE_DATA,
+    insightText: topItem ? `You practice ${topItem.label} the most.` : "Start practicing to see your insights.",
+  };
+};
 
 // ─── Animation Variants ─────────────────────────────────────────────────────
 const fadeUp = {
@@ -259,10 +296,13 @@ function LegendItem({ item, dark, textColor, index, isInView }) {
 }
 
 // ─── Practice Analysis ──────────────────────────────────────────────────────
-export default function PracticeAnalysis() {
+export default function PracticeAnalysis({ overview = {} }) {
   const { dark, textColor } = useTheme();
   const router = useRouter();
-  
+  const practiceSeries = getPracticeData(overview);
+  const chartData = practiceSeries.data;
+  const insightText = practiceSeries.insightText;
+
   // Create ref for the component
   const practiceRef = useRef(null);
   const headerRef = useRef(null);
@@ -357,8 +397,8 @@ export default function PracticeAnalysis() {
               animate={chartInView ? "visible" : "hidden"}
               className="relative flex-shrink-0 w-48 h-48 sm:w-52 sm:h-52 md:w-56 md:h-56"
             >
-              <DonutChart data={PRACTICE_DATA} isInView={chartInView} />
-              <ChartLabels data={PRACTICE_DATA} dark={dark} isInView={chartInView} />
+              <DonutChart data={chartData} isInView={chartInView} />
+              <ChartLabels data={chartData} dark={dark} isInView={chartInView} />
               <motion.div
                 variants={iconVariants}
                 initial="hidden"
@@ -393,7 +433,7 @@ export default function PracticeAnalysis() {
               animate={legendInView ? "visible" : "hidden"}
               className="flex-1 w-full space-y-3 sm:space-y-4"
             >
-              {PRACTICE_DATA.map((item, index) => (
+              {chartData.map((item, index) => (
                 <LegendItem
                   key={item.id}
                   item={item}
@@ -418,7 +458,7 @@ export default function PracticeAnalysis() {
               borderColor: dark ? "#fdfdfd" : "#EDEAE1"
             }}
           >
-            {INSIGHT_TEXT}
+            {insightText}
           </motion.p>
         </motion.div>
       </motion.div>

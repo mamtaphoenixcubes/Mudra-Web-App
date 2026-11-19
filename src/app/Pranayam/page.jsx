@@ -6,14 +6,16 @@ import PopularPranayam from "../../components/Pranayam/PopularPranayam";
 import PranayamHome from "../../components/Pranayam/PranayamHome";
 import { Suspense, useEffect, useState } from "react";
 import { pranayamService } from "../../services/apiService";
+import useAuthStore from "../../store/useAuthStore";
 
 export default function Pranayam() {
     const [pranayams, setPranayams] = useState([]);
-
+const { user } = useAuthStore();
+  const authId = user?.id;
     useEffect(() => {
         const fetchPranayams = async () => {
             try {
-                const response = await pranayamService.getAllPranayams();
+                const response = await pranayamService.getAllPranayams(authId);
                 const list = response?.data?.data || response?.data || response || [];
                 setPranayams(list);
                 console.log("pranayamService", response);

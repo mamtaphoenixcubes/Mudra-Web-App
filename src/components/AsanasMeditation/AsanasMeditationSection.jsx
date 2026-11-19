@@ -8,7 +8,6 @@ import { useTheme } from "../../context/ThemeContext";
 import { IMAGES } from "../../assets/assets";
 import { useAuthStore } from "../../store/useAuthStore";
 import { asanaService } from "../../services/apiService";
-
 function QuoteIcon({ color }) {
   return (
     <svg width="32" height="26" viewBox="0 0 32 26" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -104,7 +103,26 @@ function MeditationTimerModal({ dark, duration, asana = null, onClose }) {
   const [isRunning, setIsRunning] = useState(false);
   const [playTune, setPlayTune] = useState(false);
   const intervalRef = useRef(null);
+const audioRef = useRef(null);
+const BACKGROUND_TUNE = "/audio/peace-tune.mp3";
+const handleBackgroundTuneChange = async (checked) => {
+  setPlayTune(checked);
 
+  if (!audioRef.current) return;
+
+  if (checked) {
+    try {
+      audioRef.current.currentTime = 0;
+      await audioRef.current.play();
+    } catch (error) {
+      console.warn("Unable to play background music:", error);
+      setPlayTune(false);
+    }
+  } else {
+    audioRef.current.pause();
+    audioRef.current.currentTime = 0;
+  }
+};
   const { user } = useAuthStore();
   const profileDocId = user?.profileDocumentId || user?.profileDocId || (typeof user?.id === "string" && user.id.length > 5 ? user.id : null) || "nh0p1vtynpr7mge2orest5mt";
   const asanaDocId = asana?.data?.documentId || asana?.id;
@@ -132,6 +150,10 @@ function MeditationTimerModal({ dark, duration, asana = null, onClose }) {
 
   const handleTimerComplete = async () => {
     setIsRunning(false);
+      if (audioRef.current) {
+    audioRef.current.pause();
+    audioRef.current.currentTime = 0;
+  }
     if (playTune) {
       playSingingBowlSound();
     }
@@ -204,6 +226,15 @@ function MeditationTimerModal({ dark, duration, asana = null, onClose }) {
   }, [isRunning, secondsLeft]);
 
   useEffect(() => {
+  return () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
+  };
+}, []);
+
+  useEffect(() => {
     if (secondsLeft === 0 && isRunning) {
       handleTimerComplete();
     }
@@ -214,20 +245,39 @@ function MeditationTimerModal({ dark, duration, asana = null, onClose }) {
     setIsRunning(true);
   };
 
-  const handlePauseToggle = async () => {
-    const nextRunning = !isRunning;
+ const handlePauseToggle = async () => {
+  const nextRunning = !isRunning;
 
-    if (!nextRunning) {
-      await sendTimerProgress(secondsLeft);
+  if (!nextRunning) {
+    // Pause background music
+    if (audioRef.current && playTune) {
+      audioRef.current.pause();
     }
 
-    setIsRunning(nextRunning);
-  };
+    await sendTimerProgress(secondsLeft);
+  } else {
+    // Resume background music from where it paused
+    if (audioRef.current && playTune) {
+      try {
+        await audioRef.current.play();
+      } catch (error) {
+        console.warn("Unable to resume background music:", error);
+      }
+    }
+  }
+
+  setIsRunning(nextRunning);
+};
 
   const handleStop = async () => {
     setIsRunning(false);
     setSecondsLeft(totalSeconds);
+if (audioRef.current) {
+  audioRef.current.pause();
+  audioRef.current.currentTime = 0;
+}
 
+setPlayTune(false);
     const elapsed = totalSeconds - secondsLeft;
     if (asanaDocId && elapsed > 0) {
       try {
@@ -260,6 +310,14 @@ function MeditationTimerModal({ dark, duration, asana = null, onClose }) {
       style={{ backgroundColor: "rgba(0,0,0,0.6)" }}
       onClick={onClose}
     >
+
+    {/* ADD AUDIO HERE - Line 296 */}
+    <audio
+      ref={audioRef}
+      src={BACKGROUND_TUNE}
+      loop
+      preload="auto"
+    />
       <div
         className="relative w-full max-w-sm rounded-3xl px-6 py-8 flex flex-col items-center text-center"
         style={{
@@ -287,12 +345,12 @@ function MeditationTimerModal({ dark, duration, asana = null, onClose }) {
           className="w-full flex items-center gap-3 rounded-xl px-4 py-3 mb-6 cursor-pointer"
           style={{ backgroundColor: dark ? "#241f33" : "#f3f4f6" }}
         >
-          <input
-            type="checkbox"
-            checked={playTune}
-            onChange={(e) => setPlayTune(e.target.checked)}
-            className="w-4 h-4 rounded"
-          />
+        <input
+  type="checkbox"
+  checked={playTune}
+  onChange={(e) => handleBackgroundTuneChange(e.target.checked)}
+  className="w-4 h-4 rounded"
+/>
           <span className="text-sm" style={{ color: dark ? "#e5e7eb" : "#3A362E" }}>
             Play background peace tune
           </span>

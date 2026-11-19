@@ -1,0 +1,533 @@
+"use client";
+
+import { useState, useRef, useEffect } from "react";
+import { motion, useInView } from "framer-motion";
+import Image from "next/image";
+import { useRouter, useSearchParams } from "next/navigation";
+import { IMAGES } from "../../assets/assets";
+import {
+  mudraService,
+  yogaNidraService,
+  meditationService,
+  asanaService,
+  pranayamService,
+  combinedBenefitService,
+} from "../../services/apiService";
+import { useAuthStore } from "../../store/useAuthStore";
+import SiteContainer from "../../common/SiteContainer";
+import SectionHeader from "../../common/SectionHeader";
+import ExploreMore from "../ElementDetailTemplate/ExploreMore";
+
+const IMAGE_BASE_URL =
+  process.env.NEXT_PUBLIC_IMAGE_BASE_URL || "http://192.168.1.14:1337";
+
+const CATEGORIES = [
+  "All Categories",
+  "Mind",
+  "Energy",
+  "Detox",
+  "Healing",
+  "Emotional",
+];
+const ELEMENTS = ["All Elements", "Space", "Earth", "Air", "Fire", "Water"];
+const SORT_OPTIONS = ["Sort By", "Newest", "Oldest", "A–Z", "Z–A"];
+
+// ── Icons ──────────────────────────────────────────────────────
+const ChevronDown = () => (
+  <svg
+    className="w-4 h-4 text-gray-400 pointer-events-none"
+    viewBox="0 0 20 20"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={2}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M5 7.5l5 5 5-5" />
+  </svg>
+);
+
+const SearchIcon = () => (
+  <svg
+    className="w-4 h-4 text-gray-400"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={2}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <circle cx="11" cy="11" r="8" />
+    <path d="M21 21l-4.35-4.35" />
+  </svg>
+);
+
+const ArrowRight = () => (
+  <svg
+    className="w-3.5 h-3.5 ml-1"
+    viewBox="0 0 16 16"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={2}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M3 8h10M9 4l4 4-4 4" />
+  </svg>
+);
+
+export default function PopularMudras() {
+  const searchParams = useSearchParams();
+  const title = searchParams.get("title");
+  const type = searchParams.get("type");
+  const sectionRef = useRef(null);
+  const isInView = useInView(sectionRef, { once: true, amount: 0.05 });
+ const { user } = useAuthStore();
+  const profileDocId = user?.id || user?.profileDocId || (typeof user?.id === "string" && user.id.length > 5 ? user.id : null) || "nh0p1vtynpr7mge2orest5mt";
+ 
+  const router = useRouter();
+  const { isLoggedIn } = useAuthStore();
+
+  const [mudrasList, setMudrasList] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [categoriesList, setCategoriesList] = useState(CATEGORIES);
+  const [elementsList, setElementsList] = useState(ELEMENTS);
+
+  const [search, setSearch] = useState("");
+  const [element, setElement] = useState(title || "All Elements");
+  const [sortBy, setSortBy] = useState("Sort By");
+
+  const CARD_COLORS = [
+    "bg-[#FEF9C3]",
+    "bg-[#F3E8FF]",
+    "bg-[#BFDDF2]",
+    "bg-[#FCE7F3]",
+    "bg-[#DCFCE7]",
+  ];
+
+  const normalizedType = type?.trim().toLowerCase();
+
+const fetchItemsByType = async (profileDocId, elementFilter, sortParams) => {
+  switch (normalizedType) {
+    case "mudra":
+      return mudraService.getAllMudras(
+        profileDocId,
+        elementFilter,
+        sortParams
+      );
+
+    case "yoganidra":
+      return yogaNidraService.getAllYogaNidras(
+        profileDocId,
+        elementFilter,
+        sortParams
+      );
+
+    case "asana":
+      return asanaService.getAllAsanas(
+        profileDocId,
+        elementFilter,
+        sortParams
+      );
+
+    case "meditation":
+      return meditationService.getAllMeditations(
+        profileDocId,
+        elementFilter,
+        sortParams
+      );
+
+    case "pranayama":
+      return pranayamService.getAllPranayams(
+        profileDocId,
+        elementFilter,
+        sortParams
+      );
+
+    default:
+      return [];
+  }
+};
+ useEffect(() => {
+  if (title) {
+    const formatted =
+      title.charAt(0).toUpperCase() +
+      title.slice(1).toLowerCase();
+
+    setElement(formatted);
+  }
+}, [title]);
+
+
+ useEffect(() => {
+  async function fetchItems() {
+    setIsLoading(true);
+
+    try {
+      const elementFilter =
+        element !== "All Elements" ? element : null;
+
+      const sortQuery =
+        sortBy === "Newest"
+          ? "createdAt:desc"
+          : sortBy === "Oldest"
+          ? "createdAt:asc"
+          : sortBy === "A–Z"
+          ? "name:asc"
+          : sortBy === "Z–A"
+          ? "name:desc"
+          : null;
+
+      const sortParams = sortQuery
+        ? { sort: sortQuery }
+        : {};
+
+      const json = await fetchItemsByType(
+        profileDocId,
+        elementFilter,
+        sortParams
+      );
+
+      let rawList = [];
+
+      if (Array.isArray(json)) {
+        rawList = json;
+        
+      } else if (Array.isArray(json?.data)) {
+        console.log(json, "rawList"); // Debugging line
+
+        rawList = json.data;
+      } else if (Array.isArray(json?.data?.data)) {
+        rawList = json.data.data;
+
+      }
+const isYogaNidra = ["yoganidra", "yoga nidra"].includes(normalizedType);
+
+const mapped = rawList.map((item, idx) => {
+  // Yoga Nidra fields
+  const nidraCard = item.NidraIntroCard || {};
+
+  // Name
+  const itemName = isYogaNidra
+    ? nidraCard.Name || item.Name || item.name || item.title || ""
+    : item.name || item.title || item.Name || "";
+
+  // Category
+  const firstCategory = isYogaNidra
+    ? item.NidraCategories?.[0]
+    : item.categories?.[0];
+
+  const categoryName =
+    firstCategory?.Name ||
+    firstCategory?.name ||
+    item.category ||
+    "Healing";
+
+  // Benefits — supports both old and new API fields
+  const itemBenefits = isYogaNidra
+    ? item.YogaNidraBenefits || item.therapeuticNotes || item.web?.Benefits || []
+    : item.therapeuticNotes ||
+      item.web?.Benefits ||
+      item.benefits ||
+      [];
+
+  const benefitNames = Array.isArray(itemBenefits)
+    ? itemBenefits
+        .map((benefit) =>
+          typeof benefit === "string"
+            ? benefit
+            : benefit?.Name || benefit?.name || benefit?.title || ""
+        )
+        .filter(Boolean)
+    : [];
+
+  // Element
+  const elementVal = isYogaNidra
+    ? item.Elements || item.element || "Earth"
+    : item.element || item.Elements || "Earth";
+
+  // Description
+  const description = isYogaNidra
+    ? nidraCard.ShortDescription ||
+      item.description ||
+      item.web?.IntroCardWeb?.Description ||
+      ""
+    : item.description ||
+      item.web?.IntroCardWeb?.Description ||
+      item.desc ||
+      "";
+
+  // Image — supports new API and existing API structures
+  const nidraImage = nidraCard.ThumbnailImage?.[0];
+
+  const imagePath = isYogaNidra
+    ? nidraImage?.formats?.medium?.url ||
+      nidraImage?.url ||
+      item.thumbnail?.url
+    : item.thumbnail?.formats?.medium?.url ||
+      item.thumbnail?.url ||
+      item.bannerImage?.url ||
+      item.web?.IntroCardWeb?.IntrocardImage?.url ||
+      (Array.isArray(item.image)
+        ? item.image[0]?.url
+        : item.image?.url);
+
+  const iconUrl = imagePath
+    ? imagePath.startsWith("http")
+      ? imagePath
+      : `${IMAGE_BASE_URL}${imagePath}`
+    : null;
+
+  return {
+    id: item.documentId || item.id,
+    name: itemName,
+    elements: `${categoryName} • ${elementVal}`,
+    desc: description,
+    bg: CARD_COLORS[idx % CARD_COLORS.length],
+    imgKey: "",
+    category: categoryName,
+    benefits: benefitNames,
+    element: elementVal,
+    createdAt:
+      item.createdAt ||
+      item.publishedAt ||
+      item.created_at ||
+      item.id,
+    iconUrl,
+    isRemote: !!iconUrl,
+  };
+});
+
+setMudrasList(mapped);
+
+      const uniqueCategories = [
+        "All Categories",
+        ...new Set(mapped.map((m) => m.category).filter(Boolean)),
+      ];
+
+      setCategoriesList(uniqueCategories);
+      setElementsList(ELEMENTS);
+    } catch (err) {
+      console.warn(`Error fetching ${type}:`, err);
+      setMudrasList([]);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  fetchItems();
+}, [element, sortBy, type, profileDocId]);
+
+    const filtered = mudrasList
+      .filter((m) => {
+        const q = search.toLowerCase();
+
+        if (
+          q &&
+          !m.name?.toLowerCase().includes(q) &&
+          !m.desc?.toLowerCase().includes(q)
+        ) {
+          return false;
+        }
+
+        if (
+          element !== "All Elements" &&
+          m.element !== element
+        ) {
+          return true;
+        }
+
+        return true;
+      })
+    .sort((a, b) => {
+      if (sortBy === "A–Z") return a.name.localeCompare(b.name);
+      if (sortBy === "Z–A") return b.name.localeCompare(a.name);
+      if (sortBy === "Newest") {
+        const timeA = a.createdAt
+          ? new Date(a.createdAt).getTime()
+          : typeof a.id === "number"
+          ? a.id
+          : 0;
+        const timeB = b.createdAt
+          ? new Date(b.createdAt).getTime()
+          : typeof b.id === "number"
+          ? b.id
+          : 0;
+        return timeB - timeA;
+      }
+      if (sortBy === "Oldest") {
+        const timeA = a.createdAt
+          ? new Date(a.createdAt).getTime()
+          : typeof a.id === "number"
+          ? a.id
+          : 0;
+        const timeB = b.createdAt
+          ? new Date(b.createdAt).getTime()
+          : typeof b.id === "number"
+          ? b.id
+          : 0;
+        return timeA - timeB;
+      }
+      return 0;
+    });
+
+  const handleCardClick = (id) => {
+    if (!isLoggedIn) {
+      router.push(`/Login?redirectTo=/MudraDetailTemplate?id=${id}`);
+    } else {
+      router.push(`/MudraDetailTemplate?id=${id}`);
+    }
+  };
+
+  return (
+    <section ref={sectionRef} className="w-full bg-white">
+      <SiteContainer>
+        {/* ── 1. FILTER BAR ── */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 lg:gap-5 mb-12 items-center">
+          {/* Search Box */}
+          <div className="relative w-full">
+            <div className="absolute left-3.5 top-1/2 -translate-y-1/2">
+              <SearchIcon />
+            </div>
+            <input
+              type="text"
+              placeholder={`Search ${type || "mudras"}...`}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full bg-white border border-gray-200 rounded-lg pl-10 pr-4 py-2.5 text-xs sm:text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#9A85FE]/30 shadow-sm"
+            />
+          </div>
+
+    
+
+          {/* Element Dropdown */}
+          <div className="relative w-full">
+            <select
+              value={element}
+              onChange={(e) => setElement(e.target.value)}
+              className="appearance-none w-full bg-white border border-gray-200 rounded-lg pl-4 pr-10 py-2.5 text-xs sm:text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#9A85FE]/30 cursor-pointer shadow-sm"
+            >
+              {elementsList.map((el) => (
+                <option key={el} value={el}>
+                  {el}
+                </option>
+              ))}
+            </select>
+            <div className="absolute right-3 top-1/2 -translate-y-1/2">
+              <ChevronDown />
+            </div>
+          </div>
+        </div>
+
+        {/* ── 2. SECTION HEADING ── */}
+        <SectionHeader
+      title={
+          <>
+            Popular {type ? type.charAt(0).toUpperCase() + type.slice(1) : "Mudras"}
+          </>
+        }      
+         subtitle={`Browse a selection of commonly used and effective ${type || "mudras"}.`}
+          align="center"
+          sx={{
+            mb: 5,
+            "& h2": {
+              color: "#9A85FE",
+              fontFamily:
+                '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Inter", sans-serif',
+              fontWeight: 500,
+              fontSize: {
+                xs: "1.875rem",
+                sm: "2.25rem",
+                lg: "44px",
+              },
+            },
+            "& p": {
+              color: "#374151",
+              fontWeight: 600,
+              maxWidth: "32rem",
+            },
+          }}
+        />
+
+        {/* ── 3. CARDS GRID ── */}
+        {isLoading ? (
+          <div className="flex items-center justify-center py-20">
+            <div className="w-10 h-10 border-4 border-gray-200 border-t-[#9A85FE] rounded-full animate-spin" />
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className="text-center py-20">
+            <p className="text-gray-500 text-sm">
+              No {type || "mudras"} found.
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 lg:gap-5">
+            {filtered.map((item, index) => {
+              const mudraImage = IMAGES[item.imgKey];
+
+              return (
+                <motion.div
+                  key={item.id}
+                  onClick={() => handleCardClick(item.id)}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={
+                    isInView
+                      ? { opacity: 1, y: 0 }
+                      : { opacity: 0, y: 20 }
+                  }
+                  transition={{ duration: 0.4, delay: index * 0.04 }}
+                  whileHover={{ y: -4, scale: 1.02 }}
+                  className={`${item.bg} rounded-2xl p-5 flex flex-col items-center text-center transition-all duration-200 hover:shadow-md cursor-pointer`}
+                >
+                  {/* Avatar Image */}
+                  <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden bg-white shadow-sm mb-3 border border-white/60 flex items-center justify-center shrink-0">
+                    {item.isRemote && item.iconUrl ? (
+                      <img
+                        src={item.iconUrl}
+                        alt={item.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : mudraImage ? (
+                      <Image
+                        src={mudraImage}
+                        alt={item.name}
+                        width={96}
+                        height={96}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gray-100" />
+                    )}
+                  </div>
+
+                  {/* Name */}
+                  <h3 className="text-base font-bold text-gray-900 mb-0.5 leading-snug">
+                    {item.name}
+                  </h3>
+
+                  {/* Elements */}
+                  <p className="text-xs font-semibold text-gray-500 mb-2 leading-tight">
+                    {item.elements}
+                  </p>
+
+                  {/* Description */}
+                  <p className="text-xs text-gray-600 leading-relaxed mb-4 flex-1">
+                    {item.desc}
+                  </p>
+
+                  {/* Learn More */}
+                  <div className="mt-auto flex items-center justify-center text-xs font-bold text-gray-800 hover:text-gray-900">
+                    <span>Learn More</span>
+                    <ArrowRight />
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        )}
+      </SiteContainer>
+        <ExploreMore title={title}/>
+
+    </section>
+  );
+}

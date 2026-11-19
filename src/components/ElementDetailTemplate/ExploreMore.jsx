@@ -8,39 +8,68 @@ import { IMAGES } from "../../assets/assets";
 import { card, spacing, typography } from "../../theme";
 import { useTheme } from "../../context/ThemeContext";
 import SiteContainer from "../../common/SiteContainer";
+import { useRouter, useSearchParams } from "next/navigation";
+
 
 const exploreLinks = [
   {
     title: "Mudras",
     linkLabel: "Explore Mudras",
-    href: "/MudraLibrary",
+    href: "/ElementDetailTemplate",
+    type: "mudra",
     bg: "bg-[#E3DDFF]",
     image: IMAGES.HastaMudras,
   },
   {
     title: "Yoga Nidra",
     linkLabel: "Explore Yoga Nidra",
-    href: "/YogaNidraLibrary",
+    href: "/ElementDetailTemplate",
+    type: "yoganidra",
     bg: "bg-[#C8E8F5]",
     image: IMAGES.IconYogaNidra,
   },
   {
-    title: "Benefits",
-    linkLabel: "View Benefits",
-    href: "/Benefits",
+    title: "Asanas",
+    linkLabel: "Explore Asanas",
+    href: "/ElementDetailTemplate",
+    type: "asana",
+    bg: "bg-[#D4F5D4]",
+    image: IMAGES.IconPractice,
+  },
+  {
+    title: "Meditation",
+    linkLabel: "Explore Meditation",
+    href: "/ElementDetailTemplate",
+    type: "meditation",
     bg: "bg-[#F8D4DC]",
     image: IMAGES.Energy,
   },
   {
-    title: "Library",
-    linkLabel: "View Library",
-    href: "/BlogLearning",
-    bg: "bg-[#D4F5D4]",
+    title: "Pranayama",
+    linkLabel: "Explore Pranayama",
+    href: "/ElementDetailTemplate",
+    type: "pranayama",
+    bg: "bg-[#FCE5C8]",
     image: IMAGES.IconPractice,
   },
+  // {
+  //   title: "Benefits",
+  //   linkLabel: "View Benefits",
+  //   href: "/Benefits",
+  //   bg: "bg-[#F8D4DC]",
+  //   image: IMAGES.Energy,
+  // },
+  // {
+  //   title: "Library",
+  //   linkLabel: "View Library",
+  //   href: "/BlogLearning",
+  //   bg: "bg-[#D4F5D4]",
+  //   image: IMAGES.IconPractice,
+  // },
 ];
 
-function ExploreCard({ item, dark, textColor, index }) {
+function ExploreCard({ item, dark, textColor, index, elementTitle }) {
+  
   const cardVariants = {
     hidden: { opacity: 0, x: -20, scale: 0.95 },
     visible: {
@@ -55,6 +84,18 @@ function ExploreCard({ item, dark, textColor, index }) {
     },
   };
 
+  // Pass element title only to Mudras and Yoga Nidra
+const shouldPassTitle = [
+  "Mudras",
+  "Yoga Nidra",
+  "Asanas",
+  "Meditation",
+  "Pranayama",
+].includes(item.title);
+
+const href = shouldPassTitle
+  ? `${item.href}?title=${encodeURIComponent(elementTitle || "")}&type=${item.type}`
+  : item.href;
   return (
     <motion.div
       variants={cardVariants}
@@ -68,7 +109,7 @@ function ExploreCard({ item, dark, textColor, index }) {
       }}
     >
       <Link
-        href={item.href}
+        href={href}
         className={`
           ${item.bg} ${card.radius} ${card.hover}
           ${spacing.cardPadding}
@@ -126,9 +167,16 @@ function ExploreCard({ item, dark, textColor, index }) {
   );
 }
 
-export default function ExploreMore() {
+export default function ExploreMore({ title }) {
   const { dark, textColor } = useTheme();
+  const searchParams = useSearchParams();
   const sectionRef = useRef(null);
+   const type = searchParams.get("type");
+   const normalizedType = type?.trim().toLowerCase();
+
+const filteredExploreLinks = exploreLinks.filter(
+  (item) => item.type !== normalizedType
+);
   const isInView = useInView(sectionRef, {
     once: true,
     amount: 0.05,
@@ -231,20 +279,21 @@ export default function ExploreMore() {
 
         {/* Grid */}
         <motion.div
-          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4"
+          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
           variants={containerVariants}
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
         >
-          {exploreLinks.map((item, i) => (
-            <ExploreCard
-              key={i}
-              item={item}
-              dark={dark}
-              textColor={textColor}
-              index={i}
-            />
-          ))}
+       {filteredExploreLinks.map((item, i) => (
+          <ExploreCard
+            key={item.type}
+            item={item}
+            dark={dark}
+            textColor={textColor}
+            index={i}
+            elementTitle={title}
+          />
+        ))}
         </motion.div>
       </SiteContainer>
     </motion.section>

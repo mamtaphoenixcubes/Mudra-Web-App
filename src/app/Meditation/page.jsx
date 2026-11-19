@@ -5,14 +5,16 @@ import { Suspense, useEffect, useState } from "react";
 import PopularMeditation from "../../components/Meditation/PopularMeditation";
 import FullPowerofMeditation from "../../components/Meditation/FullPowerofMeditation";
 import { meditationService } from "../../services/apiService";
+import useAuthStore from "../../store/useAuthStore";
 
 export default function Meditation() {
     const [meditations, setMeditations] = useState([]);
-
+const { user } = useAuthStore();
+  const authId = user?.id;
     useEffect(() => {
         const fetchMeditations = async () => {
             try {
-                const response = await meditationService.getAllMeditations();
+                const response = await meditationService.getAllMeditations(authId);
                 const list = response?.data?.data || response?.data || response || [];
                 setMeditations(list);
                 console.log("meditationService", response);

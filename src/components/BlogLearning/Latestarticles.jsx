@@ -21,7 +21,24 @@ const getImgBaseUrl = () => {
   return "http://192.168.1.3:1337";
 };
 
-const IMAGE_BASE_URL = getImgBaseUrl();
+const IMAGE_BASE_URL = process.env.NEXT_PUBLIC_IMAGE_BASE_URL || getImgBaseUrl();
+
+const normalizeImageUrl = (url) => {
+  if (!url) return "";
+
+  const baseUrl = process.env.NEXT_PUBLIC_IMAGE_BASE_URL || getImgBaseUrl();
+
+  if (url.startsWith("http://") || url.startsWith("https://")) {
+    const withoutOrigin = url.replace(/^https?:\/\/[^/]+/, "");
+    return `${baseUrl}${withoutOrigin.startsWith("/") ? withoutOrigin : `/${withoutOrigin}`}`;
+  }
+
+  if (url.startsWith("/")) {
+    return `${baseUrl}${url}`;
+  }
+
+  return `${baseUrl}/${url}`;
+};
 
 // ── Tabs config ────────────────────────────────────────────────
 const TABS = [
@@ -81,11 +98,7 @@ function TabIconCircle({ tab, size, imgSize, dark, textColor, index }) {
 // ── Article Card (compact, uses common <Card>) ─────────────────
 function ArticleCard({ article, dark, textColor, index }) {
   const thumbUrl = article.Thumbnail?.url || article.thumbnail?.url;
-  const resolvedImgUrl = thumbUrl
-    ? thumbUrl.startsWith("http")
-      ? thumbUrl
-      : `${IMAGE_BASE_URL}${thumbUrl}`
-    : IMAGES[article.imgKey];
+  const resolvedImgUrl = thumbUrl ? normalizeImageUrl(thumbUrl) : IMAGES[article.imgKey];
 
   const titleText = article.Title || article.title || "";
   const descriptionText =

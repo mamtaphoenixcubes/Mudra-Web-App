@@ -100,11 +100,12 @@ function AsanaCard({ asana }) {
 export default function PopularAsanas() {
   const [asanaList, setAsanaList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-
+const { user } = useAuthStore();
+  const authId = user?.id;
   useEffect(() => {
     const fetchAsanas = async () => {
       try {
-        const response = await asanaService.getAllAsanas();
+        const response = await asanaService.getAllAsanas(authId);
         console.log("All Asanas API response:", response);
 
         const normalized =

@@ -85,22 +85,27 @@ export const mudraService = {
     return response.data;
   },
   
-  getAllMudras: async (element = null, params = {}) => {
-    const queryParams = { ...(element ? { element } : {}), ...params };
-    const config = { params: queryParams };
-    try {
-      const response = await api.get("/webmudras", config);
+getAllMudras: async (authId, element = null, params = {}) => {
+  const queryParams = {
+    ...(element ? { element } : {}),
+    ...params,
+  };
+
+  const config = { params: queryParams };
+
+  try {
+    
+    // First try fetching using authenticated user ID
+    if (authId) {
+    console.log(`Fetching mudras for authId: ${authId}`);
+
+      const response = await api.get(`/webmudras?profileDocumentId=${authId}`, config);
       return response.data;
-    } catch (error) {
-      try {
-        const response = await api.get("/getallmudras", config);
-        return response.data;
-      } catch (err) {
-        const response = await api.get("/mudras", config);
-        return response.data;
-      }
     }
-  },
+  } catch (error) {
+    console.warn("Direct fetch failed. Trying alternative Mudra APIs...");
+  }
+},
 
   getMudraDetail: async (id) => {
     const isNumeric = /^\d+$/.test(id);
@@ -223,10 +228,34 @@ export const mudraService = {
 };
 
 export const asanaService = {
-  getAllAsanas: async (params = {}) => {
-    const response = await api.get(`${MOBILE_API_BASE_URL}/asanas`, { params });
+ getAllAsanas: async (authId, params = {}) => {
+  const config = {
+    params: {
+      ...params,
+    },
+  };
+
+  try {
+    if (authId) {
+      console.log(`Fetching Asanas for authId: ${authId}`);
+
+      const response = await api.get(
+        `${MOBILE_API_BASE_URL}/asanas?profileDocumentId=${authId}`,
+        config
+      );
+
+      return response.data;
+    }
+
+    const response = await api.get(`${MOBILE_API_BASE_URL}/asanas`, config);
     return response.data;
-  },
+  } catch (error) {
+    console.warn("Direct Asana fetch failed. Trying fallback...");
+
+    const response = await api.get(`${MOBILE_API_BASE_URL}/asanas`, config);
+    return response.data;
+  }
+},
   getAsanaById: async (id, profileDocumentId) => {
     const params = profileDocumentId ? { profileDocumentId } : {};
     const response = await api.get(`${API_BASE_URL}/asanas/${id}`, { params });
@@ -274,13 +303,73 @@ export const asanaService = {
     const response = await api.post(`${API_BASE_URL}/asanas/${id}/complete`, payload);
     return response.data;
   },
+
+  saveAsanaMediaProgress: async (payload) => {
+    try {
+      const response = await api.post(`${MOBILE_API_BASE_URL}/user-asana-activities/media-progress`, payload);
+      return response.data;
+    } catch (err) {
+      const targetId = payload.asanaDocumentId || payload.mediaDocumentId;
+      if (targetId) {
+        return await asanaService.saveAsanaProgress(
+          targetId,
+          payload.profileDocumentId,
+          payload.remainingDuration,
+          payload.sessionDuration,
+          payload.payment
+        );
+      }
+      throw err;
+    }
+  },
+
+  completeAsanaMedia: async (payload) => {
+    try {
+      const response = await api.post(`${MOBILE_API_BASE_URL}/user-asana-activities/media-complete`, payload);
+      return response.data;
+    } catch (err) {
+      const targetId = payload.asanaDocumentId || payload.mediaDocumentId;
+      if (targetId) {
+        return await asanaService.completeAsana(
+          targetId,
+          payload.profileDocumentId,
+          payload.completedDuration || payload.sessionDuration || 0
+        );
+      }
+      throw err;
+    }
+  },
 };
 export const meditationService = {
   // Get all meditations
-  getAllMeditations: async (params = {}) => {
-    const response = await api.get("/meditations", { params });
+getAllMeditations: async (authId, params = {}) => {
+  const config = {
+    params: {
+      ...params,
+    },
+  };
+
+  try {
+    if (authId) {
+      console.log(`Fetching Meditations for authId: ${authId}`);
+
+      const response = await api.get(
+        `/meditations?profileDocumentId=${authId}`,
+        config
+      );
+
+      return response.data;
+    }
+
+    const response = await api.get("/meditations", config);
     return response.data;
-  },
+  } catch (error) {
+    console.warn("Direct Meditation fetch failed. Trying fallback...");
+
+    const response = await api.get("/meditations", config);
+    return response.data;
+  }
+},
 
   // Get meditation details by ID
   getMeditationById: async (id, profileDocumentId) => {
@@ -414,13 +503,38 @@ export const meditationService = {
 };
 
 export const pranayamService = {
-  getAllPranayams: async (params = {}) => {
+ getAllPranayams: async (authId, params = {}) => {
+  const config = {
+    params: {
+      ...params,
+    },
+  };
+      console.log(`Fetching Pranayams for authId: ${authId}`);
+
+  try {
+    if (authId) {
+
+      const response = await api.get(
+        `${MOBILE_API_BASE_URL}/pranayams?profileDocumentId=${authId}`,
+        config
+      );
+
+      return response.data;
+    }
+
+
+    return response.data;
+  } catch (error) {
+    console.warn("Direct Pranayama fetch failed. Trying fallback...");
+
     const response = await api.get(
       `${MOBILE_API_BASE_URL}/pranayams`,
-      { params }
+      config
     );
+
     return response.data;
-  },
+  }
+},
 
   getPranayamById: async (id, profileDocumentId) => {
     const params = profileDocumentId ? { profileDocumentId } : {};
@@ -532,10 +646,34 @@ export const pranayamService = {
 
 
 export const yogaNidraService = {
-  getAllYogaNidras: async (params = {}) => {
-    const response = await api.get("/yoga-nidras", { params });
+  getAllYogaNidras: async (authId, params = {}) => {
+  const config = {
+    params: {
+      ...params,
+    },
+  };
+
+  try {
+    if (authId) {
+      console.log(`Fetching Yoga Nidras for authId: ${authId}`);
+
+      const response = await api.get(
+        `/yoga-nidras?profileDocumentId=${authId}`,
+        config
+      );
+
+      return response.data;
+    }
+
+    const response = await api.get("/yoga-nidras", config);
     return response.data;
-  },
+  } catch (error) {
+    console.warn("Direct Yoga Nidra fetch failed. Trying fallback...");
+
+    const response = await api.get("/yoga-nidras", config);
+    return response.data;
+  }
+},
   getYogaNidraById: async (id, profileDocumentId) => {
     const params = profileDocumentId ? { profileDocumentId } : {};
     const response = await api.get(`/yoga-nidras/${id}`, { params });
@@ -850,6 +988,54 @@ export const progressInsightService = {
     return response.data;
   },
 };
+
+
+export const wellnessCategoriesService = {
+  // Get all wellness categories (Web)
+  getAllWellnessCategories: async (params = {}) => {
+    const response = await api.get("/wellness-categories", { params });
+    return response.data;
+  },
+
+  // Get wellness category details by documentId (Web)
+  getWellnessCategoryById: async (documentId, params = {}) => {
+    const response = await api.get(
+      `/wellness-categories/${documentId}`,
+      { params }
+    );
+    return response.data;
+  },
+};
+
+
+export const subscriptionService = {
+  // Get all subscription plans
+  getSubscriptionPlans: async (params = {}) => {
+    const response = await api.get(
+      `${MOBILE_API_BASE_URL}/subscription-plans`,
+      { params }
+    );
+    return response.data;
+  },
+
+  // Create Razorpay subscription
+  createSubscription: async (
+    profileDocumentId,
+    subscriptionPlanDocumentId
+  ) => {
+    const response = await api.post(
+      `${API_BASE_URL}/payments/create-order`,
+      {
+        profileDocumentId,
+        subscriptionPlanDocumentId,
+      }
+    );
+
+    return response.data;
+  },
+};
+
+
 
 
 export default api;

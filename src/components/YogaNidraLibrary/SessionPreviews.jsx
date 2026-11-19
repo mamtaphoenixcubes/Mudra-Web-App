@@ -129,7 +129,9 @@ function SessionCard({ session }) {
 export default function SessionPreviewsSection() {
   const [sessionsList, setSessionsList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+const { user } = useAuthStore();
 
+const authId = user?.id;
   const [durationsList, setDurationsList] = useState([
     { label: "All Durations", value: "all" },
   ]);
@@ -210,7 +212,7 @@ export default function SessionPreviewsSection() {
         if (level !== "All Levels") queryParams.level = level;
         if (sortBy !== "all") queryParams.sort = sortBy;
 
-        const json = await yogaNidraService.getAllYogaNidras(queryParams);
+        const json = await yogaNidraService.getAllYogaNidras(authId, queryParams);
 
         let rawList = [];
 
@@ -272,7 +274,7 @@ export default function SessionPreviewsSection() {
     }
 
     fetchFilteredSessions();
-  }, [search, duration, theme, benefit, level, sortBy]);
+  }, [authId, search, duration, theme, benefit, level, sortBy]);
 
   return (
     <section className="w-full bg-white">

@@ -91,7 +91,7 @@ export default function CTASection() {
             >
               Get Started
             </motion.button>
-
+{/* 
             <motion.div 
               className={`${typography.ctaNote} flex items-center gap-2`}
               style={{ color: dark ? "#000000" : "#4b5563" }}
@@ -112,7 +112,7 @@ export default function CTASection() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
               </svg>
               <span>No credit card required.</span>
-            </motion.div>
+            </motion.div> */}
           </motion.div>
 
         </motion.div>

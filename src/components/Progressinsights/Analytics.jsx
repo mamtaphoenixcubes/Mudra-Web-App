@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
 import { Sparkles, ChevronDown } from "lucide-react";
 import Image from "next/image";
 import { motion, AnimatePresence, useInView } from "framer-motion";
@@ -11,31 +11,63 @@ import { IMAGES } from "../../assets/assets";
 // ─── Config ─────────────────────────────────────────────────────────────────
 const TIME_RANGES = ["This Week", "This Month", "This Year", "All Time"];
 
-const STATS = [
-    {
-        id: "avgSession",
-        icon: "clock",
-        value: "28 min",
-        label: "Average Session Duration",
-        imageIcon: IMAGES.Clock,
-    },
-    {
-        id: "increase",
-        icon: "image",
-        value: "15%",
-        label: "Increase vs Last Week",
-        imageIcon: IMAGES.ImprovedOutcomes,
-    },
-    {
-        id: "goals",
-        icon: "target",
-        value: "4 / 5",
-        label: "Goals Completed",
-        imageIcon: IMAGES.ImproveFocus,
-    },
-];
+const formatDurationLabel = (seconds = 0) => {
+    const totalSeconds = Number(seconds) || 0;
+    if (totalSeconds <= 0) return "0m";
 
-const INSIGHT_TEXT = "Great progress! You're building a beautiful habit of self-care.";
+    const totalMinutes = Math.round(totalSeconds / 60);
+    if (totalMinutes < 60) return `${totalMinutes}m`;
+
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+
+    if (minutes === 0) return `${hours}h`;
+    return `${hours}h ${minutes}m`;
+};
+
+const formatPercent = (value = 0) => {
+    const numericValue = Number(value) || 0;
+    return `${Math.abs(numericValue)}%`;
+};
+
+const buildAnalyticsStats = (analysis = {}, timeRange = "This Week") => {
+    const analyticsData = analysis?.data ?? analysis ?? {};
+    const averageSessionDuration = analyticsData.averageSessionDuration ?? {};
+    const weeklyComparison = analyticsData.weeklyComparison ?? {};
+    const goalCompletion = analyticsData.goalCompletion ?? {};
+
+    const avgSessionSeconds = Number(averageSessionDuration.seconds ?? 0);
+    const comparisonPercentage = Number(weeklyComparison.percentage ?? 0);
+    const goalCurrent = Number(goalCompletion.current ?? 0);
+    const goalTarget = Number(goalCompletion.target ?? 0);
+    const isPositiveTrend = (weeklyComparison.trend ?? "UP") === "UP";
+
+    return [
+        {
+            id: "avgSession",
+            icon: "clock",
+            value: formatDurationLabel(avgSessionSeconds),
+            label: "Average Session Duration",
+            imageIcon: IMAGES.Clock,
+        },
+        {
+            id: "increase",
+            icon: "image",
+            value: formatPercent(comparisonPercentage),
+            label: isPositiveTrend ? `Increase vs Last ${timeRange === "This Week" ? "Week" : timeRange}` : `Decrease vs Last ${timeRange === "This Week" ? "Week" : timeRange}`,
+            imageIcon: IMAGES.ImprovedOutcomes,
+        },
+        {
+            id: "goals",
+            icon: "target",
+            value: goalTarget > 0 ? `${goalCurrent} / ${goalTarget}` : "0 / 0",
+            label: "Goals Completed",
+            imageIcon: IMAGES.ImproveFocus,
+        },
+    ];
+};
+
+const DEFAULT_INSIGHT_TEXT = "Great progress! You're building a beautiful habit of self-care.";
 
 // ─── Animation Variants ─────────────────────────────────────────────────────
 const fadeUp = {
@@ -215,15 +247,34 @@ function TimeRangeDropdown({ range, setRange, dark, textColor }) {
 }
 
 // ─── Analytics ──────────────────────────────────────────────────────────────
-export default function Analytics() {
+export default function Analytics({ analysis, loading }) {
     const { dark, textColor } = useTheme();
     const [timeRange, setTimeRange] = useState("This Week");
-    
+
+    const stats = useMemo(() => buildAnalyticsStats(analysis, timeRange), [analysis, timeRange]);
+
+    const insightText = useMemo(() => {
+        const analyticsData = analysis?.data ?? analysis ?? {};
+        const weeklyComparison = analyticsData.weeklyComparison ?? {};
+        const trend = weeklyComparison.trend ?? "UP";
+        const percentage = Number(weeklyComparison.percentage ?? 0);
+
+        if (trend === "DOWN") {
+            return `You are ${Math.abs(percentage)}% below last week. A few more sessions will bring you back on track.`;
+        }
+
+        if (trend === "UP") {
+            return `Great progress! You are ${Math.abs(percentage)}% ahead of last week.`;
+        }
+
+        return DEFAULT_INSIGHT_TEXT;
+    }, [analysis]);
+
     // Create ref for the component
     const analyticsRef = useRef(null);
     const statsCardRef = useRef(null);
     const bannerRef = useRef(null);
-    
+
     // Check if sections are in view
     const analyticsInView = useInView(analyticsRef, { once: true, margin: "-50px" });
     const statsInView = useInView(statsCardRef, { once: true, margin: "-50px" });
@@ -283,11 +334,11 @@ export default function Analytics() {
                     animate={statsInView ? "visible" : "hidden"}
                     className="flex flex-col sm:flex-row divide-y sm:divide-y-0 divide-solid"
                 >
-                    {STATS.map((stat, i) => (
+                    {(loading ? buildAnalyticsStats({}, timeRange) : stats).map((stat, i) => (
                         <StatItem
                             key={stat.id}
                             stat={stat}
-                            isLast={i === STATS.length - 1}
+                            isLast={i === stats.length - 1}
                             dark={dark}
                             textColor={textColor}
                             index={i}
@@ -328,7 +379,7 @@ export default function Analytics() {
                         className="text-[12px] sm:text-[13px] font-medium"
                         style={{ color: textColor }}
                     >
-                        {INSIGHT_TEXT}
+                        {loading ? "Loading your practice analytics..." : insightText}
                     </motion.p>
                 </motion.div>
 
